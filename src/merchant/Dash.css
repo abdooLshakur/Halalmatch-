@@ -1,0 +1,115 @@
+*{
+    margin: 0;
+    padding: 0;
+    
+}
+.dash{
+    display: grid;
+    grid-template-columns: 25% 75%;
+    min-height: 920px;
+    background-color: rgb(226, 226, 223);
+
+}
+.sidedash{
+    min-height: 100%;
+    background-color: rgb(29,25,24);
+    color: white;
+    position: fixed;
+    
+}
+.logooo img {
+    width: 30%;
+    /* background-color: white; */
+    margin: 15px 0 0 0;
+}
+.sidedash_container{
+    min-height: 920px;
+    width: 90%;
+    margin: auto;
+}
+.sidedash ul{
+    padding: 0;
+}
+.sidedash li {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-decoration: none;
+    list-style-type: none;
+    padding: 15px 0;
+    font-size: larger;
+    border-bottom: 1px solid rgb(218, 215, 215);
+    text-align: left;
+}
+.sidedash li a{
+    color: white;
+    text-decoration: none;
+}
+.mainbody{
+    margin-top: 30px;
+}
+.dash_box{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.dash_box div{
+    background-color: white;
+    padding: 10px;
+    color: black;
+    height: 200px;
+    width: 430px;
+    margin: 20px 0;
+    }
+/* manage product */
+.manageproduct-grid{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+.manageproduct-grid img{
+    width: 100%;
+    height: 400px;
+}
+.delete,
+.edit{
+    padding: 10px 15px;
+    margin: 10px 0;
+    width: 90px;
+    outline: none;
+    border: none;
+}
+.edit{
+    background-color: green;
+    color: white;
+}
+.delete{
+    background-color: red;
+    color: white;
+}
+/* table */
+#customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .table_image img{
+    width: 90px;
+    height: 90px;
+  }
+  #customers td, #customers th {
+    /* border: 1px solid #ddd; */
+    padding: 8px;
+  }
+  
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #customers tr:hover {background-color: #ddd;}
+  
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: rgb(29,25,24);
+    color: white;
+  }
