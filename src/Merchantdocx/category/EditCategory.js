@@ -37,7 +37,7 @@ const EditCategoryPage = ({ onCancel }) => {
     formData.append("name", categoryname);
 
     try {
-      const response = await fetch(`https://3bf8-102-91-93-50.ngrok-free.app/api/update-category/${id}`, {
+      const response = await fetch(`http://localhost:9000/api/update-category/${id}`, {
         method: "PUT",
         headers: { "Content-type": "Application/Json" },
         body: formData,
@@ -59,10 +59,33 @@ const EditCategoryPage = ({ onCancel }) => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+       {/* Back Button */}
+    <div className="absolute top-4 left-4">
+      <button
+        className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+        onClick={() => window.history.back()}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-5 h-5 mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+        Back
+      </button>
+    </div>
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4 text-gray-700">Edit Category</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <h2 className="text-2xl font-bold mb-4 text-gray-700">Edit Category</h2>
+        <form onSubmit={handleSubmit} className="space-y-4 my-6">
           {/* Name Field */}
           <div>
             <label
@@ -93,7 +116,7 @@ const EditCategoryPage = ({ onCancel }) => {
             </label>
             {formData.icon && typeof formData.icon === "string" && (
               <img
-                src={`https://3bf8-102-91-93-50.ngrok-free.app/${formData.icon}`}
+                src={`http://localhost:9000/${formData.icon}`}
                 alt="Category"
                 className="w-24 h-24 object-cover rounded-lg my-2"
               />

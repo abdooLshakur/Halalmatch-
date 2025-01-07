@@ -13,7 +13,7 @@ const GetMerchants = () => {
   const [sampleData, setsampleData] = useState([]);
 
   useEffect(() => {
-    fetch("https://3bf8-102-91-93-50.ngrok-free.app/api/all-merchants")
+    fetch("http://localhost:9000/api/all-merchants")
       .then((response) => response.json())
       .then((data) => {
         console.log(data);

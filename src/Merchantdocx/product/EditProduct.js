@@ -66,7 +66,7 @@ const EditProduct = ({ onCancel }) => {
     }
 
     try {
-      const response = await fetch(`https://3bf8-102-91-93-50.ngrok-free.app/api/update-product/${id}`, {
+      const response = await fetch(`http://localhost:9000/api/update-product/${id}`, {
         method: "PUT",
         headers: { "Content-type": "Application/Json" },
         body: formDataToSend,
@@ -88,10 +88,38 @@ const EditProduct = ({ onCancel }) => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+    {/* Back Button */}
+    <div className="absolute top-4 left-4">
+      <button
+        className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+        onClick={() => window.history.back()}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-5 h-5 mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+        Back
+      </button>
+    </div>
+  
+    {/* Centered Form */}
+    <div className="flex flex-grow items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Edit Banner</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+          Edit Product
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6 my-6">
           {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">
@@ -108,7 +136,7 @@ const EditProduct = ({ onCancel }) => {
               placeholder="Enter title"
             />
           </div>
-
+  
           {/* Description */}
           <div>
             <label htmlFor="descp" className="block text-sm font-medium text-gray-700">
@@ -125,7 +153,7 @@ const EditProduct = ({ onCancel }) => {
               placeholder="Enter description"
             />
           </div>
-
+  
           {/* Image */}
           <div>
             <label htmlFor="images" className="block text-sm font-medium text-gray-700">
@@ -146,138 +174,7 @@ const EditProduct = ({ onCancel }) => {
               className="w-full p-2 mt-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-
-          {/* Price */}
-          <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-              Price
-            </label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter price"
-            />
-          </div>
-
-          {/* Currency */}
-          <div>
-            <label htmlFor="currency" className="block text-sm font-medium text-gray-700">
-              Currency
-            </label>
-            <input
-              type="text"
-              id="currency"
-              name="currency"
-              value={formData.currency}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter currency"
-            />
-          </div>
-
-          {/* Quantity */}
-          <div>
-            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-              Quantity
-            </label>
-            <input
-              type="number"
-              id="quantity"
-              name="quantity"
-              value={formData.quantity}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter quantity"
-            />
-          </div>
-
-          {/* Brand */}
-          <div>
-            <label htmlFor="brand" className="block text-sm font-medium text-gray-700">
-              Brand
-            </label>
-            <input
-              type="text"
-              id="brand"
-              name="brand"
-              value={formData.brand}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter brand"
-            />
-          </div>
-
-          {/* Discount */}
-          <div>
-            <label htmlFor="discount" className="block text-sm font-medium text-gray-700">
-              Discount
-            </label>
-            <input
-              type="number"
-              id="discount"
-              name="discount"
-              value={formData.discount}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter discount percentage"
-            />
-          </div>
-
-          {/* Min Quantity */}
-          <div>
-            <label htmlFor="min_qty" className="block text-sm font-medium text-gray-700">
-              Minimum Quantity
-            </label>
-            <input
-              type="number"
-              id="min_qty"
-              name="min_qty"
-              value={formData.min_qty}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter minimum quantity"
-            />
-          </div>
-
-          {/* Max Quantity */}
-          <div>
-            <label htmlFor="max_qty" className="block text-sm font-medium text-gray-700">
-              Maximum Quantity
-            </label>
-            <input
-              type="number"
-              id="max_qty"
-              name="max_qty"
-              value={formData.max_qty}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter maximum quantity"
-            />
-          </div>
-
-          {/* Shipping Locations */}
-          <div>
-            <label htmlFor="shipping_locations" className="block text-sm font-medium text-gray-700">
-              Shipping Locations
-            </label>
-            <textarea
-              id="shipping_locations"
-              name="shipping_locations"
-              value={formData.shipping_locations}
-              onChange={handleChange}
-              rows={2}
-              className="w-full p-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter shipping locations (comma-separated)"
-            />
-          </div>
-
-          {/* Error Message */}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
+  
           {/* Buttons */}
           <div className="flex justify-end gap-3">
             <button
@@ -298,6 +195,10 @@ const EditProduct = ({ onCancel }) => {
         </form>
       </div>
     </div>
+  </div>
+  
+  
+
   );
 };
 

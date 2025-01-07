@@ -50,7 +50,7 @@ const EditBanner = ({ onCancel }) => {
             formDataToSend.append("banner_img", formData.banner_img);
         }
         try {
-            const response = await fetch(`https://3bf8-102-91-93-50.ngrok-free.app/api/update-banner/${id}`, {
+            const response = await fetch(`http://localhost:9000/api/update-banner/${id}`, {
                 method: "PUT",
                 headers: { "Content-type": "Application/Json" },
                 body: formDataToSend,
@@ -72,7 +72,7 @@ const EditBanner = ({ onCancel }) => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-xl font-bold mb-4 text-gray-700">Edit Banner</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -125,7 +125,7 @@ const EditBanner = ({ onCancel }) => {
                         </label>
                         {formData.banner_img && typeof formData.banner_img === "string" && (
                             <img
-                                src={`https://3bf8-102-91-93-50.ngrok-free.app/${formData.banner_img}`}
+                                src={`http://localhost:9000/${formData.banner_img}`}
                                 alt="Banner"
                                 className="w-24 h-24 object-cover rounded-lg my-2"
                             />
@@ -166,8 +166,8 @@ const EditBanner = ({ onCancel }) => {
                     <div className="flex justify-end gap-3">
                         <button
                             type="button"
-                            onClick={onCancel}
                             className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+                            onClick={() => window.history.back()}
                         >
                             Cancel
                         </button>

@@ -16,7 +16,7 @@ const Login = () => {
       email: email,
       password: password
     }
-    fetch("https://3bf8-102-91-93-50.ngrok-free.app/api/merchant-login", {
+    fetch("http://localhost:9000/api/merchant-login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,25 +43,45 @@ const Login = () => {
     
   }
   return (
-    <div className="max-w-full mx-auto mt-16 bg-white shadow-lg rounded-lg p-8">
+    <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+    <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg p-8">
       <h2 className="text-2xl font-bold text-gray-800 text-center">Login</h2>
       <form className="space-y-4 mt-6" onSubmit={handleEvent}>
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          required
-          value={email} onChange={(e) => setEmail(e.target.value)}
-        />
-        {error === true && email === "" ? <span className="error-span01">please enter Email</span> : null}
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          required
-          value={password} onChange={(e) => setPassword(e.target.value)}
-        />
-        {error === true && password === "" ? <span className="error-span01">please enter Password</span> : null}
+        {/* Email Input */}
+        <div>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {error && email === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter an email.
+            </span>
+          )}
+        </div>
+  
+        {/* Password Input */}
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {error && password === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter a password.
+            </span>
+          )}
+        </div>
+  
+        {/* Submit Button */}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
@@ -69,10 +89,17 @@ const Login = () => {
           Login
         </button>
       </form>
+  
+      {/* Signup Link */}
       <p className="text-center mt-4 text-sm text-gray-600">
-        Don’t have an account? <a href="/signup" className="text-blue-500">Signup</a>
+        Don’t have an account?{" "}
+        <a href="/signup" className="text-blue-500 hover:underline">
+          Signup
+        </a>
       </p>
     </div>
+  </div>
+  
   );
 };
 

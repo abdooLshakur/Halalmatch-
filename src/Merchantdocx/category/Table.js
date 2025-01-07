@@ -23,7 +23,7 @@ const ResponsiveTable = ({ data, onDelete }) => {
               <td className="px-6 py-4">
                 {item.icon ? (
                   <img
-                    src={`https://3bf8-102-91-93-50.ngrok-free.app/${item.icon}`}
+                    src={`http://localhost:9000/${item.icon}`}
                     alt={item.name}
                     className="w-12 h-12 object-cover rounded"
                   />

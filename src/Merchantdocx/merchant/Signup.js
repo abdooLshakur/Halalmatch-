@@ -38,7 +38,7 @@ const Signup = () => {
       descp,
     };
 
-    fetch(`https://3bf8-102-91-93-50.ngrok-free.app/api/register-merchant`, {
+    fetch(`http://localhost:9000/api/register-merchant`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -71,106 +71,167 @@ const Signup = () => {
   };
 
   return (
-    <div className="signup max-w-4xl mx-auto mt-16 bg-white shadow-lg rounded-lg p-8">
+    <div className="w-screen h-screen flex items-center justify-center bg-gray-100 relative">
+    <div className="absolute top-4 left-4">
+      <button
+        className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+        onClick={() => window.history.back()}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-5 h-5 mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+        Back
+      </button>
+    </div>
+    <div className="signup w-full max-w-4xl bg-white shadow-lg rounded-lg p-8">
       <h2 className="text-2xl font-bold text-gray-800 text-center">Signup</h2>
       <form
         className="space-y-4 mt-6 grid grid-cols-2 gap-6"
         onSubmit={handleEvent}
       >
-        <input
-          type="text"
-          placeholder="Business Name"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 col-span-2"
-          value={storename}
-          onChange={(e) => setStorename(e.target.value)}
-          required
-        />
-        {error && storename === "" ? (
-          <span className="error-span01">Please enter Store name</span>
-        ) : null}
-
-        <input
-          type="text"
-          placeholder="Business Description"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 col-span-2"
-          value={descp}
-          onChange={(e) => setDescp(e.target.value)}
-          required
-        />
-        {error && descp === "" ? (
-          <span className="error-span01">
-            Please enter Business or Shop Description
-          </span>
-        ) : null}
-
-        <input
-          type="text"
-          placeholder="First Name"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          value={fname}
-          onChange={(e) => setFname(e.target.value)}
-          required
-        />
-        {error && fname === "" ? (
-          <span className="error-span01">Please enter First name</span>
-        ) : null}
-
-        <input
-          type="text"
-          placeholder="Last Name"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          value={lname}
-          onChange={(e) => setLname(e.target.value)}
-          required
-        />
-        {error && lname === "" ? (
-          <span className="error-span01">Please enter Last name</span>
-        ) : null}
-
-        <input
-          type="number"
-          placeholder="Phone"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          required
-        />
-        {error && phone === "" ? (
-          <span className="error-span01">Please enter Phone Number</span>
-        ) : null}
-
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        {error && email === "" ? (
-          <span className="error-span01">Please enter Email</span>
-        ) : null}
-
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error && password === "" ? (
-          <span className="error-span01">Please enter Password</span>
-        ) : null}
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition col-span-2"
-        >
-          Signup
-        </button>
+        {/* Business Name */}
+        <div className="col-span-2">
+          <input
+            type="text"
+            placeholder="Business Name"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={storename}
+            onChange={(e) => setStorename(e.target.value)}
+            required
+          />
+          {error && storename === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter Store name.
+            </span>
+          )}
+        </div>
+  
+        {/* Business Description */}
+        <div className="col-span-2">
+          <input
+            type="text"
+            placeholder="Business Description"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={descp}
+            onChange={(e) => setDescp(e.target.value)}
+            required
+          />
+          {error && descp === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter Business or Shop Description.
+            </span>
+          )}
+        </div>
+  
+        {/* First Name */}
+        <div>
+          <input
+            type="text"
+            placeholder="First Name"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={fname}
+            onChange={(e) => setFname(e.target.value)}
+            required
+          />
+          {error && fname === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter First name.
+            </span>
+          )}
+        </div>
+  
+        {/* Last Name */}
+        <div>
+          <input
+            type="text"
+            placeholder="Last Name"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={lname}
+            onChange={(e) => setLname(e.target.value)}
+            required
+          />
+          {error && lname === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter Last name.
+            </span>
+          )}
+        </div>
+  
+        {/* Phone */}
+        <div>
+          <input
+            type="number"
+            placeholder="Phone"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+          {error && phone === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter Phone Number.
+            </span>
+          )}
+        </div>
+  
+        {/* Email */}
+        <div>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          {error && email === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter Email.
+            </span>
+          )}
+        </div>
+  
+        {/* Password */}
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && password === "" && (
+            <span className="text-red-500 text-sm mt-1 block">
+              Please enter Password.
+            </span>
+          )}
+        </div>
+  
+        {/* Submit Button */}
+        <div className="col-span-2">
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+          >
+            Signup
+          </button>
+        </div>
       </form>
     </div>
+  </div>
+  
   );
 };
 

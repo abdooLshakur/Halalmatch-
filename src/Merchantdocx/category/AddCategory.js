@@ -20,7 +20,7 @@ const CategoryManagement = () => {
   formData.append("icon", categoryicon);
   formData.append("name", categoryname);
   console.log(formData)
-  fetch(`https://3bf8-102-91-93-50.ngrok-free.app/api/create-category/${merchantid}`, {
+  fetch(`http://localhost:9000/api/create-category/${merchantid}`, {
     method: "POST",
     body: formData,
   })
@@ -46,25 +46,79 @@ const CategoryManagement = () => {
     });
  }
   return (
-    <div className="categories banners max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-lg p-8">
-      <h2 style={{fontSize:"30px", textAlign:"center"}}>Manage Categories</h2>
-      <form onSubmit={handleEvent}>
-        <input type="text" placeholder="Category Name" className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" value={categoryname} onChange={(e) => setcategoryname(e.target.value)} required />
-        <input
-          type="file"
-          placeholder="Banner Image"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          onChange={(e) => setcategoryicon(e.target.files[0])} 
-          required
-        />
-
-        {error === true && !categoryicon ? (
-          <span className="error-span01">Please upload an avatar</span>
-        ) : null}
-        <button type="submit"className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300">Add Category</button>
-      </form>
-     
+    <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+       {/* Back Button */}
+    <div className="absolute top-4 left-4">
+      <button
+        className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+        onClick={() => window.history.back()}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-5 h-5 mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+        Back
+      </button>
     </div>
+    <div className="max-w-4xl w-full mx-auto bg-white shadow-lg rounded-lg p-8">
+      <h2 className="text-2xl font-bold text-center mb-6">Add Categories</h2>
+
+      <form onSubmit={handleEvent} className="space-y-6 my-6">
+        {/* Category Name */}
+        <div>
+          <label htmlFor="categoryname" className="block text-sm font-medium text-gray-700">
+            Category Name
+          </label>
+          <input
+            type="text"
+            id="categoryname"
+            placeholder="Enter category name"
+            className="w-full p-3 mt-1 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={categoryname}
+            onChange={(e) => setcategoryname(e.target.value)}
+            required
+          />
+        </div>
+  
+        {/* Banner Image */}
+        <div>
+          <label htmlFor="categoryicon" className="block text-sm font-medium text-gray-700">
+            Banner Image
+          </label>
+          <input
+            type="file"
+            id="categoryicon"
+            className="w-full p-3 mt-1 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            onChange={(e) => setcategoryicon(e.target.files[0])}
+            required
+          />
+          {/* Error Message */}
+          {error === true && !categoryicon && (
+            <p className="text-red-500 text-sm mt-2">Please upload an avatar</p>
+          )}
+        </div>
+  
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+        >
+          Add Category
+        </button>
+      </form>
+    </div>
+  </div>
+  
   );
 };
 

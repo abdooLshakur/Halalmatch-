@@ -18,7 +18,7 @@ const BannerManagement = () => {
   formData.append("banner_descp", bannerdescp);
   formData.append("banner_link", bannerlink);
   console.log(formData)
-  fetch(`https://3bf8-102-91-93-50.ngrok-free.app/api/add-banner`, {
+  fetch(`http://localhost:9000/api/add-banner`, {
     method: "POST",
     body: formData,
   })
@@ -45,32 +45,120 @@ const BannerManagement = () => {
  }
   
   return (
-    <div className="banners max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-lg p-8">
-      <h2 style={{textAlign:"center", fontSize:"30px"}}>Create Banners</h2>
-      <form onSubmit={handleEvent}>
-        <input type="text" placeholder="Banner Title" className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" value={bannerheader} onChange={(e) => setbannerheader(e.target.value)} required />
-        {error === true && bannerheader === "" ? <span className="error-span01">please enter </span> : null}
-
-        <input type="text" placeholder="Banner Description" className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" value={bannerdescp} onChange={(e) => setbannerdescp(e.target.value)} required />
-        {error === true && bannerdescp=== "" ? <span className="error-span01">please enter </span> : null}
-
-        <input
-          type="file"
-          placeholder="Banner Image"
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-          onChange={(e) => setbannerimg(e.target.files[0])} 
-          required
-        />
-
-        {error === true && !bannerimg ? (
-          <span className="error-span01">Please upload an avatar</span>
-        ) : null}
-        <input type="url" placeholder="Redirect Link" className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300" value={bannerlink} onChange={(e) => setbannerlink(e.target.value)} required />
-        {error === true && bannerlink === "" ? <span className="error-span01">please enter </span> : null}
-
-        <button type="submit" className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300">Add Banner</button>
-      </form>    
+    <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+    {/* Back Button */}
+    <div className="absolute top-4 left-4">
+      <button
+        className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+        onClick={() => window.history.back()}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-5 h-5 mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+        Back
+      </button>
     </div>
+  
+    {/* Form Container */}
+    <div className="max-w-4xl w-full mx-auto bg-white shadow-lg rounded-lg p-8">
+      <h2 className="text-2xl font-bold text-center mb-6">Add Banners</h2>
+      <form onSubmit={handleEvent} className="space-y-6">
+        {/* Banner Title */}
+        <div>
+          <label htmlFor="bannerheader" className="block text-sm font-medium text-gray-700">
+            Banner Title
+          </label>
+          <input
+            type="text"
+            id="bannerheader"
+            placeholder="Enter banner title"
+            className="w-full p-3 mt-1 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={bannerheader}
+            onChange={(e) => setbannerheader(e.target.value)}
+            required
+          />
+          {error && !bannerheader && (
+            <p className="text-red-500 text-sm mt-2">Please enter a banner title</p>
+          )}
+        </div>
+  
+        {/* Banner Description */}
+        <div>
+          <label htmlFor="bannerdescp" className="block text-sm font-medium text-gray-700">
+            Banner Description
+          </label>
+          <input
+            type="text"
+            id="bannerdescp"
+            placeholder="Enter banner description"
+            className="w-full p-3 mt-1 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={bannerdescp}
+            onChange={(e) => setbannerdescp(e.target.value)}
+            required
+          />
+          {error && !bannerdescp && (
+            <p className="text-red-500 text-sm mt-2">Please enter a banner description</p>
+          )}
+        </div>
+  
+        {/* Banner Image */}
+        <div>
+          <label htmlFor="bannerimg" className="block text-sm font-medium text-gray-700">
+            Banner Image
+          </label>
+          <input
+            type="file"
+            id="bannerimg"
+            className="w-full p-3 mt-1 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            onChange={(e) => setbannerimg(e.target.files[0])}
+            required
+          />
+          {error && !bannerimg && (
+            <p className="text-red-500 text-sm mt-2">Please upload a banner image</p>
+          )}
+        </div>
+  
+        {/* Redirect Link */}
+        <div>
+          <label htmlFor="bannerlink" className="block text-sm font-medium text-gray-700">
+            Redirect Link
+          </label>
+          <input
+            type="url"
+            id="bannerlink"
+            placeholder="Enter redirect link"
+            className="w-full p-3 mt-1 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            value={bannerlink}
+            onChange={(e) => setbannerlink(e.target.value)}
+            required
+          />
+          {error && !bannerlink && (
+            <p className="text-red-500 text-sm mt-2">Please enter a redirect link</p>
+          )}
+        </div>
+  
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+        >
+          Add Banner
+        </button>
+      </form>
+    </div>
+  </div>
+  
   );
 };
 
