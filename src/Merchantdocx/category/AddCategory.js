@@ -1,53 +1,105 @@
 import React from "react";
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 const CategoryManagement = () => {
   const [categoryname, setcategoryname] = useState("")
   const [categoryicon, setcategoryicon] = useState("")
-  const [merchantid, setMerchantId] = useState("");
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
   const [error, setError] = useState(false)
+  const token = localStorage.getItem("token");
+  const id = localStorage.getItem("merchant");
+  const api = "http://localhost:9000"
+  
+   //  Helper function to show toast notifications
+   const showToast = (message, type) => {
+    console.log(`[${type.toUpperCase()}]: ${message}`);
+  };
 
   useEffect(() => {
-    const storedMerchant = localStorage.getItem("merchant");
-    if (storedMerchant) {
-      setMerchantId(storedMerchant.replace(/"/g, ""));
-    }
-  }, []);
- const handleEvent = (e) => {
-  e.preventDefault();
-  const formData = new FormData();
-  formData.append("icon", categoryicon);
-  formData.append("name", categoryname);
-  console.log(formData)
-  fetch(`http://localhost:9000/api/create-category/${merchantid}`, {
-    method: "POST",
-    body: formData,
-  })
-    .then(async (resp) => {
-      const data = await resp.json();
-      return { status: resp.status, body: data };
-    })
-    .then(({ status, body }) => {
-      console.log(body); 
-      if (status === 200 && body.success === true) {
-        alert("Category successfully Created");
-        Navigate("/getcategory"); 
-      
-      } else {
-        setError(true);
-        alert(body.message); 
+    const validateToken = async () => {
+      try {
+        const response = await fetch(`${api}/api/validate-token`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          switch (response.status) {
+            case 401:
+            case 403:
+              showToast("Invalid token. Redirecting to login page...", "warning");
+              navigate("/");
+              break;
+
+            default:
+              showToast("An error occurred. Redirecting to login page...", "error");
+              navigate("/");
+          }
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+      } catch (err) {
+        console.error("Error validating token:", err);
+        navigate("/"); // Redirect on any validation failure
       }
-    })
-    .catch((err) => {
-      console.error(err);
-      setError(true);
-      alert("An error occurred Adding Category. Please try again.");
-    });
- }
-  return (
-    <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
-       {/* Back Button */}
+    };
+
+    if (!token) {
+      showToast("No token found. Redirecting to login page...", "warning");
+      navigate("/");
+    } else {
+      validateToken();
+    }
+  }, [token, navigate]);
+
+  const handleEvent = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("icon", categoryicon);
+    formData.append("name", categoryname);
+
+    try {
+      const response = await fetch(`${api}/api/create-category`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+
+        switch (response.status) {
+          case 401:
+          case 403:
+            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            navigate("/");
+            break;
+
+          case 500:
+            showToast("Server error. Please try again later.", "error");
+            break;
+
+          default:
+            showToast("Failed to create category. Please try again.", "error");
+        }
+
+        console.error(`HTTP Error: ${response.status}`, errorMessage);
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      showToast("Category created successfully!", "success");
+      navigate("/getcategory");
+    } catch (err) {
+      console.error("Error creating category:", err);
+      setError("Failed to create category.");
+    }
+  };
+return (
+  <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+    {/* Back Button */}
     <div className="absolute top-4 left-4">
       <button
         className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
@@ -89,7 +141,7 @@ const CategoryManagement = () => {
             required
           />
         </div>
-  
+
         {/* Banner Image */}
         <div>
           <label htmlFor="categoryicon" className="block text-sm font-medium text-gray-700">
@@ -107,7 +159,7 @@ const CategoryManagement = () => {
             <p className="text-red-500 text-sm mt-2">Please upload an avatar</p>
           )}
         </div>
-  
+
         {/* Submit Button */}
         <button
           type="submit"
@@ -118,8 +170,8 @@ const CategoryManagement = () => {
       </form>
     </div>
   </div>
-  
-  );
+
+);
 };
 
 export default CategoryManagement;

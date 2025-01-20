@@ -6,6 +6,8 @@ const Login = () => {
   const [password, setPassword] = useState("")
   const [error, setError] = useState(false)
   const Navigate = useNavigate()
+  const api = "http://localhost:9000"
+
   const handleEvent = (e) => {
     e.preventDefault()
     if (email === "" || password === "") {
@@ -16,30 +18,31 @@ const Login = () => {
       email: email,
       password: password
     }
-    fetch("http://localhost:9000/api/merchant-login", {
+    fetch(`${api}/api/merchant-login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(UserDetails),
     })
-      .then((res) => res.json().then((data) => ({ status: res.status, body: data }))) 
-      .then(({ status, body }) => {    
-        if (status === 200 && body.success === true) {
-          localStorage.setItem("merchant", JSON.stringify(body.data.id));
-          alert("Login successful");
-          Navigate("/dashboard");
-        } else {
-          setError(true);
-          alert(body.message || "Invalid credentials"); 
-        }
-      })
-      .catch((err) => {
-        console.error(err); 
+    .then((res) => res.json()) 
+    .then((data) => {
+      if (data.success) {
+        // Store relevant data in localStorage
+        localStorage.setItem("merchant", data.data.id);
+        localStorage.setItem("token", data.data.token);
+        alert(data.message); 
+        Navigate("/getproduct"); 
+      } else {
         setError(true);
-        alert("An error occurred during login. Please try again.");
-      });
-    
+        alert(data.message || "Invalid credentials"); 
+      }
+    })
+    .catch((err) => {
+      console.error("Error:", err); // Log the error
+      setError(true);
+      alert("An error occurred during login. Please try again.");
+    });
     
   }
   return (

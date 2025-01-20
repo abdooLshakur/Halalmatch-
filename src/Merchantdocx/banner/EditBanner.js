@@ -5,7 +5,15 @@ const EditBanner = ({ onCancel }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const { id } = useParams(); // Banner ID from URL params
+    const { id } = useParams();
+    const token = localStorage.getItem("token");
+    const api = "${api}"
+
+    //  Helper function to show toast notifications
+    const showToast = (message, type) => {
+        console.log(`[${type.toUpperCase()}]: ${message}`);
+    };
+
     const [formData, setFormData] = useState({
         banner_header: "",
         banner_descp: "",
@@ -50,19 +58,46 @@ const EditBanner = ({ onCancel }) => {
             formDataToSend.append("banner_img", formData.banner_img);
         }
         try {
-            const response = await fetch(`http://localhost:9000/api/update-banner/${id}`, {
+            if (!token) {
+                showToast("Invalid token. Redirecting to login page...", "warning");
+                navigate("/");
+                return;
+            }
+
+            setLoading(true);
+            const response = await fetch(`${api}/api/update-banner/${id}`, {
                 method: "PUT",
-                headers: { "Content-type": "Application/Json" },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
                 body: formDataToSend,
             });
 
             if (!response.ok) {
-                throw new Error("Failed to update banner");
+                const errorMessage = await response.text();
+
+                switch (response.status) {
+                    case 401:
+                    case 403:
+                        showToast("Admin not logged in. Redirecting to login page...", "warning");
+                        navigate("/");
+                        break;
+
+                    case 500:
+                        showToast("Server error. Please try again later.", "error");
+                        break;
+
+                    default:
+                        showToast(`Error: ${errorMessage || "Failed to fetch categories."}`, "error");
+                }
+
+                console.error(`HTTP Error: ${response.status}`, errorMessage);
+                throw new Error(`HTTP Error: ${response.status}`);
             }
 
             const result = await response.json();
             console.log("Banner updated:", result);
-              navigate("/getbanners"); 
+            navigate("/getbanners");
         } catch (err) {
             setError("Failed to update banner. Please try again.");
             console.error(err);
@@ -125,7 +160,7 @@ const EditBanner = ({ onCancel }) => {
                         </label>
                         {formData.banner_img && typeof formData.banner_img === "string" && (
                             <img
-                                src={`http://localhost:9000/${formData.banner_img}`}
+                                src={`${api}/${formData.banner_img}`}
                                 alt="Banner"
                                 className="w-24 h-24 object-cover rounded-lg my-2"
                             />

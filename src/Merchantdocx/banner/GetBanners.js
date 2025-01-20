@@ -1,7 +1,7 @@
 import React from "react";
 import ResponsiveTable from "./Table";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
 
 const GetBanner = () => {
@@ -9,6 +9,14 @@ const GetBanner = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate()
+  const api = "http://localhost:9000"
+
+  //  Helper function to show toast notifications
+  const showToast = (message, type) => {
+    console.log(`[${type.toUpperCase()}]: ${message}`);
+  };
   // responsiveness sidebar
   useEffect(() => {
     const handleResize = () => {
@@ -29,11 +37,43 @@ const GetBanner = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:9000/api/banners");
+      if (!token) {
+        showToast("Invalid token. Redirecting to login page...", "warning");
+        navigate("/");
+        return;
+      }
+  
+      setLoading(true);
+      const response = await fetch(`${api}/api/banners`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
-        throw new Error("Failed to fetch Banners");
+        const errorMessage = await response.text();
+  
+        switch (response.status) {
+          case 401:
+          case 403:
+            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            navigate("/");
+            break;
+  
+          case 500:
+            showToast("Server error. Please try again later.", "error");
+            break;
+  
+          default:
+            showToast(`Error: ${errorMessage || "Failed to fetch categories."}`, "error");
+        }
+  
+        console.error(`HTTP Error: ${response.status}`, errorMessage);
+        throw new Error(`HTTP Error: ${response.status}`);
       }
       const data = await response.json();
+      if (!data || !data.data) {
+        throw new Error("Invalid response structure from the server.");
+      }
       setBanner(data.data);
     } catch (error) {
       setError("Failed to fetch Banners. Please try again.");
@@ -51,7 +91,7 @@ const GetBanner = () => {
 
   const handleDelete = async (item) => {
     try {
-      const response = await fetch(`http://localhost:9000/api/delete-banner/${item._id}`, {
+      const response = await fetch(`${api}/api/delete-banner/${item._id}`, {
         method: "DELETE",
         headers: { "Content-type": "Application/Json" },
       });
@@ -108,7 +148,7 @@ const GetBanner = () => {
               </button>
               </Link>
             </div>
-          </div>      
+          </div>
           <ResponsiveTable
             data={BannerData}
             onDelete={handleDelete}

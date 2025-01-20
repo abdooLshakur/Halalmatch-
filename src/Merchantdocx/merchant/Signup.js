@@ -11,6 +11,8 @@ const Signup = () => {
   const [storename, setStorename] = useState("");
   const [error, setError] = useState(false);
   const Navigate = useNavigate();
+  const api = "http://localhost:9000"
+
 
   const handleEvent = (e) => {
     e.preventDefault();
@@ -38,7 +40,7 @@ const Signup = () => {
       descp,
     };
 
-    fetch(`http://localhost:9000/api/register-merchant`, {
+    fetch(`${api}/api/register-merchant`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

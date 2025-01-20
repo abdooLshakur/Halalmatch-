@@ -1,7 +1,7 @@
 import React from "react";
 import ResponsiveTable from "./Table";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
 
 const GetCategory = () => {
@@ -10,6 +10,14 @@ const GetCategory = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const api = "http://localhost:9000"
+
+  //  Helper function to show toast notifications
+   const showToast = (message, type) => {
+    console.log(`[${type.toUpperCase()}]: ${message}`);
+  };
   // responsiveness sidebar
   useEffect(() => {
     const handleResize = () => {
@@ -29,29 +37,83 @@ const GetCategory = () => {
   const fetchCategories = async () => {
     setLoading(true);
     setError(null);
+  
     try {
-      const response = await fetch("http://localhost:9000/api/categories"); 
-      if (!response.ok) {
-        throw new Error("Failed to fetch categories");
+      if (!token) {
+        showToast("Invalid token. Redirecting to login page...", "warning");
+        navigate("/");
+        return;
       }
+  
+      setLoading(true);
+  
+      const response = await fetch(`${api}/api/categories`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        const errorMessage = await response.text();
+  
+        // switch (response.status) {
+        //   case 400:
+        //     showToast("Bad Request: Invalid data provided.", "error");
+        //     break;
+
+        //   case 401:
+        //     showToast("Admin not logged in. Redirecting to login page...", "warning");
+        //     navigate("/");
+        //     break;
+
+        //   case 403:
+        //     showToast("Admin not logged in. Redirecting to login page...", "warning");
+        //     navigate("/");
+        //     break;
+  
+        //   case 500:
+        //     showToast("Server error. Please try again later.", "error");
+        //     break;
+  
+        //   default:
+        //     showToast(`Error: ${errorMessage || "Failed to fetch categories."}`, "error");
+        // }
+  
+        console.error(`HTTP Error: ${response.status}`, errorMessage);
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+  
       const data = await response.json();
+  
+      if (!data || !data.data) {
+        throw new Error("Invalid response structure from the server.");
+      }
+  
       setCategories(data.data);
     } catch (error) {
-      setError("Failed to fetch categories. Please try again.");
       console.error("Error fetching categories:", error);
+  
+      if (error.message.includes("NetworkError")) {
+        showToast("Network error. Please check your connection and try again.", "error");
+      } else {
+        showToast("Failed to fetch categories. Please try again.", "error");
+      }
+  
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchCategories();
-  }, []);
+  },[token]); 
+  
   
 
   const handleDelete = async (item) => {
     try {
-      const response = await fetch(`http://localhost:9000/api/delete-category/${item._id}`, {
+      const response = await fetch(`${api}/api/delete-category/${item._id}`, {
         method: "DELETE",
         headers: { "Content-type": "Application/Json" },
       });

@@ -7,12 +7,18 @@ const EditCategoryPage = ({ onCancel }) => {
   const [categoryname, setcategoryname] = useState("");
   const [categoryicon, setcategoryicon] = useState("");
   const navigate = useNavigate();
-  const { id } = useParams();  // Get category ID from the URL
+  const token = localStorage.getItem("token");
+  const { id } = useParams();  
+  const api = "http://localhost:9000"
+
   const [formData, setFormData] = useState({
     name: "",  
     icon: "",   
   });
-
+ //  Helper function to show toast notifications
+ const showToast = (message, type) => {
+  console.log(`[${type.toUpperCase()}]: ${message}`);
+};
   // Fetch the category data from localStorage or API using the ID
   useEffect(() => {
     const categoryData = JSON.parse(localStorage.getItem("categoryData"));
@@ -37,19 +43,39 @@ const EditCategoryPage = ({ onCancel }) => {
     formData.append("name", categoryname);
 
     try {
-      const response = await fetch(`http://localhost:9000/api/update-category/${id}`, {
+      const response = await fetch(`${api}/api/update-category/${id}`, {
         method: "PUT",
-        headers: { "Content-type": "Application/Json" },
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update category");
-      }
+        const errorMessage = await response.text();
+
+        switch (response.status) {
+            case 401:
+            case 403:
+                showToast("Admin not logged in. Redirecting to login page...", "warning");
+                navigate("/");
+                break;
+
+            case 500:
+                showToast("Server error. Please try again later.", "error");
+                break;
+
+            default:
+                showToast("Failed to add product to trending. Please try again.", "error");
+        }
+
+        console.error(`HTTP Error: ${response.status}`, errorMessage);
+        throw new Error(`HTTP Error: ${response.status}`);
+    }
 
       const result = await response.json();
       console.log("Category updated:", result);
-      navigate("/getcategories");  // Navigate back to category list after success
+      navigate("/getcategories"); 
     } catch (err) {
       setError("Failed to update category. Please try again.");
       console.error(err);
@@ -116,7 +142,7 @@ const EditCategoryPage = ({ onCancel }) => {
             </label>
             {formData.icon && typeof formData.icon === "string" && (
               <img
-                src={`http://localhost:9000/${formData.icon}`}
+                src={`${api}/${formData.icon}`}
                 alt="Category"
                 className="w-24 h-24 object-cover rounded-lg my-2"
               />

@@ -1,19 +1,14 @@
 import React from "react";
 import ResponsiveTable from "./Table";
 import { useState, useEffect } from "react";
-const sampleData = [
-  { id: 1, name: "Product A", type: "product", status: "verified" },
-  { id: 2, name: "Category B", type: "category", status: "pending" },
-  { id: 3, name: "Banner C", type: "banner", status: "verified" },
-  { id: 4, name: "Merchant D", type: "merchant", status: "pending" },
-];
+const api = "http://localhost:9000"
 
 const GetMerchants = () => {
 
   const [sampleData, setsampleData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:9000/api/all-merchants")
+    fetch(`${api}/api/all-merchants`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
