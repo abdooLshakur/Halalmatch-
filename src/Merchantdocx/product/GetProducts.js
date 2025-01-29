@@ -12,7 +12,7 @@ const GetProduct = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const api = "https://zmh-api.onrender.com"
-
+  
   //  Helper function to show toast notifications
   const showToast = (message, type) => {
     console.log(`[${type.toUpperCase()}]: ${message}`);
@@ -36,7 +36,8 @@ const GetProduct = () => {
 
   // localstorage
   const token = localStorage.getItem("token");
-  const id = localStorage.getItem("merchant"); 
+  const id = localStorage.getItem("merchant");
+
   // fetch product
   const fetchProduct = async () => {
     setLoading(true);
@@ -50,7 +51,7 @@ const GetProduct = () => {
       setLoading(true);
       const response = await fetch(`${api}/api/Products`, {
         headers: {
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -102,69 +103,111 @@ const GetProduct = () => {
   };
   useEffect(() => {
     fetchProduct();
-  });
+  }, []);
+
   const handleDelete = async (item) => {
     try {
       const response = await fetch(`${api}/api/delete-product/${item._id}`, {
         method: "DELETE",
-        headers: { "Content-type": "Application/Json" },
-        Authorization: `Bearer ${token}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+      console.log(item._id)
       if (!response.ok) {
-        throw new Error("Failed to delete Banner");
+        const errorMessage = await response.text();
+
+        switch (response.status) {
+          case 401:
+          case 403:
+            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            navigate("/");
+            break;
+
+          case 500:
+            showToast("Server error. Please try again later.", "error");
+            break;
+
+          default:
+            showToast("Failed to add product to trending. Please try again.", "error");
+        }
+
+        const body = await response.json();
+        alert(body.message);
       }
-      alert(`Banner has been deleted.`);
       fetchProduct();
     } catch (error) {
       console.error(error);
       alert("Error deleting Banner. Please try again.");
     }
   };
+
   const handleTrending = async (item) => {
     try {
       const response = await fetch(`${api}/api/add_trending/${id}/${item._id}`, {
         method: "Put",
-        headers: { "Content-type": "Application/Json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
-        // Check for specific status codes
-        if (response.status === 400) {
-          alert("Bad Request: Invalid data provided.");
-        } else if (response.status === 404) {
-          alert("Product not found. Please check the product ID.");
-        } else if (response.status === 500) {
-          alert("Server error. Please try again later.");
-        } else {
-          alert("Failed to add product to trending. Please try again.");
+        const errorMessage = await response.text();
+
+        switch (response.status) {
+          case 401:
+          case 403:
+            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            navigate("/");
+            break;
+
+          case 500:
+            showToast("Server error. Please try again later.", "error");
+            break;
+
+          default:
+            showToast("Failed to add product to trending. Please try again.", "error");
         }
+
+        console.error(`HTTP Error: ${response.status}`, errorMessage);
         throw new Error(`HTTP Error: ${response.status}`);
       }
 
       // Success handling
       alert("Product added to trending successfully.");
-      fetchProduct(); // Refresh the product list
+      fetchProduct();
     } catch (error) {
       console.error("Error adding product to trending:", error);
       alert("An unexpected error occurred. Please try again.");
     }
   };
+
   const handleFeatured = async (item) => {
     try {
       const response = await fetch(`${api}/api/add_featured/${id}/${item._id}`, {
         method: "PUT",
-        headers: { "Content-type": "Application/Json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
-        // Check for specific status codes
-        if (response.status === 400) {
-          alert("Bad Request: Invalid data provided.");
-        } else if (response.status === 404) {
-          alert("Product not found. Please check the product ID.");
-        } else if (response.status === 500) {
-          alert("Server error. Please try again later.");
-        } else {
-          alert("Failed to add product to trending. Please try again.");
+        const errorMessage = await response.text();
+
+        switch (response.status) {
+          case 401:
+          case 403:
+            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            navigate("/");
+            break;
+
+          case 500:
+            showToast("Server error. Please try again later.", "error");
+            break;
+
+          default:
+            showToast("Failed to add product to trending. Please try again.", "error");
         }
+
+        console.error(`HTTP Error: ${response.status}`, errorMessage);
         throw new Error(`HTTP Error: ${response.status}`);
       }
 
@@ -176,11 +219,14 @@ const GetProduct = () => {
       alert("An unexpected error occurred. Please try again.");
     }
   };
+
   const removefromtrending = async (item) => {
     try {
       const response = await fetch(`${api}/api/remove_from_trending/${id}/${item._id}`, {
         method: "Put",
-        headers: { "Content-type": "Application/Json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
         // Check for specific status codes
@@ -197,18 +243,22 @@ const GetProduct = () => {
       }
 
       // Success handling
-      alert("Product added to trending successfully.");
+      alert("Product removed from trending successfully.");
       fetchProduct(); // Refresh the product list
     } catch (error) {
       console.error("Error adding product to trending:", error);
       alert("An unexpected error occurred. Please try again.");
     }
   };
+
   const removefromfeatured = async (item) => {
+  const productid = item._id
     try {
-      const response = await fetch(`${api}/api/remeve_from_featured/${id}/${item._id}`, {
+      const response = await fetch(`${api}/api/remove_from_featured/${id}/${productid}`, {
         method: "Put",
-        headers: { "Content-type": "Application/Json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
         // Check for specific status codes
@@ -225,7 +275,7 @@ const GetProduct = () => {
       }
 
       // Success handling
-      alert("Product added to trending successfully.");
+      alert("Product removed from trending successfully.");
       fetchProduct(); // Refresh the product list
     } catch (error) {
       console.error("Error adding product to trending:", error);
