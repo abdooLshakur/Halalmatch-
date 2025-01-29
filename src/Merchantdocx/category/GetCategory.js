@@ -115,7 +115,9 @@ const GetCategory = () => {
     try {
       const response = await fetch(`${api}/api/delete-category/${item._id}`, {
         method: "DELETE",
-        headers: { "Content-type": "Application/Json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
         throw new Error("Failed to delete category");

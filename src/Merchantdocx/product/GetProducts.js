@@ -103,7 +103,7 @@ const GetProduct = () => {
   };
   useEffect(() => {
     fetchProduct();
-  }, []);
+  }, [token]);
 
   const handleDelete = async (item) => {
     try {

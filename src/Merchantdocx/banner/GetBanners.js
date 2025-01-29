@@ -84,7 +84,7 @@ const GetBanner = () => {
   };
   useEffect(() => {
     fetchBanner();
-  }, []);
+  }, [token]);
 
 
 
@@ -93,7 +93,9 @@ const GetBanner = () => {
     try {
       const response = await fetch(`${api}/api/delete-banner/${item._id}`, {
         method: "DELETE",
-        headers: { "Content-type": "Application/Json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
         throw new Error("Failed to delete Banner");
