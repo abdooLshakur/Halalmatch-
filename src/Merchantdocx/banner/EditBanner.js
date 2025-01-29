@@ -7,7 +7,7 @@ const EditBanner = ({ onCancel }) => {
     const navigate = useNavigate();
     const { id } = useParams();
     const token = localStorage.getItem("token");
-    const api = "${api}"
+    const api = "https://zmh-api.onrender.com"
 
     //  Helper function to show toast notifications
     const showToast = (message, type) => {

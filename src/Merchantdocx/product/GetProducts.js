@@ -11,7 +11,7 @@ const GetProduct = () => {
   const [error, setError] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
-  const api = "http://localhost:9000"
+  const api = "https://zmh-api.onrender.com"
 
   //  Helper function to show toast notifications
   const showToast = (message, type) => {

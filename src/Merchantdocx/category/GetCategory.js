@@ -12,7 +12,7 @@ const GetCategory = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const api = "http://localhost:9000"
+  const api = "https://zmh-api.onrender.com"
 
   //  Helper function to show toast notifications
    const showToast = (message, type) => {

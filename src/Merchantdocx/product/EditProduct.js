@@ -6,7 +6,7 @@ const EditProduct = ({ onCancel }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
+  const api = "https://zmh-api.onrender.com"
   const { id } = useParams(); 
 
   //  Helper function to show toast notifications
@@ -71,7 +71,7 @@ const EditProduct = ({ onCancel }) => {
     }
   
     try {
-      const response = await fetch(`http://localhost:9000/api/update-product/${id}`, {
+      const response = await fetch(`${api}/api/update-product/${id}`, {
         method: "PUT",
         headers: { 
           Authorization: `Bearer ${token}`, // Include token

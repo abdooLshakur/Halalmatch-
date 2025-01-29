@@ -9,7 +9,7 @@ const EditCategoryPage = ({ onCancel }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const { id } = useParams();  
-  const api = "http://localhost:9000"
+  const api = "https://zmh-api.onrender.com"
 
   const [formData, setFormData] = useState({
     name: "",  

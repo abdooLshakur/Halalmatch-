@@ -20,6 +20,7 @@ const CreateProduct = () => {
   const id = localStorage.getItem("merchant");
   const navigate = useNavigate()
   const [error, setError] = useState(false)
+  const api = "https://zmh-api.onrender.com"
   // show toast
   const showToast = (message, type) => {
     console.log(`[${type.toUpperCase()}]: ${message}`);
@@ -43,7 +44,7 @@ const CreateProduct = () => {
 
     try {
         const response = await fetch(
-            `http://localhost:9000/api/create-product/${id}/${categoryid}`,
+            `${api}/api/create-product/${id}/${categoryid}`,
             {
                 method: "POST",
                 body: formData,
@@ -90,7 +91,7 @@ const Fetchcategories = async () => {
     setError(null);
 
     try {
-        const response = await fetch("http://localhost:9000/api/categories", {
+        const response = await fetch(`${api}/api/categories`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

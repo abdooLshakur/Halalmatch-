@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ReactPaginate from "react-paginate";
-
+const api = "https://zmh-api.onrender.com"
 const ResponsiveTable = ({ data, onEdit, onFeatured, onTrend, onDelete, removefromtrending, removefromfeatured }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const productsPerPage = 20; 
@@ -54,7 +54,7 @@ const trendingResult = trendingData.length > 0 ? trendingData : [];
               <td className="px-4 py-3">
                 {item.images ? (
                   <img
-                    src={`http://localhost:9000/${item.images}`}
+                    src={`${api}/${item.images}`}
                     alt={item.title}
                     className="w-10 h-10 object-cover rounded"
                   />
@@ -141,7 +141,7 @@ const trendingResult = trendingData.length > 0 ? trendingData : [];
               <td className="px-4 py-3">
                 {item.images ? (
                   <img
-                    src={`${item.images}`}
+                    src={`${api}/${item.images}`}
                     alt={item.title}
                     className="w-10 h-10 object-cover rounded"
                   />
@@ -216,7 +216,7 @@ const trendingResult = trendingData.length > 0 ? trendingData : [];
               <td className="px-4 py-3">
                 {item.images ? (
                   <img
-                    src={`${item.images}`}
+                    src={`${api}/${item.images}`}
                     alt={item.title}
                     className="w-10 h-10 object-cover rounded"
                   />

@@ -9,7 +9,7 @@ const BannerManagement = () => {
   const [error, setError] = useState(false)
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const api = "http://localhost:9000"
+  const api = "https://zmh-api.onrender.com"
   //  Helper function to show toast notifications
   const showToast = (message, type) => {
     console.log(`[${type.toUpperCase()}]: ${message}`);

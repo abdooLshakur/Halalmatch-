@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
+const api = "https://zmh-api.onrender.com"
 const ResponsiveTable = ({ data, onEdit, onDelete }) => {
 
 
@@ -29,7 +29,7 @@ const ResponsiveTable = ({ data, onEdit, onDelete }) => {
                   <td className="px-6 py-4">
                     {item.banner_img ? (
                       <img
-                        src={`http://localhost:9000/${item.banner_img}`}
+                        src={`${api}/${item.banner_img}`}
                         alt={item.title}
                         className="w-12 h-12 object-cover rounded"
                       />

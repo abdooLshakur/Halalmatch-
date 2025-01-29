@@ -1,7 +1,7 @@
 import React from "react";
 import ResponsiveTable from "./Table";
 import { useState, useEffect } from "react";
-const api = "http://localhost:9000"
+const api = "https://zmh-api.onrender.com"
 
 const GetMerchants = () => {
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+const api = "https://zmh-api.onrender.com"
 
 const ResponsiveTable = ({ data, onDelete }) => {
   return (
@@ -23,7 +24,7 @@ const ResponsiveTable = ({ data, onDelete }) => {
               <td className="px-6 py-4">
                 {item.icon ? (
                   <img
-                    src={`http://localhost:9000/${item.icon}`}
+                    src={`${api}/${item.icon}`}
                     alt={item.name}
                     className="w-12 h-12 object-cover rounded"
                   />
