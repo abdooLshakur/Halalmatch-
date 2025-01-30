@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const EditBanner = ({ onCancel }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -79,16 +80,16 @@ const EditBanner = ({ onCancel }) => {
                 switch (response.status) {
                     case 401:
                     case 403:
-                        showToast("Admin not logged in. Redirecting to login page...", "warning");
+                        toast.warning("Admin not logged in. Redirecting to login page...", "warning");
                         navigate("/");
                         break;
 
                     case 500:
-                        showToast("Server error. Please try again later.", "error");
+                        toast.error("Server error. Please try again later.", "error");
                         break;
 
                     default:
-                        showToast(`Error: ${errorMessage || "Failed to fetch categories."}`, "error");
+                        toast.error(`Error: ${errorMessage || "Failed to fetch categories."}`, "error");
                 }
 
                 console.error(`HTTP Error: ${response.status}`, errorMessage);
@@ -96,8 +97,8 @@ const EditBanner = ({ onCancel }) => {
             }
 
             const result = await response.json();
-            console.log("Banner updated:", result);
-            navigate("/getbanners");
+            toast.success("Banner updated:", result);
+            setTimeout(() => navigate("/getbanners "), 1500);
         } catch (err) {
             setError("Failed to update banner. Please try again.");
             console.error(err);
@@ -108,6 +109,8 @@ const EditBanner = ({ onCancel }) => {
 
     return (
         <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+            {/* Toast Notification Container */}
+            <ToastContainer />
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-xl font-bold mb-4 text-gray-700">Edit Banner</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">

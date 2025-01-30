@@ -1,6 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const CreateProduct = () => {
   const [producttitle, setproducttitle] = useState("")
   const [productdescp, setproductdescp] = useState("")
@@ -23,8 +25,8 @@ const CreateProduct = () => {
   const api = "https://zmh-api.onrender.com"
   // show toast
   const showToast = (message, type) => {
-    console.log(`[${type.toUpperCase()}]: ${message}`);
-};
+    toast[type](message);
+  };
 
   const handleEvent = async (e) => {
     e.preventDefault();
@@ -43,98 +45,101 @@ const CreateProduct = () => {
     formData.append("shipping_locations", productshippinglocations);
 
     try {
-        const response = await fetch(
-            `${api}/api/create-product/${id}/${categoryid}`,
-            {
-                method: "POST",
-                body: formData,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+      const response = await fetch(
+        `${api}/api/create-product/${id}/${categoryid}`,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-        if (!response.ok) {
-            const errorMessage = await response.text();
+      if (!response.ok) {
+        const errorMessage = await response.text();
 
-            switch (response.status) {
-                case 401:
-                case 403:
-                    showToast("Admin not logged in. Redirecting to login page...", "warning");
-                    navigate("/");
-                    break;
+        switch (response.status) {
+          case 401:
+          case 403:
+            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            navigate("/");
+            break;
 
-                case 500:
-                    showToast("Server error. Please try again later.", "error");
-                    break;
+          case 500:
+            showToast("Server error. Please try again later.", "error");
+            break;
 
-                default:
-                    showToast("Failed to add product to trending. Please try again.", "error");
-            }
-
-            console.error(`HTTP Error: ${response.status}`, errorMessage);
-            throw new Error(`HTTP Error: ${response.status}`);
+          default:
+            showToast("Failed to add product to trending. Please try again.", "error");
         }
 
-        const body = await response.json();
-        alert(body.message);
+        console.error(`HTTP Error: ${response.status}`, errorMessage);
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const body = await response.json();
+      showToast(body.message, "success");
+      navigate("/getproduct")
 
     } catch (err) {
-        console.error(err);
-        setError(true);
-        alert("An error occurred Creating Product. Please try again.");
+      console.error(err);
+      setError(true);
+      showToast("An error occurred Creating Product. Please try again.", "error");
     }
-};
+  };
 
-const Fetchcategories = async () => {
+  const Fetchcategories = async () => {
     setLoading(true);
     setError(null);
 
     try {
-        const response = await fetch(`${api}/api/categories`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+      const response = await fetch(`${api}/api/categories`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (!response.ok) {
-            const errorMessage = await response.text();
+      if (!response.ok) {
+        const errorMessage = await response.text();
 
-            switch (response.status) {
-                case 401:
-                case 403:
-                    showToast("Admin not logged in. Redirecting to login page...", "warning");
-                    navigate("/");
-                    break;
+        switch (response.status) {
+          case 401:
+          case 403:
+            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            navigate("/");
+            break;
 
-                case 500:
-                    showToast("Server error. Please try again later.", "error");
-                    break;
+          case 500:
+            showToast("Server error. Please try again later.", "error");
+            break;
 
-                default:
-                    showToast("Failed to fetch categories. Please try again.", "error");
-            }
-
-            console.error(`HTTP Error: ${response.status}`, errorMessage);
-            throw new Error(`HTTP Error: ${response.status}`);
+          default:
+            showToast("Failed to fetch categories. Please try again.", "error");
         }
 
-        const data = await response.json();
-        setCategoryData(data.data);
+        console.error(`HTTP Error: ${response.status}`, errorMessage);
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setCategoryData(data.data);
 
     } catch (error) {
-        setError("Failed to fetch categories. Please try again.");
-        console.error("Error fetching categories:", error);
+      setError("Failed to fetch categories. Please try again.");
+      console.error("Error fetching categories:", error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
-useEffect(() => {
-  Fetchcategories();
-});
+  };
+  useEffect(() => {
+    Fetchcategories();
+  });
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-gray-100 relative">
+      {/* Toast Notification Container */}
+      <ToastContainer />
       {/* Back Button */}
       <div className="absolute top-4 left-4">
         <button

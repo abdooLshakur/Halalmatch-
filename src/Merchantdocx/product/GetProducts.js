@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const GetProduct = () => {
   const [ProductData, setProduct] = useState([]);
@@ -12,12 +14,10 @@ const GetProduct = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const api = "https://zmh-api.onrender.com"
-  
-  //  Helper function to show toast notifications
-  const showToast = (message, type) => {
-    console.log(`[${type.toUpperCase()}]: ${message}`);
-  };
-
+   // Show Toast Messages
+    const showToast = (message, type) => {
+      toast[type](message); // 'success', 'error', 'warning', 'info'
+    };
   // responsiveness sidebar
   useEffect(() => {
     const handleResize = () => {
@@ -44,7 +44,7 @@ const GetProduct = () => {
     setError(null);
     try {
       if (!token) {
-        showToast("Invalid token. Redirecting to login page...", "warning");
+        toast.warning("Invalid token. Redirecting to login page...", "warning");
         navigate("/");
         return;
       }
@@ -60,25 +60,25 @@ const GetProduct = () => {
 
         switch (response.status) {
           case 400:
-            showToast("Bad Request: Invalid data provided.", "error");
+            toast.error("Bad Request: Invalid data provided.", "error");
             break;
 
           case 401:
-            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            toast.warning("Admin not logged in. Redirecting to login page...", "warning");
             navigate("/");
             break;
 
           case 403:
-            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            toast.warning("Admin not logged in. Redirecting to login page...", "warning");
             navigate("/");
             break;
 
           case 500:
-            showToast("Server error. Please try again later.", "error");
+            toast.error("Server error. Please try again later.", "error");
             break;
 
           default:
-            showToast("Failed to add product to trending. Please try again.", "error");
+            toast.error("Failed to add product to trending. Please try again.", "error");
         }
 
         // Log the error for debugging
@@ -92,9 +92,9 @@ const GetProduct = () => {
       setProduct(data.data);
     } catch (error) {
       if (error.message.includes("NetworkError")) {
-        showToast("Network error. Please check your connection and try again.", "error");
+        toast.error("Network error. Please check your connection and try again.", "error");
       } else {
-        showToast("Failed to fetch categories. Please try again.", "error");
+        toast.error("Failed to fetch categories. Please try again.", "error");
       }
       setError(error.message);
     } finally {
@@ -113,32 +113,31 @@ const GetProduct = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(item._id)
       if (!response.ok) {
         const errorMessage = await response.text();
 
         switch (response.status) {
           case 401:
           case 403:
-            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            toast.warning("Admin not logged in. Redirecting to login page...", "warning");
             navigate("/");
             break;
 
           case 500:
-            showToast("Server error. Please try again later.", "error");
+            toast.error("Server error. Please try again later.", "error");
             break;
 
           default:
-            showToast("Failed to add product to trending. Please try again.", "error");
+            toast.error("Failed to add product to trending. Please try again.", "error");
         }
 
-        const body = await response.json();
-        alert(body.message);
       }
+      const body = await response.json();
+      toast.success(body.message);
       fetchProduct();
     } catch (error) {
       console.error(error);
-      alert("Error deleting Banner. Please try again.");
+      toast.error("Error deleting Banner. Please try again.");
     }
   };
 
@@ -156,16 +155,16 @@ const GetProduct = () => {
         switch (response.status) {
           case 401:
           case 403:
-            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            toast.warning("Admin not logged in. Redirecting to login page...", "warning");
             navigate("/");
             break;
 
           case 500:
-            showToast("Server error. Please try again later.", "error");
+            toast.error("Server error. Please try again later.", "error");
             break;
 
           default:
-            showToast("Failed to add product to trending. Please try again.", "error");
+            toast.error("Failed to add product to trending. Please try again.", "error");
         }
 
         console.error(`HTTP Error: ${response.status}`, errorMessage);
@@ -173,11 +172,11 @@ const GetProduct = () => {
       }
 
       // Success handling
-      alert("Product added to trending successfully.");
+      toast.success("Product added to trending successfully.");
       fetchProduct();
     } catch (error) {
       console.error("Error adding product to trending:", error);
-      alert("An unexpected error occurred. Please try again.");
+      toast("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -195,16 +194,16 @@ const GetProduct = () => {
         switch (response.status) {
           case 401:
           case 403:
-            showToast("Admin not logged in. Redirecting to login page...", "warning");
+            toast.warning("Admin not logged in. Redirecting to login page...", "warning");
             navigate("/");
             break;
 
           case 500:
-            showToast("Server error. Please try again later.", "error");
+            toast.error("Server error. Please try again later.", "error");
             break;
 
           default:
-            showToast("Failed to add product to trending. Please try again.", "error");
+            toast.error("Failed to add product to Featured. Please try again.", "error");
         }
 
         console.error(`HTTP Error: ${response.status}`, errorMessage);
@@ -212,11 +211,11 @@ const GetProduct = () => {
       }
 
       // Success handling
-      alert("Product added to trending successfully.");
-      fetchProduct(); // Refresh the product list
+      toast.success("Product added to Featured successfully.");
+      fetchProduct(); 
     } catch (error) {
-      console.error("Error adding product to trending:", error);
-      alert("An unexpected error occurred. Please try again.");
+      console.error("Error adding product to Featured:", error);
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -231,23 +230,23 @@ const GetProduct = () => {
       if (!response.ok) {
         // Check for specific status codes
         if (response.status === 400) {
-          alert("Bad Request: Invalid data provided.");
+          toast.error("Bad Request: Invalid data provided.");
         } else if (response.status === 404) {
-          alert("Product not found. Please check the product ID.");
+          toast.error("Product not found. Please check the product ID.");
         } else if (response.status === 500) {
-          alert("Server error. Please try again later.");
+          toast.error("Server error. Please try again later.");
         } else {
-          alert("Failed to add product to trending. Please try again.");
+          toast.error("Failed to add product to trending. Please try again.");
         }
         throw new Error(`HTTP Error: ${response.status}`);
       }
 
       // Success handling
-      alert("Product removed from trending successfully.");
-      fetchProduct(); // Refresh the product list
+      toast.success("Product removed from trending successfully.");
+      fetchProduct(); 
     } catch (error) {
       console.error("Error adding product to trending:", error);
-      alert("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -263,28 +262,30 @@ const GetProduct = () => {
       if (!response.ok) {
         // Check for specific status codes
         if (response.status === 400) {
-          alert("Bad Request: Invalid data provided.");
+          toast.error("Bad Request: Invalid data provided.");
         } else if (response.status === 404) {
-          alert("Product not found. Please check the product ID.");
+          toast.error("Product not found. Please check the product ID.");
         } else if (response.status === 500) {
-          alert("Server error. Please try again later.");
+          toast.error("Server error. Please try again later.");
         } else {
-          alert("Failed to add product to trending. Please try again.");
+          toast.error("Failed to add product to Featured. Please try again.");
         }
         throw new Error(`HTTP Error: ${response.status}`);
       }
 
       // Success handling
-      alert("Product removed from trending successfully.");
-      fetchProduct(); // Refresh the product list
+      toast.success("Product removed from Featured successfully.");
+      fetchProduct(); 
     } catch (error) {
-      console.error("Error adding product to trending:", error);
-      alert("An unexpected error occurred. Please try again.");
+      console.error("Error adding product to Featured:", error);
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 
   return (
     <div className="flex w-screen h-screen bg-gray-100">
+       {/* Toast Notification Container */}
+       <ToastContainer />
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"

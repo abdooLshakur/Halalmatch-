@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EditProduct = ({ onCancel }) => {
   const [loading, setLoading] = useState(false);
@@ -103,8 +105,8 @@ const EditProduct = ({ onCancel }) => {
   
       const result = await response.json();
       console.log("Product updated:", result);
-      showToast("Product updated successfully!", "success");
-      navigate("/getproduct");
+      toast.success("Product updated successfully!", "success");
+      setTimeout(() => navigate("/getproduct"), 1500);
     } catch (err) {
       setError("Failed to update product. Please try again.");
       console.error(err);
@@ -116,6 +118,8 @@ const EditProduct = ({ onCancel }) => {
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+       {/* Toast Notification Container */}
+       <ToastContainer />
       {/* Back Button */}
       <div className="absolute top-4 left-4">
         <button
@@ -223,7 +227,6 @@ const EditProduct = ({ onCancel }) => {
         </div>
       </div>
     </div>
-
 
 
   );
