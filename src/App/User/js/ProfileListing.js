@@ -26,8 +26,7 @@ export default function ProfileListingPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [approvedIds, setApprovedIds] = useState([]);
 
-
-  const api = "http://localhost:7000";
+  const api = "https://halal-1.onrender.com";
   // Debounced version of fetchUsers
   const fetchUsers = useCallback(async () => {
     try {
@@ -141,7 +140,7 @@ export default function ProfileListingPage() {
   useEffect(() => {
     const fetchApprovedIds = async () => {
       try {
-        const res = await fetch('http://localhost:7000/approvedimagerequests', {
+        const res = await fetch(`${api}/approvedimagerequests`, {
           method: 'GET',
           credentials: 'include', // important if auth is required
         });

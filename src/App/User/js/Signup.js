@@ -15,7 +15,7 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const Navigate = useNavigate();
-  const api = "http://localhost:7000";
+  const api = "https://halal-1.onrender.com";
 
   const handleEvent = async (e) => {
     setIsLoading(true);

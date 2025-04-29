@@ -13,7 +13,7 @@ export default function UserProfile() {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const [userId, setUserId] = useState(null);
-  const api = "http://localhost:7000";
+  const api = "https://halal-1.onrender.com";
   const navigate = useNavigate();
 
   const getCookie = (name) => {

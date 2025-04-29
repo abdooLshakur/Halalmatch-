@@ -7,7 +7,7 @@ const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
-  const api = "http://localhost:7000";
+  const api = "https://halal-1.onrender.com";
 
   const token = searchParams.get("token");
   const email = searchParams.get("email");
