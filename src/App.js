@@ -1,48 +1,36 @@
-
-
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
-import Login from "./Merchantdocx/merchant/Login";
-import Signup from "./Merchantdocx/merchant/Signup";
-import CreateProduct from "./Merchantdocx/product/AddProduct";
-import CategoryManagement from "./Merchantdocx/category/AddCategory";
-import BannerManagement from "./Merchantdocx/banner/AddBanner";
-import Dashboard from "./Merchantdocx/Dashboard";
-import GetCategory from "./Merchantdocx/category/GetCategory";
-import GetBanner from "./Merchantdocx/banner/GetBanners";
-import GetProduct from "./Merchantdocx/product/GetProducts";
-import GetMerchant from "./Merchantdocx/merchant/GetMerchant";
-import EditCategoryPage from "./Merchantdocx/category/EditCategory";
-import Editbanner from "./Merchantdocx/banner/EditBanner";
-import EditProduct from "./Merchantdocx/product/EditProduct";
+import Login from "./App/User/js/Login";
+import Signup from "./App/User/js/Signup";
+import ContactPage from "./App/User/js/Contact";
+import Landing from "./App/User/js/Landingpage";
+import ProfilePage from "./App/User/js/Profilepage";
+import ProfileListingPage from "./App/User/js/ProfileListing";
+import Notifications from "./App/User/js/Notifications";
+import ForgotPassword from "./App/User/js/Requestresetpassword";
+import ResetPassword from "./App/User/js/ResetPassword";
+import AboutHalalMatch from "./App/User/js/Abouthalal";
 
 function App() {
 
   return (
     <Router>
-     
 
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/merchants" element={<GetMerchant />} />
 
-            <Route path="/create-product" element={<CreateProduct />} />
-            <Route path="/getproduct" element={<GetProduct />} />
-            <Route path="/edit-product/:id" element={<EditProduct />} />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/Contact" element={<ContactPage />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profilelisting" element={<ProfileListingPage />} />
+        <Route path="/about" element={<AboutHalalMatch />} />
+        <Route path="/notification" element={<Notifications />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Routes>
 
-            <Route path="/create-categories" element={<CategoryManagement />} />
-            <Route path="/getcategories" element={<GetCategory />} />
-            <Route path="/edit-category/:id" element={<EditCategoryPage />} />
-
-            <Route path="/create-banners" element={<BannerManagement />} />
-            <Route path="/getbanners" element={<GetBanner />} />
-            <Route path="/edit-banner/:id" element={<Editbanner />} />
-
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-       
     </Router>
   );
 }
