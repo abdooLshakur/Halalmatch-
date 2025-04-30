@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function CookieConsentBanner() {
-  const [showBanner, setShowBanner] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
     const api = "https://halal-t0ed.onrender.com";
 
   useEffect(() => {
@@ -11,19 +11,19 @@ export default function CookieConsentBanner() {
   const handleAccept = async () => {
     try {
       // Save consent flag to localStorage
-      localStorage.setItem("cookie_consent", "accepted");
-
+      
       // Make a request to the server to re-set cookies after user consent
       const response = await fetch(`${api}/reconsent`, {
-        method: "POST",
-        credentials: "include", // ensures cookies are included
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to acknowledge consent");
-      }
-
-      setShowBanner(false);
+          method: "POST",
+          credentials: "include", // ensures cookies are included
+        });
+        
+        if (!response.ok) {
+            throw new Error("Failed to acknowledge consent");
+        }
+        
+        setShowBanner(false);
+        localStorage.setItem("cookie_consent", "accepted");
       // Optional: reload the app to ensure cookies are re-applied
       window.location.reload();
     } catch (err) {
