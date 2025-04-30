@@ -10,7 +10,7 @@ export default function CookieConsentBanner() {
 
   const handleAccept = async () => {
     try {
-      const res = await fetch(`${api}/reconsent`, {
+      const res = await fetch(`${api}/consent`, {
         method: "POST",
         credentials: "include", // critical for sending cookies
       });
