@@ -10,12 +10,27 @@ export default function CookieConsentBanner() {
     }
   }, []);
 
-  const handleAccept = () => {
-    localStorage.setItem("cookie_consent", "accepted");
-    setShowBanner(false);
+  const handleAccept = async () => {
+    try {
+      // Save consent flag to localStorage
+      localStorage.setItem("cookie_consent", "accepted");
 
-    // ✅ Call your cookie-setting logic here:
-    // E.g., make a request that sets the `user` cookie
+      // Make a request to the server to re-set cookies after user consent
+      const response = await fetch("/api/reconsent", {
+        method: "POST",
+        credentials: "include", // ensures cookies are included
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to acknowledge consent");
+      }
+
+      setShowBanner(false);
+      // Optional: reload the app to ensure cookies are re-applied
+      window.location.reload();
+    } catch (err) {
+      console.error("Consent handling error:", err);
+    }
   };
 
   return (
