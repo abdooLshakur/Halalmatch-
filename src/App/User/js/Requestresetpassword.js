@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
-  const api = "https://halal-1.onrender.com";
+  const api = "https://halal-t0ed.onrender.com";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

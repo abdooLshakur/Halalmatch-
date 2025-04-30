@@ -7,7 +7,7 @@ export default function Notifications() {
   const [notifications, setNotifications] = useState([]); // Initialized to an empty array
   const [activeTab, setActiveTab] = useState("interest");
   const [confirmAction, setConfirmAction] = useState(null);
-  const api = "https://halal-1.onrender.com";
+  const api = "https://halal-t0ed.onrender.com";
 
   function getUserIdFromCookie() {
     const name = "user=";

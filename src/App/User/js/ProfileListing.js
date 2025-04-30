@@ -26,7 +26,7 @@ export default function ProfileListingPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [approvedIds, setApprovedIds] = useState([]);
 
-  const api = "https://halal-1.onrender.com";
+  const api = "https://halal-t0ed.onrender.com";
   // Debounced version of fetchUsers
   const fetchUsers = useCallback(async () => {
     try {
