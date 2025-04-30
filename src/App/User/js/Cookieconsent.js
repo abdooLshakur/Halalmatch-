@@ -14,6 +14,7 @@ export default function CookieConsentBanner() {
         method: "POST",
         credentials: "include", // critical for sending cookies
       });
+      
   
       if (res.ok) {
         setShowBanner(false);
