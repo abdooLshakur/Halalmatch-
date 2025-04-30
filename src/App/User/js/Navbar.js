@@ -12,7 +12,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userData, setUserData] = useState({});
   const [newMessages, setNewMessages] = useState(0);  // Track new messages
-  const api = "http://localhost:7000";
+  const api = "https://halal-t0ed.onrender.com";
 
   // // Fetch notifications function
   // const getNotifications = async () => {
@@ -35,30 +35,19 @@ export default function Navbar() {
 
   useEffect(() => {
     const userCookie = Cookies.get("user");
-
+  
     if (userCookie) {
       setIsLoggedIn(true);
       try {
         const parsed = JSON.parse(userCookie);
         setUserData(parsed);
       } catch (error) {
-        toast.error("Error parsing user cookie:", error);
+        console.error("Error parsing user cookie:", error);
       }
     } else {
       setIsLoggedIn(false);
     }
-
-    // Fetch notifications on login or when the component mounts
-    if (isLoggedIn) {
-      // getNotifications().then((notifications) => {
-      //   if (Array.isArray(notifications)) {
-      //     // Filter out unread notifications
-      //     const unreadMessages = notifications.filter(notification => !notification.read);
-      //     setNewMessages(unreadMessages.length);
-      //   }
-      // });
-    }
-  }, [isLoggedIn]);
+  }, []);
 
   return (
     <nav className="flex items-center justify-between p-2 bg-white shadow relative">
