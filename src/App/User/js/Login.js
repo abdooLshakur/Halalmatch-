@@ -16,13 +16,6 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // 🔒 Block login if no consent
-  if (localStorage.getItem("consentGiven") !== "true") {
-    toast.warning("Please accept cookies to log in.");
-    setIsLoading(false);
-    return;
-  }
-
     if (email === "" || password === "") {
       setError(true);
       toast.warning("Please fill in all fields.");
@@ -57,8 +50,6 @@ const Login = () => {
       })
       .finally(() => setIsLoading(false));
   };
- 
-  
 
   return (
     <div >
