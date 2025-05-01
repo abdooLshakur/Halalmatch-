@@ -57,17 +57,7 @@ const Login = () => {
       })
       .finally(() => setIsLoading(false));
   };
-  useEffect(() => {
-    fetch("https://halal-t0ed.onrender.com/test-cookies", {
-      method: "GET",
-      credentials: "include",
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log("Server received cookies:", data.cookies);
-      })
-      .catch(err => console.error("Error testing cookies:", err));
-  }, []);
+ 
   
 
   return (

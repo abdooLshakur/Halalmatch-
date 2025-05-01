@@ -34,23 +34,32 @@ export default function Navbar() {
   // };
 
   useEffect(() => {
-    const userCookie = Cookies.get("user");
-  
-    if (userCookie) {
-      setIsLoggedIn(true);
-      try {
-        const parsed = JSON.parse(userCookie);
-        setUserData(parsed);
-      } catch (error) {
-        console.error("Error parsing user cookie:", error);
+    const checkUser = () => {
+      const userCookie = Cookies.get("user");
+      if (userCookie) {
+        try {
+          setIsLoggedIn(true);
+          setUserData(JSON.parse(userCookie));
+        } catch {
+          setIsLoggedIn(false);
+        }
+      } else {
+        setIsLoggedIn(false);
       }
-    } else {
-      setIsLoggedIn(false);
-    }
+    };
+  
+    checkUser(); // initial check
+  
+    // 👇 Listen to login updates from other tabs/windows
+    const handleStorageChange = () => checkUser();
+  
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+
   return (
-    <nav className="flex items-center justify-between p-2 bg-white shadow relative">
+    <nav className="sticky top-0 z-50 flex items-center justify-between p-2 bg-white shadow ">
       <div className="flex items-center">
         <Link to={"/"}><img src={logo} alt="Logo" className="w-50 h-20 object-contain rounded-lg " /></Link>
       </div>
