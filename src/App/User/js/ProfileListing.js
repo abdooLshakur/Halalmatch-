@@ -162,17 +162,21 @@ export default function ProfileListingPage() {
       try {
         const res = await fetch(`${api}/approvedimagerequests`, {
           method: 'GET',
-          credentials: 'include', // important if auth is required
+          credentials: 'include',
         });
         const data = await res.json();
-        setApprovedIds(data.approved.map(id => String(id))); // ensure strings
+        setApprovedIds(data.approved.map(id => String(id)));
       } catch (error) {
         console.error("Failed to fetch approved image requests:", error);
       }
     };
-
-    fetchApprovedIds();
+  
+    const userId = getUserIdFromCookie();
+    if (userId) {
+      fetchApprovedIds();
+    }
   }, []);
+  
 
 
   const renderUserDetail = (label, value) => (
