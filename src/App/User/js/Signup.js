@@ -114,7 +114,7 @@ const Signup = () => {
           <h2 className="text-2xl font-bold text-gray-800 text-center">Signup</h2>
 
           <form
-            className="space-y-4 mt-6 grid grid-cols-2 gap-6"
+            className="space-y-4 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6"
             onSubmit={handleEvent}
           >
             <div>
