@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
+import { FaRegUser } from "react-icons/fa";
+
 
 export default function UserProfile() {
   const [userData, setUserData] = useState({});
@@ -13,7 +14,8 @@ export default function UserProfile() {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const [userId, setUserId] = useState(null);
-  const api = "https://halal-t0ed.onrender.com";
+  const api = "https://halal-m2e0.onrender.com";
+
   const navigate = useNavigate();
 
   const getCookie = (name) => {
@@ -74,23 +76,23 @@ export default function UserProfile() {
         credentials: 'include',
       });
       const result = await response.json();
-
+      console.log(result)
       if (result.success) {
         fetchUserData(userId);
-
+      
         const userCookie = getCookie("user");
-        if (userCookie) {
+        if (userCookie && result.data?.avatar) {
           const parsed = JSON.parse(userCookie);
           parsed.avatar = result.data.avatar;
           document.cookie = `user=${encodeURIComponent(JSON.stringify(parsed))}; path=/`;
         }
-
+      
         setSelectedImage(null);
         setPreviewUrl(null);
         toast.success("Profile picture updated!");
       } else {
         toast.error("Upload failed.");
-      }
+      }      
     } catch {
       toast.error("Upload failed.");
     }
@@ -151,9 +153,9 @@ export default function UserProfile() {
             <img
               src={
                 previewUrl ||
-                (userData.avatar ? `${api}/${userData.avatar}?t=${Date.now()}` : "/placeholder.jpg")
+                (userData.avatar ? `${api}/${userData.avatar}?t=${Date.now()}` :   <FaRegUser className="w-full h-full text-gray-500" />)
               }
-              alt="Profile"
+              alt=""
               className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow-md"
             />
             <input

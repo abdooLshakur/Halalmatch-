@@ -6,13 +6,14 @@ import { Menu, X } from "lucide-react";
 import { BellIcon } from '@heroicons/react/24/outline'
 import logo from "../images/logo.png"
 import { toast } from "react-toastify";
+import { FaRegUser } from "react-icons/fa";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [userData, setUserData] = useState({});
   const [newMessages, setNewMessages] = useState(0);  // Track new messages
-  const api = "http://localhost:7000";
+  const api = "https://halal-m2e0.onrender.com";
 
   // // Fetch notifications function
   // const getNotifications = async () => {
@@ -91,7 +92,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link to={"/profile"}>
               <img
-                src={(userData.avatar ? `${api}/${userData.avatar}` : "/placeholder.jpg")}
+                src={(userData.avatar ? `${api}/${userData.avatar}` : {FaRegUser})}
                 alt="User Avatar"
                 className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
               />

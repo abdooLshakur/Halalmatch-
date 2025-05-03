@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 export default function CookieConsentBanner() {
   const [showBanner, setShowBanner] = useState(true);
-  const api = "https://halal-t0ed.onrender.com";
+//   const api = "https://halal-t0ed.onrender.com";
+const api = "http://localhost:8900";
+
 
   useEffect(() => {
     const consent = localStorage.getItem("consentGiven");

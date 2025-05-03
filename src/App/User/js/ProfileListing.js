@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { FaFilter } from "react-icons/fa";
 import Navbar from "./Navbar";
 import debounce from "lodash/debounce";
+import { FaRegUser } from "react-icons/fa";
 
 const getCookie = (name) => {
   const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
@@ -26,8 +27,23 @@ export default function ProfileListingPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [approvedIds, setApprovedIds] = useState([]);
 
-  const api = "https://halal-t0ed.onrender.com";
-  // Debounced version of fetchUsers
+  const api = "https://halal-m2e0.onrender.com";
+  
+  const getUserIdFromCookie = () => {
+    const cookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('user='));
+    if (!cookie) return null;
+  
+    try {
+      const userData = JSON.parse(decodeURIComponent(cookie.split('=')[1]));
+      return userData.id;
+    } catch (err) {
+      console.error('Failed to parse user cookie:', err);
+      return null;
+    }
+  };
+
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -37,26 +53,30 @@ export default function ProfileListingPage() {
       );
       const data = await res.json();
       const rawUsers = data.data;
-
-      // Filter users by age
+  
+      const loggedInUserId = getUserIdFromCookie();
+  
       const filteredByAge = rawUsers.filter(user =>
         user.age >= filters.minAge && user.age <= filters.maxAge
       );
-
-      // Handle frontend pagination (e.g., 9 per page)
+  
+      const filteredUsers = filteredByAge.filter(user => user._id !== loggedInUserId);
+  
       const pageSize = 9;
       const start = (page - 1) * pageSize;
       const end = start + pageSize;
-      const paginatedUsers = filteredByAge.slice(start, end);
-
+      const paginatedUsers = filteredUsers.slice(start, end);
+  
       setUsers(paginatedUsers);
-      setTotalPages(Math.ceil(filteredByAge.length / pageSize));
+      setTotalPages(Math.ceil(filteredUsers.length / pageSize));
     } catch (err) {
       console.error("Failed to fetch users", err);
     } finally {
       setLoading(false);
     }
   }, [page, filters]);
+  
+  
 
 
   const debouncedFetchUsers = useCallback(debounce(fetchUsers, 500), [fetchUsers]);
@@ -240,7 +260,7 @@ export default function ProfileListingPage() {
                           src={
                             isApproved && user.avatar
                               ? `${api}/${user.avatar}`
-                              : "/placeholder.jpg"
+                              : {FaRegUser}
                           }
                           alt={`${user.first_name} ${user.last_name}'s avatar`}
                           className={`w-full h-48 object-cover rounded-xl mb-4 ${!isApproved ? "opacity-50" : ""}`}

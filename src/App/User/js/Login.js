@@ -10,7 +10,8 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
-  const api = "https://halal-t0ed.onrender.com";
+  const api = "https://halal-m2e0.onrender.com";
+
 
   const handleEvent = (e) => {
     e.preventDefault();

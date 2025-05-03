@@ -22,8 +22,7 @@ function Landing() {
         <Footer />
       </div>
 
-      {/* 👇 Show the cookie consent popup */}
-      <CookieConsentBanner />
+      {/* <CookieConsentBanner /> */}
     </div>
   );
 }
