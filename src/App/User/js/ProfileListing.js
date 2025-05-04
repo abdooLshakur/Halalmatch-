@@ -3,8 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { FaFilter } from "react-icons/fa";
 import Navbar from "./Navbar";
 import debounce from "lodash/debounce";
-import { FaRegUser } from "react-icons/fa";
-
+import userimg from "../images/user.png"
 const getCookie = (name) => {
   const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
   return match ? decodeURIComponent(match[2]) : null;
@@ -28,13 +27,13 @@ export default function ProfileListingPage() {
   const [approvedIds, setApprovedIds] = useState([]);
 
   const api = "https://api.zmhcollections.online";
-  
+
   const getUserIdFromCookie = () => {
     const cookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('user='));
     if (!cookie) return null;
-  
+
     try {
       const userData = JSON.parse(decodeURIComponent(cookie.split('=')[1]));
       return userData.id;
@@ -53,20 +52,20 @@ export default function ProfileListingPage() {
       );
       const data = await res.json();
       const rawUsers = data.data;
-  
+
       const loggedInUserId = getUserIdFromCookie();
-  
+
       const filteredByAge = rawUsers.filter(user =>
         user.age >= filters.minAge && user.age <= filters.maxAge
       );
-  
+
       const filteredUsers = filteredByAge.filter(user => user._id !== loggedInUserId);
-  
+
       const pageSize = 9;
       const start = (page - 1) * pageSize;
       const end = start + pageSize;
       const paginatedUsers = filteredUsers.slice(start, end);
-  
+
       setUsers(paginatedUsers);
       setTotalPages(Math.ceil(filteredUsers.length / pageSize));
     } catch (err) {
@@ -75,8 +74,8 @@ export default function ProfileListingPage() {
       setLoading(false);
     }
   }, [page, filters]);
-  
-  
+
+
 
 
   const debouncedFetchUsers = useCallback(debounce(fetchUsers, 500), [fetchUsers]);
@@ -170,13 +169,13 @@ export default function ProfileListingPage() {
         console.error("Failed to fetch approved image requests:", error);
       }
     };
-  
+
     const userId = getUserIdFromCookie();
     if (userId) {
       fetchApprovedIds();
     }
   }, []);
-  
+
 
 
   const renderUserDetail = (label, value) => (
@@ -262,13 +261,14 @@ export default function ProfileListingPage() {
                       <div key={user._id} className="bg-white rounded-2xl shadow p-4 hover:shadow-lg transition">
                         <img
                           src={
-                            isApproved && user.avatar
+                            isApproved && user.avatar !== null
                               ? `${api}/${user.avatar}`
-                              : {FaRegUser}
+                              : {userimg} // fallback icon in your public folder
                           }
                           alt={`${user.first_name} ${user.last_name}'s avatar`}
                           className={`w-full h-48 object-cover rounded-xl mb-4 ${!isApproved ? "opacity-50" : ""}`}
                         />
+
                         <h3 className="text-lg font-bold">{user.first_name} {user.last_name}</h3>
                         <p className="text-sm text-gray-500">Age: {user.age} • {user.location}</p>
                         <p className="text-sm text-gray-500">Ethnicity: {user.ethnicity}</p>
