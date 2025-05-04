@@ -14,7 +14,7 @@ export default function UserProfile() {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const [userId, setUserId] = useState(null);
-  const api = "https://halal-m2e0.onrender.com";
+  const api = "https://api.zmhcollections.online";
 
   const navigate = useNavigate();
 

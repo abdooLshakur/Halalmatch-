@@ -7,7 +7,7 @@ const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
-  const api = "https://halal-m2e0.onrender.com";
+  const api = "https://api.zmhcollections.online";
 
 
   const token = searchParams.get("token");

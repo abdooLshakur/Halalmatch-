@@ -11,7 +11,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userData, setUserData] = useState({});
   const [newMessages, setNewMessages] = useState(0);
-  const api = "https://halal-m2e0.onrender.com";
+  const api = "https://api.zmhcollections.online";
   const navigate = useNavigate();
 
   useEffect(() => {

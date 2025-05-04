@@ -10,7 +10,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
-  const api = "https://halal-m2e0.onrender.com";
+  const api = "https://api.zmhcollections.online";
 
 
   const handleEvent = (e) => {

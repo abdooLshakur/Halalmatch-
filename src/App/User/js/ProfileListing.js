@@ -27,7 +27,7 @@ export default function ProfileListingPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [approvedIds, setApprovedIds] = useState([]);
 
-  const api = "https://halal-m2e0.onrender.com";
+  const api = "https://api.zmhcollections.online";
   
   const getUserIdFromCookie = () => {
     const cookie = document.cookie

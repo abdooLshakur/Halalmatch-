@@ -11,7 +11,7 @@ export default function Hero() {
       </p>
       <div className="space-x-4">
         <Link to={"/signup"}><Button className="bg-indigo-600 text-white">Get Started</Button></Link>
-        <Button variant="outline">Learn More</Button>
+        <Link to={"/login"}><Button variant="outline">Sign in</Button></Link>
       </div>
       </div>
     </section>
