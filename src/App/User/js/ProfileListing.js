@@ -163,19 +163,26 @@ export default function ProfileListingPage() {
           method: 'GET',
           credentials: 'include',
         });
+  
         const data = await res.json();
-        setApprovedIds(data.approved.map(id => String(id)));
+  
+        if (data.approved && Array.isArray(data.approved)) {
+          setApprovedIds(data.approved.map(id => String(id)));
+        } else {
+          console.warn("Unexpected response format:", data);
+          setApprovedIds([]); // fallback to empty list
+        }
+  
       } catch (error) {
         console.error("Failed to fetch approved image requests:", error);
       }
     };
-
+  
     const userId = getUserIdFromCookie();
     if (userId) {
       fetchApprovedIds();
     }
   }, []);
-
 
 
   const renderUserDetail = (label, value) => (
@@ -261,14 +268,13 @@ export default function ProfileListingPage() {
                       <div key={user._id} className="bg-white rounded-2xl shadow p-4 hover:shadow-lg transition">
                         <img
                           src={
-                            isApproved && user.avatar !== null
+                            user.avatar && approvedIds.includes(user._id)
                               ? `${api}/${user.avatar}`
-                              : {userimg} // fallback icon in your public folder
+                              : userimg
                           }
                           alt={`${user.first_name} ${user.last_name}'s avatar`}
-                          className={`w-full h-48 object-cover rounded-xl mb-4 ${!isApproved ? "opacity-50" : ""}`}
+                          className={`w-full h-48 object-cover rounded-xl mb-4 ${!(user.avatar && approvedIds.includes(user._id)) ? "opacity-50" : ""}`}
                         />
-
                         <h3 className="text-lg font-bold">{user.first_name} {user.last_name}</h3>
                         <p className="text-sm text-gray-500">Age: {user.age} • {user.location}</p>
                         <p className="text-sm text-gray-500">Ethnicity: {user.ethnicity}</p>

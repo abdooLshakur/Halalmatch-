@@ -138,10 +138,11 @@ export default function UserProfile() {
   };
 
   const handleLogout = () => {
-    Cookies.remove("token");
-    Cookies.remove("user");
+    Cookies.remove("token", { path: "/" });
+    Cookies.remove("user", { path: "/" });
     navigate("/login");
   };
+  
 
   return (
     <div>
