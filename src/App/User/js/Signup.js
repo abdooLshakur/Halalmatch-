@@ -107,10 +107,10 @@ const Signup = () => {
   return (
     <div>
       <Navbar />
-      <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100 relative">
-        <ToastContainer />
+      <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100 mt-[70px]">
+         <ToastContainer />
 
-        <div className="signup w-full max-w-4xl bg-white shadow-lg rounded-lg p-8">
+        <div className="signup w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 sm:p-8">
           <h2 className="text-2xl font-bold text-gray-800 text-center">Signup</h2>
 
           <form
@@ -150,7 +150,6 @@ const Signup = () => {
             <div>
               <input
                 type="date"
-                placeholder="date"
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
                 value={dob}
                 onChange={(e) => setdob(e.target.value)}
@@ -200,7 +199,7 @@ const Signup = () => {
                 onChange={(e) => setmaritalstatus(e.target.value)}
                 value={maritalStatus}
               >
-                <option value="">Select maritalstatus</option>
+                <option value="">Select Marital Status</option>
                 <option value="Single">Single</option>
                 <option value="Married">Married</option>
                 <option value="Divorced">Divorced</option>
@@ -228,7 +227,7 @@ const Signup = () => {
               )}
             </div>
 
-            <div className="col-span-2">
+            <div className="col-span-1 md:col-span-2">
               <button
                 type="submit"
                 className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
@@ -239,8 +238,7 @@ const Signup = () => {
             </div>
           </form>
 
-          {/* Already have an account */}
-          <p className="text-center mt-4 text-sm text-gray-600 col-span-2">
+          <p className="text-center mt-4 text-sm text-gray-600">
             Already have an account?{" "}
             <Link to="/login" className="text-blue-500 hover:underline">
               Sign in
@@ -249,6 +247,7 @@ const Signup = () => {
         </div>
       </div>
     </div>
+
 
   );
 };
