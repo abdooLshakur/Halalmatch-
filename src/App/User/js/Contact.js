@@ -39,18 +39,16 @@ const ContactPage = () => {
             <section className="contact-section w-full flex flex-col md:flex-row gap-8 p-4 sm:p-6 md:p-10">
                 <div className="contact-info w-full md:w-1/2 text-[15px] text-center md:text-left">
                     <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-indigo-700">Get In Touch With Us</h2>
-                    <p className="text-gray-600 mb-4 text-sm sm:text-base">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestibulum mauris. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestibulum mauris quis aliquam. Integer accumsan sodales odio, id tempus velit ullamc.</p>
+                    <p className="text-gray-600 mb-4 text-sm sm:text-base">We’d love to hear from you! Fill out the form below or reach out via email — we’ll get back to you as soon as possible.</p>
                     <div className="social-icons flex justify-center md:justify-start gap-4 text-2xl mb-4">
-                        <a href="#" aria-label="Pinterest"><i className="fab fa-pinterest"></i></a>
-                        <a href="#" aria-label="Facebook"><i className="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="facebook"><i className="fab fa-facebook"></i></a>
                         <a href="#" aria-label="Twitter"><i className="fab fa-twitter"></i></a>
-                        <a href="#" aria-label="Behance"><i className="fab fa-behance"></i></a>
+                        <a href="https://www.instagram.com/halal_matchmaking_ng/" aria-label="instagram"><i className="fab fa-instagram"></i></a>
                         <a href="#" aria-label="LinkedIn"><i className="fab fa-linkedin"></i></a>
                     </div>
                     <div className="contact-details space-y-2 text-sm sm:text-base">
-                        <p><strong>Phone:</strong> +45 677 899300 223</p>
-                        <p><strong>Email:</strong> office@template.com</p>
-                        <p><strong>Address:</strong> Main Str. no 45-46, b3, 56832, Los Angeles, CA</p>
+                        <p><strong>Phone:</strong> 07025555250</p>
+                        <p><strong>Email:</strong> Halalmatch.org@gmail.com</p>
                     </div>
                 </div>
                 <div className="contact-form w-full md:w-1/2">
