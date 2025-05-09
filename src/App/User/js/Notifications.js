@@ -76,13 +76,13 @@ export default function Notifications() {
         credentials: 'include', // ensure cookies are sent
         body: JSON.stringify({ action }), // <-- send the action
       });
-
+  
       const data = await res.json();
-
+  
       if (res.ok && data.success) {
         toast.success(data.message);
-
-        // Update the notification locally (optional, for better UX)
+  
+        // Update the notification locally
         setNotifications((prev) =>
           prev.map((n) =>
             n._id === notificationId
@@ -91,7 +91,15 @@ export default function Notifications() {
           )
         );
         setConfirmAction(null);
-
+  
+        // ✅ Call the match auto-create endpoint ONLY if action is 'accepted'
+        if (action === 'accepted') {
+          await fetch(`${api}/matches/auto-create`, {
+            method: 'POST',
+            credentials: 'include',
+          });
+        }
+  
       } else {
         toast.error(data.message || 'Failed to update notification status');
       }
@@ -100,6 +108,7 @@ export default function Notifications() {
       toast.error('Error updating notification status');
     }
   };
+  
 
   const handleDelete = async (id) => {
     try {

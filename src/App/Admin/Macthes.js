@@ -3,7 +3,7 @@ import axios from "axios";
 
 const MatchesComponent = () => {
     const [matches, setMatches] = useState([]);
-    const API = "https://yourapi.com";
+    const API = "https://api.zmhcollections.online";
     useEffect(() => {
       const fetchMatches = async () => {
         const { data } = await axios.get(`${API}/matches`);

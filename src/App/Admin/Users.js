@@ -3,7 +3,7 @@ import axios from "axios";
 
 const UsersComponent = () => {
     const [users, setUsers] = useState([]);
-    const API = "https://yourapi.com";
+    const API = "https://api.zmhcollections.online";
     useEffect(() => {
       const fetchUsers = async () => {
         const { data } = await axios.get(`${API}/users`);

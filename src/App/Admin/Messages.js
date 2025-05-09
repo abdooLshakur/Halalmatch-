@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 const ContactMessagesComponent = () => {
     const [messages, setMessages] = useState([]);
-    const API = "https://yourapi.com";
+    const API = "https://api.zmhcollections.online";
     useEffect(() => {
       const fetchMessages = async () => {
         const { data } = await axios.get(`${API}/messages`);
