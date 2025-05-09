@@ -29,6 +29,11 @@ function App() {
         <Route path="/notification" element={<Notifications />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/Dashboard" element={<ResetPassword />} />
+        <Route path="/users" element={<ResetPassword />} />
+        <Route path="/matches" element={<ResetPassword />} />
+        <Route path="/messages" element={<ResetPassword />} />
+
       </Routes>
 
     </Router>
