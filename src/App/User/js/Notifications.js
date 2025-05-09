@@ -9,7 +9,6 @@ export default function Notifications() {
   const [confirmAction, setConfirmAction] = useState(null);
   const api = "https://api.zmhcollections.online";
 
-
   function getUserIdFromCookie() {
     const name = "user=";
     const decodedCookies = decodeURIComponent(document.cookie);
