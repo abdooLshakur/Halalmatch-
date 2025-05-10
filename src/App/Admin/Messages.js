@@ -12,6 +12,9 @@ const ContactMessagesComponent = () => {
     }, []);
   
     return (
+<div>
+    <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100">
+      <Sidebar/>
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Contact Messages</h3>
         <table className="min-w-full border text-sm rounded-md shadow-md">
@@ -37,6 +40,8 @@ const ContactMessagesComponent = () => {
           </tbody>
         </table>
       </div>
+    </div>
+</div>
     );
   };
 

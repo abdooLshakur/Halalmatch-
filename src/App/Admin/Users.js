@@ -17,6 +17,9 @@ const UsersComponent = () => {
     };
   
     return (
+    <div>
+      <Sidebar/>
+    <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">All Users</h3>
         <table className="min-w-full border text-sm rounded-md shadow-md">
@@ -62,6 +65,8 @@ const UsersComponent = () => {
           </tbody>
         </table>
       </div>
+    </div>
+    </div>
     );
   };
 
