@@ -31,7 +31,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/Dashboard" element={<ResetPassword />} />
         <Route path="/users" element={<ResetPassword />} />
-        <Route path="/matches" element={<ResetPassword />} />
+        <Route path="/matched-users" element={<ResetPassword />} />
         <Route path="/messages" element={<ResetPassword />} />
 
       </Routes>
