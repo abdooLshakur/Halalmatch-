@@ -18,10 +18,9 @@ const UsersComponent = () => {
     };
   
     return (
-    <div>
+    <div className="flex">
       <Sidebar/>
-    <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100">
-      <div className="space-y-4">
+      <div className="space-y-4 p-4 w-full">
         <h3 className="text-lg font-semibold">All Users</h3>
         <table className="min-w-full border text-sm rounded-md shadow-md">
           <thead className="bg-indigo-500 text-white">
@@ -66,7 +65,6 @@ const UsersComponent = () => {
           </tbody>
         </table>
       </div>
-    </div>
     </div>
     );
   };

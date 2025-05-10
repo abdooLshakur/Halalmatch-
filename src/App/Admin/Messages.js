@@ -13,10 +13,9 @@ const ContactMessagesComponent = () => {
     }, []);
   
     return (
-<div>
-    <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100">
+<div className="flex">
       <Sidebar/>
-      <div className="space-y-4">
+      <div className="space-y-4 p-4 w-full">
         <h3 className="text-lg font-semibold">Contact Messages</h3>
         <table className="min-w-full border text-sm rounded-md shadow-md">
           <thead className="bg-indigo-500 text-white">
@@ -42,7 +41,6 @@ const ContactMessagesComponent = () => {
         </table>
       </div>
     </div>
-</div>
     );
   };
 
