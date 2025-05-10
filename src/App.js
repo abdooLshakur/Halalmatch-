@@ -11,6 +11,9 @@ import Notifications from "./App/User/js/Notifications";
 import ForgotPassword from "./App/User/js/Requestresetpassword";
 import ResetPassword from "./App/User/js/ResetPassword";
 import AboutHalalMatch from "./App/User/js/Abouthalal";
+import MatchesComponent from "./App/Admin/Macthes";
+import UsersComponent from "./App/Admin/Users";
+import ContactMessagesComponent from "./App/Admin/Messages";
 
 function App() {
 
@@ -29,10 +32,10 @@ function App() {
         <Route path="/notification" element={<Notifications />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/Dashboard" element={<ResetPassword />} />
-        <Route path="/users" element={<ResetPassword />} />
-        <Route path="/matched-users" element={<ResetPassword />} />
-        <Route path="/messages" element={<ResetPassword />} />
+        {/* <Route path="/Dashboard" element={<Dashbard />} /> */}
+        <Route path="/users" element={<UsersComponent />} />
+        <Route path="/matched-users" element={<MatchesComponent />} />
+        <Route path="/messages" element={<ContactMessagesComponent />} />
 
       </Routes>
 
