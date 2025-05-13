@@ -6,7 +6,9 @@ const ContactMessagesComponent = () => {
     const API = "https://api.zmhcollections.online";
     useEffect(() => {
       const fetchMessages = async () => {
-        const { data } = await axios.get(`${API}/messages`);
+        const { data } = await axios.get(`${API}/messages`,
+          {credentials: "include",} 
+        );
         setMessages(data);
       };
       fetchMessages();

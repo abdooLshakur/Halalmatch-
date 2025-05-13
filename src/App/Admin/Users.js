@@ -7,7 +7,9 @@ const UsersComponent = () => {
     const API = "https://api.zmhcollections.online";
     useEffect(() => {
       const fetchUsers = async () => {
-        const { data } = await axios.get(`${API}/users`);
+        const { data } = await axios.get(`${API}/users`,
+          {credentials: "include",} 
+        );
         setUsers(data);
       };
       fetchUsers();

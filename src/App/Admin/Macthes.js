@@ -14,7 +14,9 @@ const MatchesComponent = () => {
     }, []);
 
     const handleShareContact = async (matchId) => {
-        await axios.post(`${API}/matches/${matchId}/share-contact`);
+        await axios.post(`${API}/matches/${matchId}/share-contact`,
+         {   credentials: "include",} 
+        );
     };
 
     return (
