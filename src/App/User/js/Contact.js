@@ -33,6 +33,8 @@ const ContactPage = () => {
     return (
         <div>
             <div><Navbar /></div>
+            <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100 ">
+            <div>
             <div className="contact-us">
                 <h1 className="text-2xl sm:text-3xl font-bold text-center mt-4">Contact Us</h1>
             </div>
@@ -60,6 +62,8 @@ const ContactPage = () => {
                     </form>
                 </div>
             </section>
+            </div>
+        </div>
         </div>
 
 

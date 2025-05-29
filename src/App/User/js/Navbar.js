@@ -52,7 +52,7 @@ export default function Navbar() {
         <Link to={"/"} className="text-slate-700 hover:text-indigo-600">Home</Link>
         <Link to={"/profilelisting"} className="text-slate-700 hover:text-indigo-600">Find Match</Link>
         <Link to={"/contact"} className="text-slate-700 hover:text-indigo-600">Contact</Link>
-        <Link to={"/"} className="text-slate-700 hover:text-indigo-600">How It Works</Link>
+        <Link to={"/gallery"} className="text-slate-700 hover:text-indigo-600">Gallery</Link>
 
         <div className="relative">
           <Link to={"/notification"} className="text-gray-800">

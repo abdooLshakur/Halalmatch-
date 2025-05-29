@@ -1,72 +1,119 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UsersComponent = () => {
     const [users, setUsers] = useState([]);
-    const API = "https://api.zmhcollections.online";
+    // const API = "https://api.zmhcollections.online";
+    const API = "http://localhost:8900"
     useEffect(() => {
       const fetchUsers = async () => {
         const { data } = await axios.get(`${API}/users`,
-          {credentials: "include",} 
+          {
+            withCredentials: true
+          } 
         );
-        setUsers(data);
+        setUsers(data.data);
       };
       fetchUsers();
     }, []);
   
-    const handleUserAction = async (userId, action) => {
-      await axios.put(`${API}/users/${userId}/${action.toLowerCase()}`);
+
+    const handleUserAction = async (userId) => {
+      const user = users.find((u) => u._id === userId);
+      const newStatus = !user.isVerified;
+    
+      try {
+        const res = await axios.put(
+          `${API}/users/${userId}/verify`,
+          { isVerified: newStatus },
+          { withCredentials: true }
+        );
+    
+        // Show toast based on status
+        toast.success(`User ${newStatus ? 'activated' : 'disabled'} successfully`);
+    
+        // Update the users list
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u._id === userId ? { ...u, isVerified: newStatus } : u
+          )
+        );
+      } catch (error) {
+        console.error("Error updating user status:", error);
+        toast.error('Failed to update user. Please try again.');
+      }
     };
+    
+    
+    
+
   
     return (
     <div className="flex">
       <Sidebar/>
-      <div className="space-y-4 p-4 w-full">
-        <h3 className="text-lg font-semibold">All Users</h3>
-        <table className="min-w-full border text-sm rounded-md shadow-md">
-          <thead className="bg-indigo-500 text-white">
-            <tr>
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Email</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user._id} className="hover:bg-gray-50">
-                <td className="p-2 border font-medium">{user.name}</td>
-                <td className="p-2 border">{user.email}</td>
-                <td className="p-2 border">{user.verified ? "Activated" : "Pending"}</td>
-                <td className="p-2 border text-center space-x-2">
-                  {!user.verified ? (
-                    <button
-                      onClick={() => handleUserAction(user._id, "Activate")}
-                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                    >
-                      Activate
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleUserAction(user._id, "Disable")}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Disable
-                    </button>
-                  )}
-                  <button
-                    onClick={() => alert(`Viewing ${user.name}`)}
-                    className="bg-gray-300 text-black px-3 py-1 rounded hover:bg-gray-400"
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <div className="flex flex-col flex-grow space-y-4 p-4 w-full overflow-x-auto">
+      <ToastContainer />
+  <h3 className="text-lg font-semibold">All Users</h3>
+  <div className="w-[80vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden m-[0 auto]">
+  <table className="min-w-full sm:min-w-[800px] w-full border text-sm rounded-md shadow-md">
+    <thead className="bg-indigo-500 text-white">
+      <tr>
+        <th className="p-2 border text-left">Name</th>
+        <th className="p-2 border text-left">Email</th>
+        <th className="p-2 border text-center">Status</th>
+        <th className="p-2 border text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+  {users.map((user) => (
+    <tr key={user._id} className="hover:bg-gray-50">
+      <td className="p-2 border font-medium">
+        {user.first_name} {user.last_name}
+      </td>
+      <td className="p-2 border max-w-[200px] truncate">{user.email}</td>
+      
+      {/* Status badge */}
+      <td className="p-2 border text-center">
+      <span
+  className={`px-2 py-1 rounded text-xs font-semibold ${
+    user.isVerified ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+  }`}
+>
+  {user.isVerified ? "Activated" : "Pending"}
+</span>
+
+      </td>
+
+      {/* Action buttons */}
+      <td className="p-2 border text-center space-x-2">
+        {!user.isVerified ? (
+          <button
+            onClick={() => handleUserAction(user._id)}
+            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+          >
+            Activate
+          </button>
+        ) : (
+          <button
+            onClick={() => handleUserAction(user._id)}
+            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+          >
+            Disable
+          </button>
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+  </table>
+  </div>
+</div>
+
+
     </div>
     );
   };

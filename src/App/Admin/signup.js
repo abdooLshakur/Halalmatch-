@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Navbar from "./Navbar";
 
-const Signup = () => {
+const AdminSignup = () => {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [email, setEmail] = useState("");
@@ -60,14 +59,14 @@ const Signup = () => {
     const signupData = {
       first_name: fname.trim(),
       last_name: lname.trim(),
-      age, // store computed whole number age
+      age,
       email: email.trim(),
       maritalStatus: maritalStatus.trim(),
       password: password.trim(),
       gender: Gender.trim(),
     };
 
-    const apiUrl = `${api}/register-User`;
+    const apiUrl = `${api}/register-Admin`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -87,7 +86,7 @@ const Signup = () => {
       if (data.success) {
         toast.success(data.message || "Sign up successful!");
         setTimeout(() => {
-          Navigate("/login");
+          Navigate("/adminlogin");
         }, 500);
       } else {
         setError(true);
@@ -107,12 +106,11 @@ const Signup = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100 mt-[70px]">
          <ToastContainer />
 
         <div className="signup w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 sm:p-8">
-          <h2 className="text-2xl font-bold text-gray-800 text-center">Signup</h2>
+          <h2 className="text-2xl font-bold text-gray-800 text-center">Admin Signup</h2>
 
           <form
             className="space-y-4 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -241,7 +239,7 @@ const Signup = () => {
 
           <p className="text-center mt-4 text-sm text-gray-600">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-500 hover:underline">
+            <Link to="/adminlogin" className="text-blue-500 hover:underline">
               Sign in
             </Link>
           </p>
@@ -253,4 +251,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default AdminSignup;

@@ -26,7 +26,8 @@ export default function ProfileListingPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [approvedIds, setApprovedIds] = useState([]);
 
-  const api = "https://api.zmhcollections.online";
+  // const api = "https://api.zmhcollections.online";
+  const api = "http://localhost:8900"
   
 
   const getUserIdFromCookie = () => {

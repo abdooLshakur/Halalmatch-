@@ -17,6 +17,18 @@ export default function Testimonials() {
       name: "Zainab & Umar",
       quote: "Highly recommend for Muslims seeking a halal path to marriage.",
     },
+    {
+      name: "Hauwa & Sulaiman",
+      quote: "Alhamdulillah! The process was smooth and respectful — a perfect halal experience.",
+    },
+    {
+      name: "Khadijah & Bilal",
+      quote: "The platform gave us clarity and confidence. We're forever grateful.",
+    },
+    {
+      name: "Maryam & Idris",
+      quote: "We connected meaningfully and quickly. It truly felt guided and intentional.",
+    },
   ];
 
   return (
@@ -30,13 +42,13 @@ export default function Testimonials() {
         pagination={{ clickable: true }}
         autoplay={{ delay: 4000, disableOnInteraction: false }}
         loop={true}
-        className="max-w-2xl"
+        className="w-full max-w-xl mx-auto"
       >
         {testimonials.map((item, index) => (
           <SwiperSlide key={index}>
-            <div className="bg-indigo-50 p-8 rounded-2xl shadow text-center">
-              <p className="text-slate-700 italic mb-4">“{item.quote}”</p>
-              <h3 className="text-indigo-600 font-semibold">{item.name}</h3>
+            <div className="px-6 py-8 text-center">
+              <p className="text-lg text-slate-700 italic mb-4 leading-relaxed">“{item.quote}”</p>
+              <h3 className="text-indigo-600 font-semibold text-base">{item.name}</h3>
             </div>
           </SwiperSlide>
         ))}

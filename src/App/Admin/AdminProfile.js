@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
@@ -7,13 +7,13 @@ import { ToastContainer } from "react-toastify";
 import { FaRegUser } from "react-icons/fa";
 
 
-export default function UserProfile() {
-  const [userData, setUserData] = useState({});
+export default function AdminProfile() {
+  const [AdminData, setAdminData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  const [userId, setUserId] = useState(null);
+  const [AdminId, setAdminId] = useState(null);
   // const api = "https://api.zmhcollections.online";
   const api = "http://localhost:8900"
 
@@ -34,24 +34,24 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
-    const userCookie = getCookie("user");
-    if (userCookie) {
+    const AdminCookie = getCookie("Admin");
+    if (AdminCookie) {
       try {
-        const parsed = JSON.parse(userCookie);
-        setUserId(parsed.id);
-        fetchUserData(parsed.id);
+        const parsed = JSON.parse(AdminCookie);
+        setAdminId(parsed.id);
+        fetchAdminData(parsed.id);
       } catch { }
     } else {
-      navigate("/login");
+      navigate("/Adminlogin");
     }
   }, []);
 
-  const fetchUserData = async (id) => {
+  const fetchAdminData = async (id) => {
     try {
-      const res = await fetch(`${api}/user/${id}`);
+      const res = await fetch(`${api}/Admin/${id}`);
       const result = await res.json();
       if (result.success) {
-        setUserData(result.data);
+        setAdminData(result.data);
       }
     } catch { }
   };
@@ -71,7 +71,7 @@ export default function UserProfile() {
     formData.append("avatar", selectedImage);
 
     try {
-      const response = await fetch(`${api}/update-user/${userId}`, {
+      const response = await fetch(`${api}/update-Admin/${AdminId}`, {
         method: "PUT",
         body: formData,
         credentials: 'include',
@@ -79,13 +79,13 @@ export default function UserProfile() {
       const result = await response.json();
       console.log(result)
       if (result.success) {
-        fetchUserData(userId);
+        fetchAdminData(AdminId);
       
-        const userCookie = getCookie("user");
-        if (userCookie && result.data?.avatar) {
-          const parsed = JSON.parse(userCookie);
+        const AdminCookie = getCookie("Admin");
+        if (AdminCookie && result.data?.avatar) {
+          const parsed = JSON.parse(AdminCookie);
           parsed.avatar = result.data.avatar;
-          document.cookie = `user=${encodeURIComponent(JSON.stringify(parsed))}; path=/`;
+          document.cookie = `Admin=${encodeURIComponent(JSON.stringify(parsed))}; path=/`;
         }
       
         setSelectedImage(null);
@@ -100,7 +100,7 @@ export default function UserProfile() {
   };
 
   const handleInputChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    setAdminData({ ...AdminData, [e.target.name]: e.target.value });
   };
 
   const handleSave = async () => {
@@ -112,22 +112,22 @@ export default function UserProfile() {
     ];
 
     for (const key of requiredKeys) {
-      if (!userData[key]) {
+      if (!AdminData[key]) {
         toast.error(`Please fill the ${key} field`);
         return;
       }
     }
 
     try {
-      const response = await fetch(`${api}/update-user/${userId}`, {
+      const response = await fetch(`${api}/update-Admin/${AdminId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
-        body: JSON.stringify(userData),
+        body: JSON.stringify(AdminData),
       });
       const result = await response.json();
       if (result.success) {
-        fetchUserData(userId);
+        fetchAdminData(AdminId);
         setIsEditing(false);
         toast.success("Profile updated");
       } else {
@@ -140,22 +140,24 @@ export default function UserProfile() {
 
   const handleLogout = () => {
     Cookies.remove("token", { path: "/" });
-    Cookies.remove("user", { path: "/" });
-    navigate("/login");
+    Cookies.remove("Admin", { path: "/" });
+    navigate("/adminlogin");
   };
   
 
   return (
     <div>
-    <Navbar />
     <ToastContainer position="top-right" autoClose={2000} />
-    <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
+    <div className="flex">
+      <Sidebar/>
+    <div className="w-[84vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
+      
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center gap-4 mb-6">
           <img
             src={
               previewUrl ||
-              (userData.avatar ? `${api}/${userData.avatar}?t=${Date.now()}` : <FaRegUser className="w-full h-full text-gray-500" />)
+              (AdminData.avatar ? `${api}/${AdminData.avatar}?t=${Date.now()}` : <FaRegUser className="w-full h-full text-gray-500" />)
             }
             alt=""
             className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow-md"
@@ -215,7 +217,7 @@ export default function UserProfile() {
                 {selectFields[key] ? (
                   <select
                     name={key}
-                    value={userData[key] || ""}
+                    value={AdminData[key] || ""}
                     onChange={handleInputChange}
                     disabled={isAlwaysDisabled || !isEditing}
                     required
@@ -231,7 +233,7 @@ export default function UserProfile() {
                   <input
                     type="text"
                     name={key}
-                    value={userData[key] || ""}
+                    value={AdminData[key] || ""}
                     onChange={handleInputChange}
                     disabled={isAlwaysDisabled || !isEditing}
                     required
@@ -264,6 +266,7 @@ export default function UserProfile() {
           Logout
         </button>
       </div>
+    </div>
     </div>
   </div>
   );

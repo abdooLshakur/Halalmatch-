@@ -1,31 +1,57 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MatchesComponent = () => {
     const [matches, setMatches] = useState([]);
-    const API = "https://api.zmhcollections.online";
+    // const API = "https://api.zmhcollections.online";
+    const API= "http://localhost:8900"
     useEffect(() => {
         const fetchMatches = async () => {
-            const { data } = await axios.get(`${API}/matches`);
-            setMatches(data);
+            try {
+                const { data } = await axios.get(`${API}/matches`, {
+                    withCredentials: true
+                });
+                setMatches(data.matches);
+            } catch (err) {
+                console.error("Error fetching matches:", err);
+            }
         };
         fetchMatches();
     }, []);
 
+
     const handleShareContact = async (matchId) => {
-        await axios.post(`${API}/matches/${matchId}/share-contact`,
-         {   credentials: "include",} 
-        );
+      try {
+        const res = await axios.post(`${API}/matches/${matchId}/share-contact`, {}, {
+          withCredentials: true
+        });
+    
+        if (res.data.success) {
+          toast.success("Contact shared successfully!");
+        } else {
+          toast.error(res.data.message || "Unexpected response from server.");
+        }
+    
+      } catch (err) {
+        console.error("Error sharing contact:", err);
+        toast.error(err.response?.data?.message || "Failed to share contact.");
+      }
     };
+    
+    
 
     return (
         <div className="flex">
             <Sidebar />
-            <div className="space-y-4 p-4 w-full">
+            <div className="flex flex-col flex-grow space-y-4 p-4 w-full overflow-x-auto">
+            <ToastContainer />
                 <h3 className="text-lg font-semibold">Matched Users</h3>
-                <table className="min-w-full border text-sm rounded-md shadow-md">
-                    <thead className="bg-indigo-500 text-white">
+                <div className="w-[80vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden m-[0 auto]">
+                <table className="min-w-full sm:min-w-[800px] w-full border text-sm rounded-md shadow-md">
+                <thead className="bg-indigo-500 text-white">
                         <tr>
                             <th className="p-2 border">User A</th>
                             <th className="p-2 border">User B</th>
@@ -59,6 +85,7 @@ const MatchesComponent = () => {
                         ))}
                     </tbody>
                 </table>
+            </div>
             </div>
         </div>
     );

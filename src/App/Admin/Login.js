@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Navbar from "./Navbar";
 
-const Login = () => {
+const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +26,7 @@ const Login = () => {
 
     const UserDetails = { email, password };
 
-    fetch(`${api}/user-login`, {
+    fetch(`${api}/Admin-login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(UserDetails),
@@ -38,7 +37,7 @@ const Login = () => {
         if (data.success) {
           toast.success(data.message || "Login successful!");
           setTimeout(() => {
-            navigate("/");
+            navigate("/matched-users");
           }, 1000);
         } else {
           setError(true);
@@ -55,11 +54,10 @@ const Login = () => {
 
   return (
     <div >
-      <Navbar />
     <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100">
       <ToastContainer />
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-800 text-center">Login</h2>
+        <h2 className="text-2xl font-bold text-gray-800 text-center">Admin Login</h2>
         <form className="space-y-4 mt-6" onSubmit={handleEvent}>
           <div>
             <input
@@ -109,7 +107,7 @@ const Login = () => {
 
         <p className="text-center mt-4 text-sm text-gray-600">
           Don’t have an account?{" "}
-          <a href="/signup" className="text-blue-500 hover:underline">
+          <a href="/adminsignup" className="text-blue-500 hover:underline">
             Signup
           </a>
         </p>
@@ -119,4 +117,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;
