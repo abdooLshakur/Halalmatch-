@@ -13,7 +13,7 @@ const CreateGallery = () => {
   });
   const [preview, setPreview] = useState(null);
   const navigate = useNavigate();
-  const api = "https://api.halalmacthmakings.com";
+  const api = "https://api.halalmatchmakings.com";
 
   const handleChange = (e) => {
     if (e.target.name === "gallery_img") {

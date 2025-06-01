@@ -6,7 +6,7 @@ export default function PaystackTransfer() {
   const [paymentUrl, setPaymentUrl] = useState(null);
   const [reference, setReference] = useState(null);
   const [status, setStatus] = useState(null);
-  const api = "https://api.halalmacthmakings.com"; // Corrected syntax
+  const api = "https://api.halalmatchmakings.com"; // Corrected syntax
 
   const initiatePayment = async () => {
     if (!email || !amount) return alert('Please enter email and amount');

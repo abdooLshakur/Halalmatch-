@@ -14,7 +14,7 @@ export default function AdminProfile() {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const [AdminId, setAdminId] = useState(null);
-  const api = "https://api.halalmacthmakings.com";
+  const api = "https://api.halalmatchmakings.com";
 
   const navigate = useNavigate();
 

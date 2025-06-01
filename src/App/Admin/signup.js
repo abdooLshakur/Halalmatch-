@@ -14,7 +14,7 @@ const AdminSignup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const Navigate = useNavigate();
-  const api = "https://api.halalmacthmakings.com";
+  const api = "https://api.halalmatchmakings.com";
 
 
   const handleEvent = async (e) => {

@@ -26,7 +26,7 @@ export default function ProfileListingPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [approvedIds, setApprovedIds] = useState([]);
 
-  const api = "https://api.halalmacthmakings.com";
+  const api = "https://api.halalmatchmakings.com";
   
 
   const getUserIdFromCookie = () => {

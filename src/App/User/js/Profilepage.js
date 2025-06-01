@@ -14,7 +14,7 @@ export default function UserProfile() {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const [userId, setUserId] = useState(null);
-  const api = "https://api.halalmacthmakings.com";
+  const api = "https://api.halalmatchmakings.com";
 
   const navigate = useNavigate();
 

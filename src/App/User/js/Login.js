@@ -10,8 +10,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
-  const api = "https://api.halalmacthmakings.com";
-
+  const api = "https://api.halalmatchmakings.com";
 
   const handleEvent = (e) => {
     e.preventDefault();

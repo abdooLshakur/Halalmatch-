@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const MatchesComponent = () => {
     const [matches, setMatches] = useState([]);
-    const API= "https://api.halalmacthmakings.com"
+    const API= "https://api.halalmatchmakings.com"
     useEffect(() => {
         const fetchMatches = async () => {
             try {
