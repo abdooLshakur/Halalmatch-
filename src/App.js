@@ -38,6 +38,7 @@ import AdminProfile from "./App/Admin/AdminProfile";
 import ContactMessagesComponent from "./App/Admin/Messages";
 import GalleryTable from "./App/Admin/GalleryTable";
 import Galleryform from "./App/Admin/Galleryform";
+import Admins from "./App/Admin/Admins";
 
 function App() {
 
@@ -68,6 +69,7 @@ function App() {
         <Route path="/adminprofile" element={<AdminProfile />} />
         <Route path="/GalleryTable" element={<GalleryTable />} />
         <Route path="/CreateGallery" element={<Galleryform />} />
+        <Route path="/admins" element={<Admins />} />
 
       </Routes>
 

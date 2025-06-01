@@ -7,6 +7,7 @@ const Sidebar = () => {
       <nav className="space-y-4">
         <Link to="/matched-users" className="block text-gray-700 hover:text-indigo-600">Matches</Link>
         <Link to="/users" className="block text-gray-700 hover:text-indigo-600">Users</Link>
+        <Link to="/admins" className="block text-gray-700 hover:text-indigo-600">Admins</Link>
         <Link to="/adminprofile" className="block text-gray-700 hover:text-indigo-600">profile</Link>
         <Link to="/GalleryTable" className="block text-gray-700 hover:text-indigo-600">Gallery</Link>
       </nav>
