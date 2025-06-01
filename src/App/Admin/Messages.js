@@ -3,7 +3,7 @@ import axios from "axios";
 import Sidebar from "./Sidebar";
 const ContactMessagesComponent = () => {
     const [messages, setMessages] = useState([]);
-    const API = "https://api.zmhcollections.online";
+    const API = "https://api.halalmacthmakings.com";
     useEffect(() => {
       const fetchMessages = async () => {
         const { data } = await axios.get(`${API}/messages`,

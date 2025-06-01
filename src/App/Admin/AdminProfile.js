@@ -14,8 +14,7 @@ export default function AdminProfile() {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const [AdminId, setAdminId] = useState(null);
-  // const api = "https://api.zmhcollections.online";
-  const api = "http://localhost:8900"
+  const api = "https://api.halalmacthmakings.com";
 
   const navigate = useNavigate();
 

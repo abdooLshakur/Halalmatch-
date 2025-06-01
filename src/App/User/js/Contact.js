@@ -3,7 +3,7 @@ import '../css/Contact.css';
 import Navbar from './Navbar';
 
 const ContactPage = () => {
-    const api = "https://api.zmhcollections.online";
+    const api = "https://api.halalmacthmakings.com";
 
     const handleSubmit = async (e) => {
         e.preventDefault();

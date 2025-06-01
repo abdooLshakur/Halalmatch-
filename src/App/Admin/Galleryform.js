@@ -13,7 +13,7 @@ const CreateGallery = () => {
   });
   const [preview, setPreview] = useState(null);
   const navigate = useNavigate();
-  const api = "http://localhost:8900";
+  const api = "https://api.halalmacthmakings.com";
 
   const handleChange = (e) => {
     if (e.target.name === "gallery_img") {

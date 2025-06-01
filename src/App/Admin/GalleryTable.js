@@ -9,7 +9,7 @@ const GalleryTable = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const api = "http://localhost:8900";
+  const api = "https://api.halalmacthmakings.com";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);

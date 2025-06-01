@@ -6,8 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const UsersComponent = () => {
     const [users, setUsers] = useState([]);
-    // const API = "https://api.zmhcollections.online";
-    const API = "http://localhost:8900"
+    const API = "https://api.halalmacthmakings.com"
     useEffect(() => {
       const fetchUsers = async () => {
         const { data } = await axios.get(`${API}/users`,

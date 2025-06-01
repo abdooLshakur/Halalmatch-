@@ -9,8 +9,7 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
-  // const api = "https://api.zmhcollections.online";
-  const api ="http://localhost:8900"
+  const api ="https://api.halalmacthmakings.com"
 
 
   const handleEvent = (e) => {

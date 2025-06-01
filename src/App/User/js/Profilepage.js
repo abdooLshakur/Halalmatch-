@@ -14,8 +14,7 @@ export default function UserProfile() {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const [userId, setUserId] = useState(null);
-  // const api = "https://api.zmhcollections.online";
-  const api = "http://localhost:8900"
+  const api = "https://api.halalmacthmakings.com";
 
   const navigate = useNavigate();
 

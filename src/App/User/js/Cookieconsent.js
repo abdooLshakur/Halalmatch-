@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function CookieConsentBanner() {
   const [showBanner, setShowBanner] = useState(true);
-  const api = "https://api.zmhcollections.online";
+  const api = "https://api.halalmacthmakings.com";
 
 
   useEffect(() => {

@@ -6,14 +6,15 @@ export default function PaystackTransfer() {
   const [paymentUrl, setPaymentUrl] = useState(null);
   const [reference, setReference] = useState(null);
   const [status, setStatus] = useState(null);
-
+  const api "https://api.halalmacthmakings.com"
   const initiatePayment = async () => {
     if (!email || !amount) return alert('Please enter email and amount');
 
-    const res = await fetch('http://localhost:5000/api/payment/paystack/initiate', {
+    const res = await fetch(`&{api}/payment/paystack/initiate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, amount: Number(amount) }),
+      withcreadentials: true
     });
     const data = await res.json();
 

@@ -7,8 +7,7 @@ export default function Notifications() {
   const [notifications, setNotifications] = useState([]); // Initialized to an empty array
   const [activeTab, setActiveTab] = useState("interest");
   const [confirmAction, setConfirmAction] = useState(null);
-  // const api = "https://api.zmhcollections.online";
-  const api ="http://localhost:8900"
+  const api = "https://api.halalmacthmakings.com";
 
   function getUserIdFromCookie() {
     const name = "user=";
