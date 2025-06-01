@@ -9,7 +9,7 @@ const AdminsComponent = () => {
     const API = "https://api.halalmatchmakings.com"
     useEffect(() => {
       const fetchadmins = async () => {
-        const { data } = await axios.get(`${API}/admins`,
+        const { data } = await axios.get(`${API}/all-Admins`,
           {
             withCredentials: true
           } 
