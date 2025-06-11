@@ -8,7 +8,7 @@ export default function Gallery() {
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const api = "https://api.halalmatchmakings.com/";
+  const api = "https://api.halalmatchmakings.com";
 
   const itemsPerPage = 15;
   useEffect(() => {

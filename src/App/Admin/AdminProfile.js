@@ -23,14 +23,7 @@ export default function AdminProfile() {
     return match ? decodeURIComponent(match[2]) : null;
   };
 
-  const selectFields = {
-    genotype: ["AA", "AS", "SS", "AC", "SC", "CC"],
-    bloodGroup: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-    complexion: ["Fair", "Light Brown", "Dark", "Albino"],
-    maritalStatus: ["Single", "Married", "Divorced", "Widowed", "Separated"],
-    qualification: ["High School", "Diploma", "Bachelor's", "Master's", "PhD"],
-    religiousLevel: ["Not Practicing", "Moderate", "Strict"],
-  };
+ 
 
   useEffect(() => {
     const AdminCookie = getCookie("Admin");
@@ -104,10 +97,7 @@ export default function AdminProfile() {
 
   const handleSave = async () => {
     const requiredKeys = [
-      "age", "numberOfKids", "location", "stateOfOrigin", "ethnicity",
-      "height", "weight", "genotype", "bloodGroup", "complexion",
-      "qualification", "profession", "hobbies", "religiousLevel",
-      "spouseQualities", "dealBreakers", "physicalChallenges", "bio"
+      "age",  "location", "stateOfOrigin", 
     ];
 
     for (const key of requiredKeys) {
@@ -144,129 +134,107 @@ export default function AdminProfile() {
   };
   
 
-  return (
-    <div>
+ return (
+  <div>
     <ToastContainer position="top-right" autoClose={2000} />
-    <div className="flex">
-      <Sidebar/>
-    <div className="w-[84vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
-      
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col items-center gap-4 mb-6">
-          <img
-            src={
-              previewUrl ||
-              (AdminData.avatar ? `${api}/${AdminData.avatar}?t=${Date.now()}` : <FaRegUser className="w-full h-full text-gray-500" />)
-            }
-            alt=""
-            className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow-md"
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="text-sm text-gray-600 file:mr-4 file:py-1 file:px-2 file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
-          />
-          {selectedImage && (
-            <button
-              onClick={handleUpload}
-              className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-            >
-              Save Picture
-            </button>
-          )}
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            {isEditing ? "Cancel Edit" : "Edit Profile"}
-          </button>
-        </div>
-  
-        <form className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {[
-            { key: "first_name", label: "First Name" },
-            { key: "last_name", label: "Last Name" },
-            { key: "email", label: "Email" },
-            { key: "age", label: "Age" },
-            { key: "numberOfKids", label: "Number of Kids" },
-            { key: "location", label: "Location" },
-            { key: "stateOfOrigin", label: "State of Origin" },
-            { key: "ethnicity", label: "Ethnicity" },
-            { key: "height", label: "Height" },
-            { key: "weight", label: "Weight" },
-            { key: "genotype", label: "Genotype" },
-            { key: "bloodGroup", label: "Blood Group" },
-            { key: "complexion", label: "Complexion" },
-            { key: "maritalStatus", label: "Marital Status" },
-            { key: "qualification", label: "Qualification" },
-            { key: "profession", label: "Profession" },
-            { key: "hobbies", label: "Hobbies" },
-            { key: "religiousLevel", label: "Religious Level" },
-            { key: "spouseQualities", label: "Spouse Qualities" },
-            { key: "dealBreakers", label: "Deal Breakers" },
-            { key: "physicalChallenges", label: "Physical Challenges" },
-            { key: "bio", label: "Bio" },
-            { key: "gender", label: "Gender" },
-          ].map(({ key, label }) => {
-            const isAlwaysDisabled = ["first_name", "last_name", "email", "age", "gender"].includes(key);
-            return (
-              <div key={key} className="w-full">
-                <label className="block text-sm font-semibold text-blue-800">{label}</label>
-                {selectFields[key] ? (
-                  <select
-                    name={key}
-                    value={AdminData[key] || ""}
-                    onChange={handleInputChange}
-                    disabled={isAlwaysDisabled || !isEditing}
-                    required
-                    className={`mt-1 block w-full rounded-md border ${isAlwaysDisabled || !isEditing ? "border-blue-300 bg-blue-100" : "border-blue-400 bg-white"
-                      } shadow-sm text-sm`}
-                  >
-                    <option value="">Select {label}</option>
-                    {selectFields[key].map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                ) : (
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+      <div className="w-full md:w-[84vw] px-4 md:px-10 py-8">
+        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
+            <div className="relative">
+              <img
+                src={
+                  previewUrl ||
+                  (AdminData.avatar
+                    ? `${api}/${AdminData.avatar}?t=${Date.now()}`
+                    : "/default-avatar.png")
+                }
+                alt="Admin avatar"
+                className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="mt-2 block text-sm text-gray-700 file:mr-4 file:py-1 file:px-3 file:border-0 file:rounded file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {selectedImage && (
+                <button
+                  onClick={handleUpload}
+                  className="mt-2 w-full py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                >
+                  Save Picture
+                </button>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-3 text-center sm:text-left">
+              <h2 className="text-xl font-bold text-gray-800">
+                {AdminData.first_name} {AdminData.last_name}
+              </h2>
+              <p className="text-sm text-gray-600">{AdminData.email}</p>
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className="self-center sm:self-start px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
+              >
+                {isEditing ? "Cancel Edit" : "Edit Profile"}
+              </button>
+            </div>
+          </div>
+
+          <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { key: "first_name", label: "First Name" },
+              { key: "last_name", label: "Last Name" },
+              { key: "email", label: "Email" },
+              { key: "age", label: "Age" },
+              { key: "location", label: "Location" },
+              { key: "stateOfOrigin", label: "State of Origin" },
+              { key: "gender", label: "Gender" },
+            ].map(({ key, label }) => {
+              const isDisabled = ["first_name", "last_name", "email", "age", "gender"].includes(key) || !isEditing;
+              return (
+                <div key={key}>
+                  <label className="text-sm font-medium text-gray-700">{label}</label>
                   <input
                     type="text"
                     name={key}
                     value={AdminData[key] || ""}
                     onChange={handleInputChange}
-                    disabled={isAlwaysDisabled || !isEditing}
-                    required
-                    className={`mt-1 block w-full rounded-md border ${isAlwaysDisabled || !isEditing ? "border-blue-300 bg-blue-100" : "border-blue-400 bg-white"
-                      } shadow-sm text-sm`}
+                    disabled={isDisabled}
+                    className={`mt-1 w-full rounded-md border px-3 py-2 text-sm shadow-sm ${
+                      isDisabled ? "bg-gray-100 border-gray-300" : "bg-white border-blue-400"
+                    }`}
                   />
-                )}
-              </div>
-            );
-          })}
-        </form>
-  
-        {isEditing && (
-          <div className="mt-6 text-center">
+                </div>
+              );
+            })}
+          </form>
+
+          {isEditing && (
+            <div className="mt-6 text-center">
+              <button
+                onClick={handleSave}
+                className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Save Changes
+              </button>
+            </div>
+          )}
+
+          <div className="mt-8 text-center">
             <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={handleLogout}
+              className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             >
-              Save Changes
+              Logout
             </button>
           </div>
-        )}
+        </div>
       </div>
-  
-      <div className="mt-6 text-center">
-        <button
-          onClick={handleLogout}
-          className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-        >
-          Logout
-        </button>
-      </div>
-    </div>
     </div>
   </div>
-  );
+);
+
 }
