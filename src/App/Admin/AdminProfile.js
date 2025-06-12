@@ -2,28 +2,22 @@ import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
-import { FaRegUser } from "react-icons/fa";
-
+import { toast, ToastContainer } from "react-toastify";
+import { FaEdit, FaSave, FaSignOutAlt, FaCamera } from "react-icons/fa";
 
 export default function AdminProfile() {
   const [AdminData, setAdminData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-
   const [AdminId, setAdminId] = useState(null);
   const api = "https://api.halalmatchmakings.com";
-
   const navigate = useNavigate();
 
   const getCookie = (name) => {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? decodeURIComponent(match[2]) : null;
   };
-
- 
 
   useEffect(() => {
     const AdminCookie = getCookie("Admin");
@@ -32,7 +26,11 @@ export default function AdminProfile() {
         const parsed = JSON.parse(AdminCookie);
         setAdminId(parsed.id);
         fetchAdminData(parsed.id);
-      } catch { }
+      } catch {
+        // Bad cookie format or JSON parse error
+        Cookies.remove("Admin", { path: "/" });
+        navigate("/Adminlogin");
+      }
     } else {
       navigate("/Adminlogin");
     }
@@ -40,12 +38,26 @@ export default function AdminProfile() {
 
   const fetchAdminData = async (id) => {
     try {
-      const res = await fetch(`${api}/Admin/${id}`);
+      const res = await fetch(`${api}/Admin/${id}`, {
+        credentials: "include",
+      });
+
+      if (res.status === 401) {
+        Cookies.remove("Admin", { path: "/" });
+        Cookies.remove("token", { path: "/" });
+        navigate("/Adminlogin");
+        return;
+      }
+
       const result = await res.json();
       if (result.success) {
         setAdminData(result.data);
+      } else {
+        toast.error("Failed to fetch admin data");
       }
-    } catch { }
+    } catch {
+      toast.error("Network error while fetching admin data");
+    }
   };
 
   const handleImageChange = (e) => {
@@ -58,7 +70,6 @@ export default function AdminProfile() {
 
   const handleUpload = async () => {
     if (!selectedImage) return;
-
     const formData = new FormData();
     formData.append("avatar", selectedImage);
 
@@ -66,26 +77,23 @@ export default function AdminProfile() {
       const response = await fetch(`${api}/update-Admin/${AdminId}`, {
         method: "PUT",
         body: formData,
-        credentials: 'include',
+        credentials: "include",
       });
       const result = await response.json();
-      console.log(result)
       if (result.success) {
         fetchAdminData(AdminId);
-      
         const AdminCookie = getCookie("Admin");
         if (AdminCookie && result.data?.avatar) {
           const parsed = JSON.parse(AdminCookie);
           parsed.avatar = result.data.avatar;
           document.cookie = `Admin=${encodeURIComponent(JSON.stringify(parsed))}; path=/`;
         }
-      
         setSelectedImage(null);
         setPreviewUrl(null);
         toast.success("Profile picture updated!");
       } else {
         toast.error("Upload failed.");
-      }      
+      }
     } catch {
       toast.error("Upload failed.");
     }
@@ -96,22 +104,18 @@ export default function AdminProfile() {
   };
 
   const handleSave = async () => {
-    const requiredKeys = [
-      "age",  "location", "stateOfOrigin", 
-    ];
-
+    const requiredKeys = ["age", "location", "stateOfOrigin"];
     for (const key of requiredKeys) {
       if (!AdminData[key]) {
         toast.error(`Please fill the ${key} field`);
         return;
       }
     }
-
     try {
       const response = await fetch(`${api}/update-Admin/${AdminId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(AdminData),
       });
       const result = await response.json();
@@ -132,109 +136,73 @@ export default function AdminProfile() {
     Cookies.remove("Admin", { path: "/" });
     navigate("/adminlogin");
   };
-  
 
- return (
-  <div>
-    <ToastContainer position="top-right" autoClose={2000} />
-    <div className="flex min-h-screen bg-gray-50">
+  return (
+    <div className="flex bg-gray-100 min-h-screen">
+      <ToastContainer />
       <Sidebar />
-      <div className="w-full md:w-[84vw] px-4 md:px-10 py-8">
-        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
+      <main className="flex-1 p-6 sm:p-10">
+        <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-lg p-6 sm:p-10">
+          <div className="flex flex-col sm:flex-row gap-6 items-center">
             <div className="relative">
               <img
-                src={
-                  previewUrl ||
-                  (AdminData.avatar
-                    ? `${api}/${AdminData.avatar}?t=${Date.now()}`
-                    : "/default-avatar.png")
-                }
-                alt="Admin avatar"
-                className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
+                src={previewUrl || (AdminData.avatar ? `${api}/${AdminData.avatar}?t=${Date.now()}` : "/default-avatar.png")}
+                alt="Profile"
+                className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
               />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="mt-2 block text-sm text-gray-700 file:mr-4 file:py-1 file:px-3 file:border-0 file:rounded file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
+              <label className="absolute bottom-0 right-0 cursor-pointer">
+                <FaCamera className="text-xl text-blue-600" />
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+              </label>
               {selectedImage && (
-                <button
-                  onClick={handleUpload}
-                  className="mt-2 w-full py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                >
-                  Save Picture
+                <button onClick={handleUpload} className="mt-2 w-full py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                  Upload
                 </button>
               )}
             </div>
-
-            <div className="flex flex-col gap-3 text-center sm:text-left">
-              <h2 className="text-xl font-bold text-gray-800">
-                {AdminData.first_name} {AdminData.last_name}
-              </h2>
-              <p className="text-sm text-gray-600">{AdminData.email}</p>
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="self-center sm:self-start px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
-              >
-                {isEditing ? "Cancel Edit" : "Edit Profile"}
+            <div className="text-center sm:text-left">
+              <h2 className="text-2xl font-bold text-gray-800">{AdminData.first_name} {AdminData.last_name}</h2>
+              <p className="text-gray-500">{AdminData.email}</p>
+              <button onClick={() => setIsEditing(!isEditing)} className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                {isEditing ? <FaEdit /> : <FaEdit />} {isEditing ? "Cancel" : "Edit Profile"}
               </button>
             </div>
           </div>
 
-          <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              { key: "first_name", label: "First Name" },
-              { key: "last_name", label: "Last Name" },
-              { key: "email", label: "Email" },
-              { key: "age", label: "Age" },
-              { key: "location", label: "Location" },
-              { key: "stateOfOrigin", label: "State of Origin" },
-              { key: "gender", label: "Gender" },
-            ].map(({ key, label }) => {
-              const isDisabled = ["first_name", "last_name", "email", "age", "gender"].includes(key) || !isEditing;
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {["first_name", "last_name", "email", "age", "gender", "location", "stateOfOrigin"].map((field) => {
+              const isReadOnly = ["first_name", "last_name", "email", "age", "gender"].includes(field) || !isEditing;
               return (
-                <div key={key}>
-                  <label className="text-sm font-medium text-gray-700">{label}</label>
+                <div key={field}>
+                  <label className="block mb-1 text-sm font-medium text-gray-700 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
                   <input
                     type="text"
-                    name={key}
-                    value={AdminData[key] || ""}
+                    name={field}
+                    value={AdminData[field] || ""}
                     onChange={handleInputChange}
-                    disabled={isDisabled}
-                    className={`mt-1 w-full rounded-md border px-3 py-2 text-sm shadow-sm ${
-                      isDisabled ? "bg-gray-100 border-gray-300" : "bg-white border-blue-400"
-                    }`}
+                    readOnly={isReadOnly}
+                    className={`w-full px-4 py-2 text-sm rounded border focus:outline-none focus:ring ${isReadOnly ? "bg-gray-100 border-gray-300" : "border-blue-400"}`}
                   />
                 </div>
               );
             })}
-          </form>
+          </div>
 
           {isEditing && (
             <div className="mt-6 text-center">
-              <button
-                onClick={handleSave}
-                className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              >
-                Save Changes
+              <button onClick={handleSave} className="inline-flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                <FaSave /> Save Changes
               </button>
             </div>
           )}
 
-          <div className="mt-8 text-center">
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Logout
+          <div className="mt-10 text-center">
+            <button onClick={handleLogout} className="inline-flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+              <FaSignOutAlt /> Logout
             </button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
-  </div>
-);
-
+  );
 }
