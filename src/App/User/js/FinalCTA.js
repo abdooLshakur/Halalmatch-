@@ -8,22 +8,22 @@ export default function FinalCTA() {
 
 useEffect(() => {
   const userCookie = Cookies.get("user");
-  console.log("Cookie found:", userCookie);
 
   if (userCookie) {
     setIsLoggedIn(true);
     try {
-      const parsed = JSON.parse(userCookie);
+      // decode before parsing!
+      const parsed = JSON.parse(decodeURIComponent(userCookie));
       setUserData(parsed);
     } catch (error) {
-      console.error("Failed to parse cookie:", error);
+      console.error("Error parsing user cookie:", error);
       toast.error("Failed to load user data");
     }
   } else {
-    console.log("User cookie not found");
     setIsLoggedIn(false);
   }
 }, []);
+
 
 
   return (
