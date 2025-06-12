@@ -7,15 +7,14 @@ const AdminSignup = () => {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [dob, setdob] = useState("");
   const [Gender, setGender] = useState("");
-  const [maritalStatus, setmaritalstatus] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const Navigate = useNavigate();
   const api = "https://api.halalmatchmakings.com";
-
 
   const handleEvent = async (e) => {
     setIsLoading(true);
@@ -27,9 +26,9 @@ const AdminSignup = () => {
       isEmpty(fname) ||
       isEmpty(lname) ||
       isEmpty(email) ||
+      isEmpty(phone) ||
       isEmpty(dob) ||
       isEmpty(Gender) ||
-      isEmpty(maritalStatus) ||
       isEmpty(password)
     ) {
       setError(true);
@@ -60,7 +59,7 @@ const AdminSignup = () => {
       last_name: lname.trim(),
       age,
       email: email.trim(),
-      maritalStatus: maritalStatus.trim(),
+      phone: phone.trim(),
       password: password.trim(),
       gender: Gender.trim(),
     };
@@ -102,15 +101,12 @@ const AdminSignup = () => {
     }
   };
 
-
   return (
     <div>
       <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100 mt-[70px]">
-         <ToastContainer />
-
+        <ToastContainer />
         <div className="signup w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 sm:p-8">
           <h2 className="text-2xl font-bold text-gray-800 text-center">Admin Signup</h2>
-
           <form
             className="space-y-4 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6"
             onSubmit={handleEvent}
@@ -175,6 +171,21 @@ const AdminSignup = () => {
             </div>
 
             <div>
+              <input
+                type="text"
+                placeholder="Phone Number"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              {error && phone === "" && (
+                <span className="text-red-500 text-sm mt-1 block">
+                  Please enter Phone number.
+                </span>
+              )}
+            </div>
+
+            <div>
               <select
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
                 onChange={(e) => setGender(e.target.value)}
@@ -187,25 +198,6 @@ const AdminSignup = () => {
               {error && Gender === "" && (
                 <span className="text-red-500 text-sm mt-1 block">
                   Please select Gender.
-                </span>
-              )}
-            </div>
-
-            <div>
-              <select
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                onChange={(e) => setmaritalstatus(e.target.value)}
-                value={maritalStatus}
-              >
-                <option value="">Select Marital Status</option>
-                <option value="Single">Single</option>
-                <option value="Married">Married</option>
-                <option value="Divorced">Divorced</option>
-                <option value="Widowed">Widowed</option>
-              </select>
-              {error && maritalStatus === "" && (
-                <span className="text-red-500 text-sm mt-1 block">
-                  Please select Marital Status.
                 </span>
               )}
             </div>
@@ -245,8 +237,6 @@ const AdminSignup = () => {
         </div>
       </div>
     </div>
-
-
   );
 };
 

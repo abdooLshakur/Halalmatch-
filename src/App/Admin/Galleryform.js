@@ -48,7 +48,7 @@ const CreateGallery = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-6">
+    <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
       <ToastContainer />
       
       <button

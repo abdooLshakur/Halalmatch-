@@ -6,25 +6,19 @@ export default function FinalCTA() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
 
-useEffect(() => {
-  const userCookie = Cookies.get("user");
+  useEffect(() => {
+    const userCookie = Cookies.get("user");
 
-  if (userCookie) {
-    setIsLoggedIn(true);
-    try {
-      // decode before parsing!
-      const parsed = JSON.parse(decodeURIComponent(userCookie));
-      setUserData(parsed);
-    } catch (error) {
-      console.error("Error parsing user cookie:", error);
-      toast.error("Failed to load user data");
+    if (userCookie) {
+      try {
+        const user = JSON.parse(userCookie);
+        setIsLoggedIn(true);
+        setUserName(user.name || "there");
+      } catch (error) {
+        console.error("Failed to parse user cookie:", error);
+      }
     }
-  } else {
-    setIsLoggedIn(false);
-  }
-}, []);
-
-
+  }, []);
 
   return (
     <section className="py-16 bg-indigo-600 text-white text-center">
