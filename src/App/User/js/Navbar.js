@@ -14,21 +14,25 @@ export default function Navbar() {
   const api = "https://api.halalmatchmakings.com";
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const userCookie = Cookies.get("user");
+ useEffect(() => {
+  const userCookie = Cookies.get("user");
+  console.log("Cookie found:", userCookie);
 
-    if (userCookie) {
-      setIsLoggedIn(true);
-      try {
-        const parsed = JSON.parse(userCookie);
-        setUserData(parsed);
-      } catch (error) {
-        toast.error("Error parsing user cookie:", error);
-      }
-    } else {
-      setIsLoggedIn(false);
+  if (userCookie) {
+    setIsLoggedIn(true);
+    try {
+      const parsed = JSON.parse(userCookie);
+      setUserData(parsed);
+    } catch (error) {
+      console.error("Failed to parse cookie:", error);
+      toast.error("Failed to load user data");
     }
-  }, []);
+  } else {
+    console.log("User cookie not found");
+    setIsLoggedIn(false);
+  }
+}, []);
+
 
   const handleLogout = () => {
     Cookies.remove("user");

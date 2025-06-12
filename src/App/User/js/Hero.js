@@ -8,18 +8,24 @@ export default function Hero() {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const userCookie = Cookies.get("user");
+  const userCookie = Cookies.get("user");
+  console.log("Cookie found:", userCookie);
 
-    if (userCookie) {
-      try {
-        const user = JSON.parse(userCookie);
-        setIsLoggedIn(true);
-        setUserName(user.name || "there");
-      } catch (error) {
-        console.error("Failed to parse user cookie:", error);
-      }
+  if (userCookie) {
+    setIsLoggedIn(true);
+    try {
+      const parsed = JSON.parse(userCookie);
+      setUserData(parsed);
+    } catch (error) {
+      console.error("Failed to parse cookie:", error);
+      toast.error("Failed to load user data");
     }
-  }, []);
+  } else {
+    console.log("User cookie not found");
+    setIsLoggedIn(false);
+  }
+}, []);
+
 
   return (
     <section

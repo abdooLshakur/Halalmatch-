@@ -1,8 +1,8 @@
 export default function HowItWorks() {
   const steps = [
     { title: "Sign Up", desc: "Create a free, secure account in minutes." },
-    { title: "Complete Your Profile", desc: "Tell us about yourself and what you're looking for." },
     { title: "Make One-Time Payment", desc: "Unlock your journey with a quick one-time payment to activate your profile." },
+    { title: "Complete Your Profile", desc: "Tell us about yourself and what you're looking for." },
     { title: "Get Matched", desc: "We’ll recommend like-minded, faith-driven matches for you." },
     { title: "Start Connecting", desc: "Message safely and move forward when you're ready." },
   ];
