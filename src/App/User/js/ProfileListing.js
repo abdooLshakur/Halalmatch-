@@ -365,7 +365,7 @@ export default function ProfileListingPage() {
                 alt="Avatar"
                 className="w-full h-60 object-cover rounded-xl mb-4"
               />
-              {["Age", "Location", "Ethnicity", "Height", "Weight"].map(label => (
+              {["Age", "Location", "Ethnicity", "Height", "Weight", "maritalStatus", "qualification", "profession","religiousLevel", "spouseQualities", "dealBreakers", "physicalChallenges", "complexion", "stateOfOrigin", "numberOfKids",].map(label => (
                 <p key={label}><strong>{label}:</strong> {selectedUser[label.toLowerCase()] || "N/A"}</p>
               ))}
               <div className="text-right mt-4">
