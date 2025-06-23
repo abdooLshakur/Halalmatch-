@@ -355,11 +355,17 @@ export default function ProfileListingPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-xl max-w-lg w-full animate-slide-in-up">
               <h2 className="text-xl font-semibold mb-4">{selectedUser.first_name} {selectedUser.last_name}</h2>
-              <img
-                src={selectedUser.avatar ? `${api}/${selectedUser.avatar}` : userimg}
-                alt="Avatar"
-                className="w-full h-60 object-cover rounded-xl mb-4"
-              />
+              {(() => {
+                const hasImageAccess = selectedUser.avatar && approvedIds.includes(selectedUser._id);
+                return (
+                  <img
+                    src={hasImageAccess ? `${api}/${selectedUser.avatar}` : userimg}
+                    alt="Avatar"
+                    className={`w-full h-60 object-cover rounded-xl mb-4 ${hasImageAccess ? '' : 'opacity-50'}`}
+                  />
+                );
+              })()}
+
               {["Age", "Location", "Ethnicity", "Height", "Weight", "maritalStatus", "qualification", "profession", "religiousLevel", "spouseQualities", "dealBreakers", "physicalChallenges", "complexion", "stateOfOrigin", "numberOfKids",].map(label => (
                 <p key={label}><strong>{label}:</strong> {selectedUser[label.toLowerCase()] || "N/A"}</p>
               ))}
