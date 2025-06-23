@@ -98,8 +98,21 @@ export default function Notifications() {
           if (data.notification?.type === 'image' && data.notification?.sender) {
             // Optional: update access list (if using context or state-sharing)
             // e.g. approvedIds.push(data.notification.sender)
-            console.log("Granted image access to:", data.notification.sender);
             // Optionally: update global state or call refresh
+          }
+          if (action === 'accepted') {
+            if (data.notification?.type === 'image') {
+              // no match creation
+              return;
+            }
+
+            // Only run for interest-type
+            if (data.notification?.type === 'interest') {
+              await fetch(`${api}/matches/auto-create`, {
+                method: 'POST',
+                credentials: 'include',
+              });
+            }
           }
 
           // Still allow auto-match creation (for interest-type)
