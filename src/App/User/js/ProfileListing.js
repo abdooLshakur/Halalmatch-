@@ -123,22 +123,23 @@ export default function ProfileListingPage() {
     }
   };
 
-  const requestImageAccess = async id => {
-    try {
-      const res = await fetch(`${api}/createnotifiation/${id}`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUserId: id }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message);
-      toast.success("Requested image access!");
-      setRequestedAccessIds(prev => [...prev, id]);
-    } catch (e) {
-      toast.error(e.message);
-    }
-  };
+ const requestImageAccess = async id => {
+  try {
+    const res = await fetch(`${api}/createnotification/${id}`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "image", message: "Request to view your photo" }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message);
+    toast.success("Requested image access!");
+    setRequestedAccessIds(prev => [...prev, id]);
+  } catch (e) {
+    toast.error(e.message);
+  }
+};
+
 
   useEffect(() => {
     const fetchApproved = async () => {
