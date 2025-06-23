@@ -125,11 +125,11 @@ export default function ProfileListingPage() {
 
  const requestImageAccess = async id => {
   try {
-    const res = await fetch(`${api}/createnotification/${id}`, {
+    const res = await fetch(`${api}/createnotifiation/${id}`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "image", message: "Request to view your photo" }),
+      body: JSON.stringify({ type: "image"}),
     });
     const data = await res.json();
     if (!res.ok || !data.success) throw new Error(data.message);
@@ -143,7 +143,7 @@ export default function ProfileListingPage() {
 
   useEffect(() => {
     const fetchApproved = async () => {
-      const res = await fetch(`${api}/api/my-image-access-list`, { credentials: 'include' });
+      const res = await fetch(`${api}/approvedimagerequests`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) setApprovedIds(data.approvedIds);
     };
