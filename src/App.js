@@ -1,19 +1,3 @@
-// import UserRoutes from "./Userroutes.js"
-// import AdminRoutes from "./Adminroutes.js"
-// function App() {
-//   const hostname = window.location.hostname;
-
-//   // Check if admin subdomain
-//   if (hostname.startsWith('admin.')) {
-//     return <AdminRoutes />;
-//   }
-
-//   return <UserRoutes />;
-// }
-
-// export default App;
-
-
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
@@ -58,7 +42,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/gallery" element={<Gallery />} />
-        <Route path="/checkout" element={<Payment />} />
+        <Route path="/activate" element={<Payment />} />
         {/* <Route path="/Dashboard" element={<Dashbard />} /> */}
 
         <Route path="/users" element={<UsersComponent />} />

@@ -47,7 +47,7 @@ export default function Notifications() {
         if (data && Array.isArray(data.notifications)) {
           setNotifications(data.notifications); // Correctly setting notifications state
         } else {
-          toast.error("Failed to fetch notifications.");
+          toast.error("try again later");
         }
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -59,7 +59,7 @@ export default function Notifications() {
 
     // Fetch notifications on component mount
     fetchNotifications();
-  }, []); // Empty dependency array ensures this effect only runs once
+  }, []); 
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
@@ -73,8 +73,8 @@ export default function Notifications() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // ensure cookies are sent
-        body: JSON.stringify({ action }), // <-- send the action
+        credentials: 'include', 
+        body: JSON.stringify({ action }), 
       });
   
       const data = await res.json();
@@ -92,7 +92,6 @@ export default function Notifications() {
         );
         setConfirmAction(null);
   
-        // ✅ Call the match auto-create endpoint ONLY if action is 'accepted'
         if (action === 'accepted') {
           await fetch(`${api}/matches/auto-create`, {
             method: 'POST',
@@ -126,14 +125,12 @@ export default function Notifications() {
     }
   };
 
-  // Ensure notifications is always an array and filter by the active tab
   const filteredNotifications = Array.isArray(notifications)
     ? notifications.filter((n) => n.type === activeTab)
     : [];
 
-  // Dynamically check if the logged-in user is the recipient
   const isLoggedInUserRecipient = (notifications) => {
-    const loggedInUserId = getUserIdFromCookie();  // Get the logged-in user ID from the cookie
+    const loggedInUserId = getUserIdFromCookie(); 
     return loggedInUserId && notifications.recipient === loggedInUserId;
   };
 

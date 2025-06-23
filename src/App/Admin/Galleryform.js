@@ -34,78 +34,75 @@ const CreateGallery = () => {
     try {
       await axios.post(`${api}/create-Gallery`, data, {
         withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Gallery created successfully!");
       navigate("/GalleryTable");
-      setFormData({ gallery_header: "", gallery_location: "", gallery_img: null });
-      setPreview(null);
     } catch (err) {
       toast.error("Failed to create gallery");
     }
   };
 
   return (
-    <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
+    <div className="min-h-screen w-[99vw] max-w-full bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-8">
       <ToastContainer />
-      
-      <button
-        onClick={() => window.history.back()}
-        className="mb-4 text-sm text-blue-600 hover:underline"
-      >
-        ← Back
-      </button>
+      <div className="max-w-xl mx-auto bg-white/80 backdrop-blur-md shadow-lg rounded-lg p-8">
+        <button
+          onClick={() => window.history.back()}
+          className="mb-4 inline-block text-blue-600 hover:underline text-sm"
+        >
+          ← Back
+        </button>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Create New Gallery</h2>
 
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow">
-        <h2 className="text-2xl font-bold mb-4">Create New Gallery</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-1">Header</label>
+            <label className="block text-gray-700 font-medium mb-1">Header</label>
             <input
               type="text"
               name="gallery_header"
               value={formData.gallery_header}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
               placeholder="Enter header"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Location</label>
+            <label className="block text-gray-700 font-medium mb-1">Location</label>
             <input
               type="text"
               name="gallery_location"
               value={formData.gallery_location}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
               placeholder="Enter location"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Image</label>
+            <label className="block text-gray-700 font-medium mb-1">Image</label>
             <input
               type="file"
               name="gallery_img"
               accept="image/*"
               onChange={handleChange}
-              className="w-full"
+              className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-white file:bg-blue-600 hover:file:bg-blue-700"
               required
             />
           </div>
           {preview && (
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-32 h-32 object-cover mt-2 rounded border"
-            />
+            <div className="mt-3">
+              <img
+                src={preview}
+                alt="Preview"
+                className="w-32 h-32 object-cover border rounded"
+              />
+            </div>
           )}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200"
           >
             Create Gallery
           </button>

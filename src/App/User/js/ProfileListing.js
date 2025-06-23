@@ -1,18 +1,27 @@
-import { useEffect, useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaChevronUp } from "react-icons/fa";
 import Navbar from "./Navbar";
 import debounce from "lodash/debounce";
-import userimg from "../images/user.png"
-const getCookie = (name) => {
-  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? decodeURIComponent(match[2]) : null;
+import userimg from "../images/user.png";
+
+const getUserIdFromCookie = () => {
+  const cookie = document.cookie
+    .split('; ')
+    .find(row => row.startsWith("user="));
+  if (!cookie) return null;
+  try {
+    const userData = JSON.parse(decodeURIComponent(cookie.split("=")[1]));
+    return userData.id;
+  } catch {
+    return null;
+  }
 };
 
 export default function ProfileListingPage() {
   const [users, setUsers] = useState([]);
-  const [filters, setFilters] = useState({ location: "", ethnicity: "", minAge: 18, maxAge: 60 });
-  const [sortOption, setSortOption] = useState("ageAsc");
+  const [filters, setFilters] = useState({ location: "", ethnicity: "", gender: "", minAge: 18, maxAge: 60 });
+  const [sortOption, setSortOption] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -23,266 +32,239 @@ export default function ProfileListingPage() {
   const [targetUserId, setTargetUserId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestedAccessIds, setRequestedAccessIds] = useState([]);
-  const [showSidebar, setShowSidebar] = useState(false);
   const [approvedIds, setApprovedIds] = useState([]);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [showActivationModal, setShowActivationModal] = useState(false); // ✅ NEW
 
   const api = "https://api.halalmatchmakings.com";
-  
-
-  const getUserIdFromCookie = () => {
-    const cookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('user='));
-    if (!cookie) return null;
-
-    try {
-      const userData = JSON.parse(decodeURIComponent(cookie.split('=')[1]));
-      return userData.id;
-    } catch (err) {
-      console.error('Failed to parse user cookie:', err);
-      return null;
-    }
-  };
 
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        `${api}/users?location=${filters.location}&ethnicity=${filters.ethnicity}`,
-        { credentials: "include" }
-      );
+      const params = new URLSearchParams({
+        location: filters.location,
+        ethnicity: filters.ethnicity,
+        gender: filters.gender
+      });
+      const res = await fetch(`${api}/users?${params}`, { credentials: "include" });
       const data = await res.json();
-      const rawUsers = data.data;
+      const all = data.data.filter(u => u._id !== getUserIdFromCookie());
+      const byAge = all.filter(u => u.age >= filters.minAge && u.age <= filters.maxAge);
 
-      const loggedInUserId = getUserIdFromCookie();
-
-      const filteredByAge = rawUsers.filter(user =>
-        user.age >= filters.minAge && user.age <= filters.maxAge
-      );
-
-      const filteredUsers = filteredByAge.filter(user => user._id !== loggedInUserId);
+      let sorted = [...byAge];
+      if (sortOption === "ageAsc") sorted.sort((a, b) => a.age - b.age);
+      if (sortOption === "ageDesc") sorted.sort((a, b) => b.age - a.age);
 
       const pageSize = 9;
-      const start = (page - 1) * pageSize;
-      const end = start + pageSize;
-      const paginatedUsers = filteredUsers.slice(start, end);
-
-      setUsers(paginatedUsers);
-      setTotalPages(Math.ceil(filteredUsers.length / pageSize));
-    } catch (err) {
-      console.error("Failed to fetch users", err);
+      setTotalPages(Math.ceil(sorted.length / pageSize));
+      setUsers(sorted.slice((page - 1) * pageSize, page * pageSize));
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to fetch users.");
     } finally {
       setLoading(false);
     }
-  }, [page, filters]);
+  }, [filters, sortOption, page]);
 
-
-
-
-  const debouncedFetchUsers = useCallback(debounce(fetchUsers, 500), [fetchUsers]);
+  const debouncedFetch = useCallback(debounce(fetchUsers, 300), [fetchUsers]);
 
   useEffect(() => {
-    debouncedFetchUsers();
-  }, [debouncedFetchUsers]);
+    debouncedFetch();
+    return debouncedFetch.cancel;
+  }, [debouncedFetch]);
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: name.includes("age") ? Math.max(18, Number(value)) : value,
-    }));
+  useEffect(() => {
+    const fetchApproved = async () => {
+      try {
+        const res = await fetch(`${api}/approvedimagerequests`, { credentials: "include" });
+        const data = await res.json();
+        if (data.approved && Array.isArray(data.approved)) {
+          setApprovedIds(data.approved.map(String));
+        }
+      } catch {
+        // ignore
+      }
+    };
+    fetchApproved();
+  }, []);
+
+  const checkActivation = async () => {
+    try {
+      const res = await fetch(`${api}/checkactivation`, { credentials: "include" });
+      const data = await res.json();
+      return data.activated;
+    } catch (e) {
+      toast.error("Failed to verify activation.");
+      return false;
+    }
   };
 
-  const clearFilters = () => {
-    setFilters({ location: "", ethnicity: "", minAge: 18, maxAge: 60 });
-  };
-
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-  };
-
-  const openInterestModal = (receiverId) => {
-    setTargetUserId(receiverId);
+  const openInterest = async (id) => {
+    const isActivated = await checkActivation();
+    if (!isActivated) {
+      setShowActivationModal(true);
+      return;
+    }
+    setTargetUserId(id);
     setShowInterestModal(true);
   };
 
-  const openDetailsModal = (user) => {
+  const openDetails = user => {
     setSelectedUser(user);
     setShowModal(true);
   };
 
   const submitInterest = async () => {
-    if (!interestMessage.trim()) {
-      toast.error("Please write a message before sending.");
-      return;
-    }
-    if (!targetUserId) {
-      toast.error("No recipient selected.");
-      return;
-    }
+    if (!interestMessage.trim()) return toast.error("Please write something.");
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
       const res = await fetch(`${api}/createnotifiation/${targetUserId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ message: interestMessage, type: "interest" }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: interestMessage, type: "interest" })
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || "Failed to send interest");
-      toast.success("Interest expressed successfully!");
+      if (!res.ok || !data.success) throw new Error(data.message);
+      toast.success("Interest sent!");
       setShowInterestModal(false);
       setInterestMessage("");
       setTargetUserId(null);
-    } catch (err) {
-      toast.error(err.message || "Error expressing interest.");
+    } catch (e) {
+      toast.error(e.message || "Failed.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const requestImageAccess = async (targetUserId) => {
+  const requestImageAccess = async id => {
     try {
-      const res = await fetch(`${api}/createnotifiation/${targetUserId}`, {
+      const res = await fetch(`${api}/createnotifiation/${id}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ type: "image" }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "image" })
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || "Failed to request image access");
-      toast.success("Image access requested!");
-      setRequestedAccessIds((prev) => [...prev, targetUserId]);
-    } catch (err) {
-      toast.error(err.message || "Error requesting image access.");
+      if (!res.ok || !data.success) throw new Error(data.message);
+      toast.success("Requested image access!");
+      setRequestedAccessIds(prev => [...prev, id]);
+    } catch (e) {
+      toast.error(e.message);
     }
   };
-  useEffect(() => {
-    const fetchApprovedIds = async () => {
-      try {
-        const res = await fetch(`${api}/approvedimagerequests`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-  
-        const data = await res.json();
-  
-        if (data.approved && Array.isArray(data.approved)) {
-          setApprovedIds(data.approved.map(id => String(id)));
-        } else {
-          console.warn("Unexpected response format:", data);
-          setApprovedIds([]); // fallback to empty list
-        }
-  
-      } catch (error) {
-        console.error("Failed to fetch approved image requests:", error);
-      }
-    };
-  
-    const userId = getUserIdFromCookie();
-    if (userId) {
-      fetchApprovedIds();
-    }
-  }, []);
-
-
-  const renderUserDetail = (label, value) => (
-    <p><strong>{label}:</strong> {value || 'N/A'}</p>
-  );
 
   return (
     <div>
       <Navbar />
       <ToastContainer />
+
       <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
-
         <div className="flex flex-col lg:flex-row min-h-screen">
-          <aside className={`bg-white p-6 shadow-md lg:w-72 w-full ${showSidebar ? 'block' : 'hidden'} lg:block`}>
-            <h2 className="text-xl font-semibold mb-4">Filters</h2>
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium">Min Age</label>
-                <input type="number" name="minAge" min="18" max="60" value={filters.minAge} onChange={handleFilterChange} className="w-full border p-2 rounded" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Max Age</label>
-                <input type="number" name="maxAge" min="18" max="60" value={filters.maxAge} onChange={handleFilterChange} className="w-full border p-2 rounded" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Location</label>
-                <input type="text" name="location" value={filters.location} onChange={handleFilterChange} className="w-full border p-2 rounded" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Ethnicity</label>
-                <select name="ethnicity" value={filters.ethnicity} onChange={handleFilterChange} className="w-full border p-2 rounded">
-                  <option value="">Any</option>
-                  <option value="Asian">Asian</option>
-                  <option value="Black">Black</option>
-                  <option value="White">White</option>
-                  <option value="Hispanic">Hispanic</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <button type="button" onClick={clearFilters} className="text-sm text-blue-600 underline">Clear Filters</button>
-            </form>
-          </aside>
+          {/* Sidebar Filters */}
+          <aside className={`bg-white p-6 shadow-md lg:w-72 w-full transition-all duration-300 ${showSidebar ? "block" : "hidden"} lg:block animate-slide-in-left`}>
+            <h2 className="text-xl font-semibold mb-4 border-b pb-2">Filters</h2>
 
-          <main className="flex-1 p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-2xl font-semibold">Browse Profiles</h1>
-              <div className="flex items-center gap-4">
-                <button onClick={() => setShowSidebar(!showSidebar)} className="lg:hidden bg-blue-600 text-white px-3 py-2 rounded">
-                  <FaFilter />
+            <label className="block mb-2">Gender:</label>
+            <div className="flex mb-4 space-x-2">
+              {["", "Male", "Female"].map(g => (
+                <button
+                  key={g}
+                  onClick={() => setFilters(f => ({ ...f, gender: g }))}
+                  className={`px-3 py-1 rounded ${filters.gender === g ? "bg-red-100" : "bg-gray-100"} hover:bg-red-200`}
+                >
+                  {g === "" ? "All" : g}
                 </button>
-                <label className="text-sm font-medium mr-2">Sort by:</label>
-                <select value={sortOption} onChange={handleSortChange} className="border p-2 rounded">
-                  <option value="ageAsc">Age (Asc)</option>
-                  <option value="ageDesc">Age (Desc)</option>
-                  <option value="locationAsc">Location (A-Z)</option>
-                  <option value="locationDesc">Location (Z-A)</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Active Filters Display */}
-            <div className="mb-4 flex flex-wrap gap-2">
-              {Object.entries(filters).map(([key, val]) => val && (
-                <span key={key} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">{key}: {val}</span>
               ))}
             </div>
 
+            {["location", "ethnicity", "minAge", "maxAge"].map(field => (
+              <div key={field} className="mb-4">
+                <label className="block text-sm font-medium capitalize">{field.replace(/([A-Z])/g, " $1")}:</label>
+                {field.includes("Age") ? (
+                  <input type="number"
+                    name={field}
+                    value={filters[field]}
+                    min="18"
+                    max="100"
+                    onChange={e => setFilters(f => ({ ...f, [field]: Number(e.target.value) }))}
+                    className="w-full border p-2 rounded" />
+                ) : (
+                  <input type="text"
+                    name={field}
+                    value={filters[field]}
+                    onChange={e => setFilters(f => ({ ...f, [field]: e.target.value }))}
+                    className="w-full border p-2 rounded" />
+                )}
+              </div>
+            ))}
+
+            <label className="block mb-2">Sort by Age:</label>
+            <select
+              value={sortOption}
+              onChange={e => setSortOption(e.target.value)}
+              className="w-full border p-2 mb-4 rounded"
+            >
+              <option value="">None</option>
+              <option value="ageAsc">Low to High</option>
+              <option value="ageDesc">High to Low</option>
+            </select>
+
+            <button
+              onClick={() => {
+                setFilters({ location: "", ethnicity: "", gender: "", minAge: 18, maxAge: 60 });
+                setSortOption("");
+                setPage(1);
+              }}
+              className="w-full bg-red-100 text-red-600 py-2 rounded"
+            >
+              Clear All
+            </button>
+          </aside>
+
+          {/* Profiles */}
+          <main className="flex-1 p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl font-semibold animate-pulse">Browse Profiles</h1>
+              <button
+                onClick={() => setShowSidebar(s => !s)}
+                className="lg:hidden bg-red-600 text-white px-3 py-2 rounded shadow"
+              >
+                <FaFilter />
+              </button>
+            </div>
+
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+                {Array(9).fill(0).map((_, i) => (
                   <div key={i} className="animate-pulse bg-gray-200 h-60 rounded-xl" />
                 ))}
               </div>
             ) : (
               <>
                 <p className="text-gray-600 mb-2">{users.length} profiles found</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {users.length === 0 && <p>No users found.</p>}
-                  {users.map((user) => {
-                    const isApproved = approvedIds.includes(String(user._id));
-
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+                  {users.length === 0 ? (
+                    <p className="col-span-full text-center">No matches found.</p>
+                  ) : users.map(user => {
+                    const gotImage = user.avatar && approvedIds.includes(user._id);
                     return (
-                      <div key={user._id} className="bg-white rounded-2xl shadow p-4 hover:shadow-lg transition">
+                      <div key={user._id} className="bg-white rounded-2xl shadow p-4 hover:shadow-lg transition animate-pop-in">
                         <img
-                          src={
-                            user.avatar && approvedIds.includes(user._id)
-                              ? `${api}/${user.avatar}`
-                              : userimg
-                          }
-                          alt={`${user.first_name} ${user.last_name}'s avatar`}
-                          className={`w-full h-48 object-cover rounded-xl mb-4 ${!(user.avatar && approvedIds.includes(user._id)) ? "opacity-50" : ""}`}
+                          src={gotImage ? `${api}/${user.avatar}` : userimg}
+                          alt={`${user.first_name} ${user.last_name}`}
+                          className={`w-full h-48 object-cover rounded-xl mb-4 ${gotImage ? "" : "opacity-50"}`}
                         />
-                        <h3 className="text-lg font-bold">{user.first_name} {user.last_name}</h3>
+                        <h3 className="text-lg font-bold mb-1">{user.first_name} {user.last_name}</h3>
                         <p className="text-sm text-gray-500">Age: {user.age} • {user.location}</p>
-                        <p className="text-sm text-gray-500">Ethnicity: {user.ethnicity}</p>
-                        <p className="text-sm text-gray-500">Height: {user.height}cm • Weight: {user.weight}kg</p>
+                        <p className="text-sm text-gray-500">Ethnicity: {user.ethnicity || "N/A"}</p>
                         <div className="flex flex-col gap-2 mt-3">
-                          <button onClick={() => openInterestModal(user._id)} className="bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700 transition">Express Interest</button>
-                          <button onClick={() => openDetailsModal(user)} className="bg-gray-200 text-gray-800 p-2 rounded hover:bg-gray-300 transition">View More</button>
+                          <button onClick={() => openInterest(user._id)} className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition">
+                            Express Interest
+                          </button>
+                          <button onClick={() => openDetails(user)} className="bg-gray-100 text-gray-800 p-2 rounded hover:bg-gray-300 transition">
+                            View More
+                          </button>
                           <button
                             onClick={() => requestImageAccess(user._id)}
                             disabled={requestedAccessIds.includes(user._id)}
@@ -299,28 +281,42 @@ export default function ProfileListingPage() {
             )}
 
             <div className="flex justify-between items-center mt-8">
-              <button disabled={page === 1 || loading} onClick={() => setPage((prev) => Math.max(1, prev - 1))} className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">Previous</button>
+              <button
+                disabled={page === 1 || loading}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
               <span>Page {page} of {totalPages}</span>
-              <button disabled={page === totalPages || loading} onClick={() => setPage((prev) => prev + 1)} className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">Next</button>
+              <button
+                disabled={page === totalPages || loading}
+                onClick={() => setPage(p => p + 1)}
+                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
             </div>
           </main>
         </div>
 
-        {/* Interest Modal */}
+        {/* Express Interest Modal */}
         {showInterestModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl max-w-md w-full">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-xl max-w-md w-full animate-slide-in-up">
               <h2 className="text-xl font-semibold mb-4">Express Interest</h2>
               <textarea
+                className="w-full border rounded p-2 mb-4"
+                rows="4"
                 value={interestMessage}
                 onChange={(e) => setInterestMessage(e.target.value)}
-                rows={4}
-                className="w-full border rounded p-2 mb-4"
                 placeholder="Write a message..."
               />
-              <div className="flex justify-end gap-2">
-                <button onClick={() => setShowInterestModal(false)} className="px-4 py-2 border rounded">Cancel</button>
-                <button onClick={submitInterest} disabled={isSubmitting} className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50">
+              <div className="flex justify-between">
+                <button onClick={() => setShowInterestModal(false)} className="px-4 py-2 border rounded">
+                  Cancel
+                </button>
+                <button onClick={submitInterest} disabled={isSubmitting} className="px-4 py-2 bg-red-600 text-white rounded disabled:opacity-50">
                   {isSubmitting ? "Sending..." : "Send"}
                 </button>
               </div>
@@ -328,25 +324,65 @@ export default function ProfileListingPage() {
           </div>
         )}
 
-        {/* Details Modal */}
+        {/* Activation Required Modal */}
+        {showActivationModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-xl max-w-md w-full animate-slide-in-up">
+              <h2 className="text-xl font-semibold mb-4 text-red-600">
+                Verification Required
+              </h2>
+              <p className="mb-4 text-gray-700">
+                Your profile is not verified. To express interest, please activate your account.
+              </p>
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={() => setShowActivationModal(false)}
+                  className="px-4 py-2 border rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowActivationModal(false);
+                    window.location.href = "/activate";
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded"
+                >
+                  Activate Now
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* View Details Modal */}
         {showModal && selectedUser && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl max-w-lg w-full">
-              <h2 className="text-xl font-semibold mb-4">Profile Details</h2>
-              <img src={selectedUser.avatar || "/placeholder.jpg"} alt="Avatar" className="w-full h-60 object-cover rounded-xl mb-4" />
-              {renderUserDetail("Name", `${selectedUser.first_name} ${selectedUser.last_name}`)}
-              {renderUserDetail("Age", selectedUser.age)}
-              {renderUserDetail("Location", selectedUser.location)}
-              {renderUserDetail("Ethnicity", selectedUser.ethnicity)}
-              {renderUserDetail("Height", `${selectedUser.height} cm`)}
-              {renderUserDetail("Weight", `${selectedUser.weight} kg`)}
-              <div className="flex justify-end mt-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-xl max-w-lg w-full animate-slide-in-up">
+              <h2 className="text-xl font-semibold mb-4">{selectedUser.first_name} {selectedUser.last_name}</h2>
+              <img
+                src={selectedUser.avatar ? `${api}/${selectedUser.avatar}` : userimg}
+                alt="Avatar"
+                className="w-full h-60 object-cover rounded-xl mb-4"
+              />
+              {["Age", "Location", "Ethnicity", "Height", "Weight"].map(label => (
+                <p key={label}><strong>{label}:</strong> {selectedUser[label.toLowerCase()] || "N/A"}</p>
+              ))}
+              <div className="text-right mt-4">
                 <button onClick={() => setShowModal(false)} className="px-4 py-2 border rounded">Close</button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Back to Top Button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed bottom-6 right-6 bg-red-600 text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition"
+      >
+        <FaChevronUp />
+      </button>
     </div>
   );
 }

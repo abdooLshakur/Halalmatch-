@@ -9,8 +9,7 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
-  const api ="https://api.halalmatchmakings.com"
-
+  const api = "https://api.halalmatchmakings.com";
 
   const handleEvent = (e) => {
     e.preventDefault();
@@ -29,7 +28,7 @@ const AdminLogin = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(UserDetails),
-      credentials: "include", 
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
@@ -44,7 +43,7 @@ const AdminLogin = () => {
         }
       })
       .catch((err) => {
-        toast.error("Error:", err);
+        console.error(err);
         setError(true);
         toast.error("An error occurred during login. Please try again.");
       })
@@ -52,17 +51,17 @@ const AdminLogin = () => {
   };
 
   return (
-    <div >
-    <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100">
+    <div className="w-screen min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-100 via-white to-blue-100 px-4">
       <ToastContainer />
-      <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-800 text-center">Admin Login</h2>
-        <form className="space-y-4 mt-6" onSubmit={handleEvent}>
+      <div className="w-full max-w-[500px] bg-white shadow-xl rounded-2xl p-8">
+        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-2">Admin Login</h2>
+        <p className="text-center text-sm text-gray-500 mb-6">Access your dashboard securely</p>
+        <form className="space-y-5" onSubmit={handleEvent}>
           <div>
             <input
               type="email"
               placeholder="Email"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-300"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -73,11 +72,12 @@ const AdminLogin = () => {
               </span>
             )}
           </div>
+
           <div>
             <input
               type="password"
               placeholder="Password"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-300"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -90,28 +90,27 @@ const AdminLogin = () => {
           </div>
 
           <div className="text-right text-sm">
-            <Link to="/forgot-password" className="text-blue-500 hover:underline">
+            <Link to="/forgot-password" className="text-rose-500 hover:underline">
               Forgot Password?
             </Link>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+            className="w-full bg-rose-500 text-white font-medium py-3 rounded-lg hover:bg-rose-600 transition"
             disabled={isLoading}
           >
             {isLoading ? <span className="spinner"></span> : "Login"}
           </button>
         </form>
 
-        <p className="text-center mt-4 text-sm text-gray-600">
+        <p className="text-center mt-6 text-sm text-gray-600">
           Don’t have an account?{" "}
-          <a href="/adminsignup" className="text-blue-500 hover:underline">
+          <Link to="/adminsignup" className="text-rose-500 hover:underline">
             Signup
-          </a>
+          </Link>
         </p>
       </div>
-    </div>
     </div>
   );
 };

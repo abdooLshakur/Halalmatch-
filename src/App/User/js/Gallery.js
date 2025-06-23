@@ -56,14 +56,14 @@ export default function Gallery() {
             </div>
           ) : (
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {currentEvents.map((event) => (
+              {currentEvents.map((event, index) => (
                 <div
-                  key={event.id}
+                  key={event._id || event.id || index} // <- Best effort fallback
                   className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition"
                 >
                   <img
                     src={`${api}/${event.gallery_img}`}
-                    alt={event.gallery_header}
+                    alt={event.gallery_header || "Gallery Image"}
                     className="w-full h-48 object-cover"
                   />
                   <div className="p-4 text-center">
@@ -74,6 +74,7 @@ export default function Gallery() {
                   </div>
                 </div>
               ))}
+
             </div>
           )}
         </div>

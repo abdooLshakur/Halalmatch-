@@ -9,7 +9,6 @@ const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const api = "https://api.halalmatchmakings.com";
 
-
   const token = searchParams.get("token");
   const email = searchParams.get("email");
 
@@ -33,29 +32,32 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-rose-100 via-white to-blue-100 px-4">
       <ToastContainer />
-      <div className="w-full max-w-md p-8 bg-white rounded shadow">
-        <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Reset Password</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="w-full max-w-[500px] bg-white shadow-xl rounded-2xl p-8 mx-auto">
+        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+          Reset Password
+        </h2>
+        <p className="text-sm text-gray-500 text-center mb-4">
+          Enter a new password to continue.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-5">
           <input
             type="password"
             placeholder="New password"
-            className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-300"
             required
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="w-full bg-rose-500 hover:bg-rose-600 text-white font-medium py-3 rounded-lg transition"
           >
             Reset Password
           </button>
         </form>
       </div>
-    </div>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Button } from "./Button";
 import { Link } from "react-router-dom";
+import heroBg from "../images/bg.jpg"; 
 
 export default function Hero() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -9,7 +10,6 @@ export default function Hero() {
 
   useEffect(() => {
     const userCookie = Cookies.get("user");
-
     if (userCookie) {
       try {
         const user = JSON.parse(userCookie);
@@ -23,40 +23,46 @@ export default function Hero() {
 
   return (
     <section
-      className="relative bg-cover bg-center bg-no-repeat py-20 flex items-center justify-center h-[70vh]"
-      style={{ backgroundImage: "url('src/App/User/images/honduras-iz19z6vw5uze6qne.jpg')" }} // replace with your actual image path
+      className="relative bg-cover bg-top bg-no-repeat flex items-center justify-center h-[80vh]"
+      style={{ backgroundImage: `url(${heroBg})` }}
     >
+
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40 z-0"></div>
+      <div className="absolute inset-0 bg-black/50 z-0" />
 
       {/* Content */}
       <div className="text-center relative z-10 px-4">
-        <h1 className="text-5xl font-bold text-white mb-4">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
           Find Your Perfect Match the Halal Way
         </h1>
-        <p className="text-lg text-white mb-8 max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl text-white mb-8 max-w-2xl mx-auto">
           A safe, respectful, and value-driven matchmaking platform tailored for Muslims worldwide.
         </p>
 
-        {/* Conditional content */}
         {isLoggedIn ? (
           <>
-            <div className="text-xl text-white font-semibold">
-              👋 Welcome back, {userName}!
+            <div className="text-2xl md:text-3xl font-semibold text-white animate-pulse">
+              👋 Welcome back, <span className="text-rose-300">{userName}</span>!
             </div>
-            <div className="mt-4">
+            <div className="mt-6">
               <Link to="/profile">
-                <Button className="bg-indigo-600 text-white">Visit your Profile</Button>
+                <Button className="bg-rose-600 text-white text-lg px-6 py-3 hover:bg-rose-500 transition">
+                  Visit your Profile
+                </Button>
               </Link>
             </div>
           </>
         ) : (
           <div className="space-x-4">
             <Link to="/signup">
-              <Button className="bg-indigo-600 text-white">Get Started</Button>
+              <Button className="bg-rose-600 text-white text-lg px-6 py-3 hover:bg-rose-500 transition">
+                Get Started
+              </Button>
             </Link>
             <Link to="/login">
-              <Button variant="outline">Sign in</Button>
+              <Button variant="outline" className="text-white border-white">
+                Sign in
+              </Button>
             </Link>
           </div>
         )}

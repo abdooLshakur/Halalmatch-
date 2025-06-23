@@ -15,26 +15,27 @@ export default function AdminProfile() {
   const navigate = useNavigate();
 
   const getCookie = (name) => {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
     return match ? decodeURIComponent(match[2]) : null;
   };
+useEffect(() => {
+  const AdminCookie = Cookies.get("Admin"); // use js-cookie properly
 
-  useEffect(() => {
-    const AdminCookie = getCookie("Admin");
-    if (AdminCookie) {
-      try {
-        const parsed = JSON.parse(AdminCookie);
-        setAdminId(parsed.id);
-        fetchAdminData(parsed.id);
-      } catch {
-        // Bad cookie format or JSON parse error
-        Cookies.remove("Admin", { path: "/" });
-        navigate("/Adminlogin");
-      }
-    } else {
+  if (AdminCookie) {
+    try {
+      const parsed = JSON.parse(AdminCookie);
+      if (!parsed?.id) throw new Error("ID not found");
+      setAdminId(parsed.id);
+      fetchAdminData(parsed.id);
+    } catch (error) {
+      console.error("Invalid Admin cookie:", error);
+      Cookies.remove("Admin", { path: "/" });
       navigate("/Adminlogin");
     }
-  }, []);
+  } else {
+    navigate("/Adminlogin");
+  }
+}, []);
 
   const fetchAdminData = async (id) => {
     try {
@@ -82,12 +83,14 @@ export default function AdminProfile() {
       const result = await response.json();
       if (result.success) {
         fetchAdminData(AdminId);
+
         const AdminCookie = getCookie("Admin");
         if (AdminCookie && result.data?.avatar) {
           const parsed = JSON.parse(AdminCookie);
           parsed.avatar = result.data.avatar;
           document.cookie = `Admin=${encodeURIComponent(JSON.stringify(parsed))}; path=/`;
         }
+
         setSelectedImage(null);
         setPreviewUrl(null);
         toast.success("Profile picture updated!");
@@ -138,7 +141,8 @@ export default function AdminProfile() {
   };
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="w-[100vw] max-w-full bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+      <div className="flex   py-6  min-h-screen overflow-x-hidden">
       <ToastContainer />
       <Sidebar />
       <main className="flex-1 p-6 sm:p-10">
@@ -146,7 +150,10 @@ export default function AdminProfile() {
           <div className="flex flex-col sm:flex-row gap-6 items-center">
             <div className="relative">
               <img
-                src={previewUrl || (AdminData.avatar ? `${api}/${AdminData.avatar}?t=${Date.now()}` : "/default-avatar.png")}
+                src={
+                  previewUrl ||
+                  (AdminData.avatar ? `${api}/${AdminData.avatar}?t=${Date.now()}` : "/default-avatar.png")
+                }
                 alt="Profile"
                 className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
               />
@@ -155,16 +162,24 @@ export default function AdminProfile() {
                 <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
               </label>
               {selectedImage && (
-                <button onClick={handleUpload} className="mt-2 w-full py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                <button
+                  onClick={handleUpload}
+                  className="mt-2 w-full py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
                   Upload
                 </button>
               )}
             </div>
             <div className="text-center sm:text-left">
-              <h2 className="text-2xl font-bold text-gray-800">{AdminData.first_name} {AdminData.last_name}</h2>
+              <h2 className="text-2xl font-bold text-gray-800">
+                {AdminData.first_name} {AdminData.last_name}
+              </h2>
               <p className="text-gray-500">{AdminData.email}</p>
-              <button onClick={() => setIsEditing(!isEditing)} className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                {isEditing ? <FaEdit /> : <FaEdit />} {isEditing ? "Cancel" : "Edit Profile"}
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                <FaEdit /> {isEditing ? "Cancel" : "Edit Profile"}
               </button>
             </div>
           </div>
@@ -174,14 +189,17 @@ export default function AdminProfile() {
               const isReadOnly = ["first_name", "last_name", "email", "age", "gender"].includes(field) || !isEditing;
               return (
                 <div key={field}>
-                  <label className="block mb-1 text-sm font-medium text-gray-700 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
+                  <label className="block mb-1 text-sm font-medium text-gray-700 capitalize">
+                    {field.replace(/([A-Z])/g, " $1")}
+                  </label>
                   <input
                     type="text"
                     name={field}
                     value={AdminData[field] || ""}
                     onChange={handleInputChange}
                     readOnly={isReadOnly}
-                    className={`w-full px-4 py-2 text-sm rounded border focus:outline-none focus:ring ${isReadOnly ? "bg-gray-100 border-gray-300" : "border-blue-400"}`}
+                    className={`w-full px-4 py-2 text-sm rounded border focus:outline-none focus:ring ${isReadOnly ? "bg-gray-100 border-gray-300" : "border-blue-400"
+                      }`}
                   />
                 </div>
               );
@@ -190,19 +208,26 @@ export default function AdminProfile() {
 
           {isEditing && (
             <div className="mt-6 text-center">
-              <button onClick={handleSave} className="inline-flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+              <button
+                onClick={handleSave}
+                className="inline-flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
                 <FaSave /> Save Changes
               </button>
             </div>
           )}
 
           <div className="mt-10 text-center">
-            <button onClick={handleLogout} className="inline-flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
               <FaSignOutAlt /> Logout
             </button>
           </div>
         </div>
       </main>
+    </div>
     </div>
   );
 }

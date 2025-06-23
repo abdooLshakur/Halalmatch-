@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./Navbar";
+import softRoseBg from "../images/bg2.png"; // ← your previous image
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,103 +17,90 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (email === "" || password === "") {
+    if (!email || !password) {
       setError(true);
       toast.warning("Please fill in all fields.");
       setIsLoading(false);
       return;
     }
 
-    const UserDetails = { email, password };
-
     fetch(`${api}/user-login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(UserDetails),
-      credentials: "include", 
+      body: JSON.stringify({ email, password }),
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
           toast.success(data.message || "Login successful!");
-          setTimeout(() => {
-            navigate("/");
-          }, 1000);
+          setTimeout(() => navigate("/"), 1000);
         } else {
-          setError(true);
           toast.error(data.message || "Invalid credentials.");
+          setError(true);
         }
       })
-      .catch((err) => {
-        toast.error("Error:", err);
+      .catch(() => {
+        toast.error("An error occurred during login.");
         setError(true);
-        toast.error("An error occurred during login. Please try again.");
       })
       .finally(() => setIsLoading(false));
   };
 
   return (
-    <div >
+    <div
+      className="min-h-screen w-screen bg-cover bg-center flex flex-col"
+      style={{ backgroundImage: `url(${softRoseBg})` }}
+    >
       <Navbar />
-    <div className="w-[99vw] h-screen flex items-center justify-center bg-gray-100">
       <ToastContainer />
-      <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-800 text-center">Login</h2>
-        <form className="space-y-4 mt-6" onSubmit={handleEvent}>
-          <div>
+
+      {/* Full-screen center */}
+      <div className="flex-grow flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-md bg-white/30 backdrop-blur-xl p-8 rounded-xl shadow-lg">
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2>
+          <form className="space-y-4" onSubmit={handleEvent}>
             <input
               type="email"
               placeholder="Email"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              required
+              className="w-full p-3 rounded-lg border border-white/40 bg-white/60 focus:outline-none focus:ring-2 focus:ring-rose-300"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {error && email === "" && (
-              <span className="text-red-500 text-sm mt-1 block">
-                Please enter an email.
-              </span>
-            )}
-          </div>
-          <div>
+            {error && email === "" && <p className="text-red-500 text-sm">Please enter an email.</p>}
+
             <input
               type="password"
               placeholder="Password"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              required
+              className="w-full p-3 rounded-lg border border-white/40 bg-white/60 focus:outline-none focus:ring-2 focus:ring-rose-300"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {error && password === "" && (
-              <span className="text-red-500 text-sm mt-1 block">
-                Please enter a password.
-              </span>
-            )}
-          </div>
+            {error && password === "" && <p className="text-red-500 text-sm">Please enter a password.</p>}
 
-          <div className="text-right text-sm">
-            <Link to="/forgot-password" className="text-blue-500 hover:underline">
-              Forgot Password?
+            <div className="text-right text-sm">
+              <Link to="/forgot-password" className="text-rose-500 hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-rose-400 hover:bg-rose-500 text-white font-medium py-3 rounded-lg transition"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+
+          <p className="text-center mt-4 text-sm text-gray-700">
+            Don’t have an account?{" "}
+            <Link to="/signup" className="text-rose-500 hover:underline">
+              Signup
             </Link>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
-            disabled={isLoading}
-          >
-            {isLoading ? <span className="spinner"></span> : "Login"}
-          </button>
-        </form>
-
-        <p className="text-center mt-4 text-sm text-gray-600">
-          Don’t have an account?{" "}
-          <a href="/signup" className="text-blue-500 hover:underline">
-            Signup
-          </a>
-        </p>
+          </p>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

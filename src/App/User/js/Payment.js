@@ -1,84 +1,139 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { PaystackButton } from 'react-paystack';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import Navbar from './Navbar';
 
-export default function PaystackTransfer() {
-  const [email, setEmail] = useState('');
-  const [amount, setAmount] = useState('');
-  const [paymentUrl, setPaymentUrl] = useState(null);
-  const [reference, setReference] = useState(null);
-  const [status, setStatus] = useState(null);
-  const api = "https://api.halalmatchmakings.com"; // Corrected syntax
+const Payment = () => {
+  const api = "https://api.halalmatchmakings.com";
+  const navigate = useNavigate();
 
-  const initiatePayment = async () => {
-    if (!email || !amount) return alert('Please enter email and amount');
+  const publicKey = 'pk_live_e9c95e99506fa63a32392517a482d79a8640e078';
+  const amount = 1000 * 100; // Paystack uses kobo
 
-    const res = await fetch(`${api}/payment/paystack/initiate`, { // Fixed template literal
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, amount: Number(amount) }),
-      credentials: 'include', // Fixed typo from `withcreadentials` to `credentials`
-    });
-    const data = await res.json();
+  const getUserFromCookies = () => {
+    const cookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('user='));
+    return cookie ? JSON.parse(decodeURIComponent(cookie.split('=')[1])) : null;
+  };
+  useEffect(() => {
+    const checkVerification = async () => {
+      try {
+ 
+        const res = await fetch(`${api}/checkactivation`, {
+          method: 'GET',
+          credentials: 'include',
+        });
 
-    if (data.status === 'success') {
-      setPaymentUrl(data.authorization_url);
-      setReference(data.reference);
-      setStatus('pending');
-      window.location.href = data.authorization_url;
-    } else {
-      alert('Failed to initiate payment');
+        if (res.status === 401) {
+          toast.error("Your session has expired. Please log in again.");
+          navigate("/login");
+          return;
+        }
+
+        const data = await res.json();
+
+        if (res.ok && data?.activated === true) {
+          navigate('/profile');
+        }
+        // else: user stays on page, likely for activation/payment
+      } catch {
+        toast.error("Unable to verify your activation status. Please try again later.");
+      }
+    };
+
+    checkVerification();
+  }, []);
+
+  const email = getUserFromCookies()?.email;
+
+  const onSuccess = async (reference) => {
+    const user = getUserFromCookies();
+    const email = user?.email;
+    const ref = reference?.reference;
+
+    if (!email || !ref) {
+      toast.error('Something went wrong. Please contact support.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${api}/activate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, reference: ref }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data?.success === true) {
+        const updatedUser = { ...user, isVerified: true };
+        document.cookie = `user=${encodeURIComponent(JSON.stringify(updatedUser))}; path=/;`;
+
+        toast.success('Your account has been successfully activated!');
+        navigate('/profile');
+      } else {
+        toast.error(data?.message || 'Payment verification failed. Please contact support.');
+      }
+
+    } catch {
+      toast.error('Unable to verify your payment at the moment. Please try again later.');
     }
   };
 
-  const verifyPayment = async () => {
-    if (!reference) return;
 
-    const res = await fetch(`${api}/payment/paystack/verify/${reference}`); // Updated the URL for verification
-    const data = await res.json();
 
-    if (data.status === 'success') {
-      setStatus('success');
-      alert('Payment successful!');
-    } else {
-      setStatus('failed');
-      alert('Payment failed or pending.');
-    }
+  const onClose = () => {
+    toast('Payment Canceled.');
+  };
+
+  const componentProps = {
+    email,
+    amount,
+    publicKey,
+    text: 'Pay ₦10,000 Now',
+    onSuccess,
+    onClose,
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded-2xl shadow-md mt-10 text-center">
-      <h2 className="text-2xl font-bold mb-4">Bank Transfer via Paystack</h2>
-      <input
-        type="email"
-        placeholder="Your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full mb-3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-      <input
-        type="number"
-        placeholder="Amount (₦)"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-      <button
-        onClick={initiatePayment}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-      >
-        Pay via Bank Transfer
-      </button>
+      <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
+      <Navbar />
+      <ToastContainer />
 
-      {status === 'pending' && (
-        <button
-          onClick={verifyPayment}
-          className="mt-4 w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition"
-        >
-          Verify Payment
-        </button>
-      )}
+      <div className="w-full flex items-center justify-center px-4 py-10">
+        <div className="max-w-md w-full bg-white border rounded-lg shadow-lg p-8 space-y-6">
+          <h2 className="text-2xl font-bold text-center text-gray-800">Activate Your Profile</h2>
 
-      {status === 'success' && <p className="mt-4 text-green-600 font-semibold">Payment was successful!</p>}
-      {status === 'failed' && <p className="mt-4 text-red-600 font-semibold">Payment failed or not completed.</p>}
+          <p className="text-gray-600 text-sm">
+            To access full features and connect with others, activate your profile with a one-time, non-refundable payment of <strong>₦10,000</strong>.
+          </p>
+
+          <ul className="text-gray-700 text-sm list-disc list-inside space-y-1">
+            <li>Lifetime access – no recurring charges</li>
+            <li>Connect freely with other verified users</li>
+            <li>Support a platform built for halal matchmaking</li>
+          </ul>
+
+          <div className="mt-6 text-sm text-red-600">
+            <strong>Note:</strong> This payment is <u>non-refundable</u>.
+          </div>
+
+          <div className="pt-4">
+            <PaystackButton
+              {...componentProps}
+              className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+
+
+};
+
+export default Payment;

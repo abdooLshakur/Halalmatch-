@@ -1,26 +1,22 @@
 import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { FaRegUser } from "react-icons/fa";
-
 
 export default function UserProfile() {
   const [userData, setUserData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-
   const [userId, setUserId] = useState(null);
   const api = "https://api.halalmatchmakings.com";
-
   const navigate = useNavigate();
 
   const getCookie = (name) => {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    return match ? decodeURIComponent(match[2]) : null;
+    const m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    return m ? decodeURIComponent(m[2]) : null;
   };
 
   const selectFields = {
@@ -30,240 +26,246 @@ export default function UserProfile() {
     maritalStatus: ["Single", "Married", "Divorced", "Widowed", "Separated"],
     qualification: ["High School", "Diploma", "Bachelor's", "Master's", "PhD"],
     religiousLevel: ["Not Practicing", "Moderate", "Strict"],
+    height: ["4'10\" - 5'0\"", "5'1\" - 5'3\"", "5'4\" - 5'6\"", "5'7\" - 5'9\"", "5'10\" - 6'0\"", "6'1\" and above"],
+    weight: ["XS", "S", "M", "L", "XL", "XXL",],
+    gender: ["Male", "Female"],
   };
 
   useEffect(() => {
-    const userCookie = getCookie("user");
-    if (userCookie) {
-      try {
-        const parsed = JSON.parse(userCookie);
-        setUserId(parsed.id);
-        fetchUserData(parsed.id);
-      } catch { }
-    } else {
-      navigate("/login");
-    }
+    const cookie = getCookie("user");
+    if (!cookie) return navigate("/login");
+    const parsed = JSON.parse(cookie);
+    setUserId(parsed.id);
+    fetchUserData(parsed.id);
   }, []);
 
-  const fetchUserData = async (id) => {
+  async function fetchUserData(id) {
     try {
-      const res = await fetch(`${api}/user/${id}`);
+      const res = await fetch(`${api}/user/${id}`, { credentials: "include" });
+
+      if (res.status === 401) {
+        toast.error("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
       const result = await res.json();
       if (result.success) {
         setUserData(result.data);
+      } else {
+        toast.error("Failed to load user data");
       }
-    } catch { }
-  };
+    } catch {
+      toast.error("Error loading user data");
+    }
+  }
 
-  const handleImageChange = (e) => {
+
+  function handleImageChange(e) {
     const file = e.target.files[0];
     if (file) {
       setSelectedImage(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
-  };
+  }
 
-  const handleUpload = async () => {
+  async function handleUpload() {
     if (!selectedImage) return;
-
-    const formData = new FormData();
-    formData.append("avatar", selectedImage);
-
+    const fd = new FormData();
+    fd.append("avatar", selectedImage);
     try {
-      const response = await fetch(`${api}/update-user/${userId}`, {
+      const res = await fetch(`${api}/update-user/${userId}`, {
         method: "PUT",
-        body: formData,
-        credentials: 'include',
+        credentials: "include",
+        body: fd,
       });
-      const result = await response.json();
-      console.log(result)
+      const result = await res.json();
       if (result.success) {
         fetchUserData(userId);
-      
-        const userCookie = getCookie("user");
-        if (userCookie && result.data?.avatar) {
-          const parsed = JSON.parse(userCookie);
-          parsed.avatar = result.data.avatar;
-          document.cookie = `user=${encodeURIComponent(JSON.stringify(parsed))}; path=/`;
-        }
-      
+        toast.success("Profile picture updated!");
         setSelectedImage(null);
         setPreviewUrl(null);
-        toast.success("Profile picture updated!");
-      } else {
-        toast.error("Upload failed.");
-      }      
+      } else toast.error("Upload failed.");
     } catch {
       toast.error("Upload failed.");
     }
-  };
+  }
 
-  const handleInputChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
-  };
+  function handleInputChange(e) {
+    setUserData((u) => ({ ...u, [e.target.name]: e.target.value }));
+  }
 
-  const handleSave = async () => {
-    const requiredKeys = [
-      "age", "numberOfKids", "location", "stateOfOrigin", "ethnicity",
-      "height", "weight", "genotype", "bloodGroup", "complexion",
-      "qualification", "profession", "hobbies", "religiousLevel",
-      "spouseQualities", "dealBreakers", "physicalChallenges", "bio"
-    ];
-
-    for (const key of requiredKeys) {
-      if (!userData[key]) {
-        toast.error(`Please fill the ${key} field`);
+  async function handleSave() {
+    const required = ["location", "ethnicity", "height", "weight", "genotype", "bloodGroup", "complexion", "qualification", "religiousLevel", "bio"];
+    for (const k of required) {
+      if (!userData[k]) {
+        toast.error(`Please fill the ${k} field`);
         return;
       }
     }
-
     try {
-      const response = await fetch(`${api}/update-user/${userId}`, {
+      const res = await fetch(`${api}/update-user/${userId}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include',
         body: JSON.stringify(userData),
       });
-      const result = await response.json();
+      const result = await res.json();
       if (result.success) {
         fetchUserData(userId);
         setIsEditing(false);
         toast.success("Profile updated");
-      } else {
-        toast.error("Failed to update profile");
-      }
+      } else toast.error("Failed to update profile");
     } catch {
       toast.error("Something went wrong while saving");
     }
-  };
+  }
 
-  const handleLogout = () => {
+  function handleLogout() {
     Cookies.remove("token", { path: "/" });
     Cookies.remove("user", { path: "/" });
     navigate("/login");
-  };
-  
+  }
 
   return (
-    <div>
-    <Navbar />
-    <ToastContainer position="top-right" autoClose={2000} />
-    <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col items-center gap-4 mb-6">
-          <img
-            src={
-              previewUrl ||
-              (userData.avatar ? `${api}/${userData.avatar}?t=${Date.now()}` : <FaRegUser className="w-full h-full text-gray-500" />)
-            }
-            alt=""
-            className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow-md"
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="text-sm text-gray-600 file:mr-4 file:py-1 file:px-2 file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
-          />
-          {selectedImage && (
-            <button
-              onClick={handleUpload}
-              className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-            >
-              Save Picture
-            </button>
+    <div className="min-h-screen w-screen bg-gray-50 flex flex-col">
+      <Navbar />
+      <ToastContainer position="top-right" autoClose={2000} />
+
+      <main className="flex-1 w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-8">
+        <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-6 relative">
+
+          {/* ✅ Badge top-left of the card */}
+          {userData?.isVerified && (
+            <div className="absolute top-4 left-4 bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded shadow">
+              ✅ Account Activated
+            </div>
           )}
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            {isEditing ? "Cancel Edit" : "Edit Profile"}
-          </button>
-        </div>
-  
-        <form className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {[
-            { key: "first_name", label: "First Name" },
-            { key: "last_name", label: "Last Name" },
-            { key: "email", label: "Email" },
-            { key: "age", label: "Age" },
-            { key: "numberOfKids", label: "Number of Kids" },
-            { key: "location", label: "Location" },
-            { key: "stateOfOrigin", label: "State of Origin" },
-            { key: "ethnicity", label: "Ethnicity" },
-            { key: "height", label: "Height" },
-            { key: "weight", label: "Weight" },
-            { key: "genotype", label: "Genotype" },
-            { key: "bloodGroup", label: "Blood Group" },
-            { key: "complexion", label: "Complexion" },
-            { key: "maritalStatus", label: "Marital Status" },
-            { key: "qualification", label: "Qualification" },
-            { key: "profession", label: "Profession" },
-            { key: "hobbies", label: "Hobbies" },
-            { key: "religiousLevel", label: "Religious Level" },
-            { key: "spouseQualities", label: "Spouse Qualities" },
-            { key: "dealBreakers", label: "Deal Breakers" },
-            { key: "physicalChallenges", label: "Physical Challenges" },
-            { key: "bio", label: "Bio" },
-            { key: "gender", label: "Gender" },
-          ].map(({ key, label }) => {
-            const isAlwaysDisabled = ["first_name", "last_name", "email", "age", "gender"].includes(key);
-            return (
-              <div key={key} className="w-full">
-                <label className="block text-sm font-semibold text-blue-800">{label}</label>
-                {selectFields[key] ? (
-                  <select
-                    name={key}
-                    value={userData[key] || ""}
-                    onChange={handleInputChange}
-                    disabled={isAlwaysDisabled || !isEditing}
-                    required
-                    className={`mt-1 block w-full rounded-md border ${isAlwaysDisabled || !isEditing ? "border-blue-300 bg-blue-100" : "border-blue-400 bg-white"
-                      } shadow-sm text-sm`}
-                  >
-                    <option value="">Select {label}</option>
-                    {selectFields[key].map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    name={key}
-                    value={userData[key] || ""}
-                    onChange={handleInputChange}
-                    disabled={isAlwaysDisabled || !isEditing}
-                    required
-                    className={`mt-1 block w-full rounded-md border ${isAlwaysDisabled || !isEditing ? "border-blue-300 bg-blue-100" : "border-blue-400 bg-white"
-                      } shadow-sm text-sm`}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </form>
-  
-        {isEditing && (
-          <div className="mt-6 text-center">
+          {!userData?.isVerified && (
+            <div className="absolute top-4 left-4 bg-yellow-100 text-yellow-900 text-sm font-semibold px-3 py-1 rounded shadow">
+              <Link to={"/activate"}>🔒 Account Not Activated</Link>
+            </div>
+          )}
+
+          {/* Avatar & Edit */}
+          <div className="flex flex-col items-center gap-4 mb-8 mt-4">
+            <div className="relative">
+              {previewUrl || userData.avatar ? (
+                <img
+                  src={previewUrl || `${api}/${userData.avatar}?t=${Date.now()}`}
+                  alt="Profile"
+                  className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
+                />
+              ) : (
+                <FaRegUser className="w-28 h-28 rounded-full border-4 border-blue-200 shadow p-6 text-gray-400" />
+              )}
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="file:mr-4 file:py-1 file:px-2 file:border-0 file:rounded bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+            />
+            {selectedImage && (
+              <button onClick={handleUpload} className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                Save Picture
+              </button>
+            )}
             <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={() => setIsEditing((e) => !e)}
+              className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
             >
-              Save Changes
+              {isEditing ? "Cancel Edit" : "Edit Profile"}
             </button>
           </div>
-        )}
-      </div>
-  
-      <div className="mt-6 text-center">
-        <button
-          onClick={handleLogout}
-          className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-        >
-          Logout
-        </button>
-      </div>
+
+          {/* Form Inputs */}
+          <form className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {[
+              { key: "first_name", label: "First Name" },
+              { key: "last_name", label: "Last Name" },
+              { key: "email", label: "Email" },
+              { key: "age", label: "Age" },
+              { key: "numberOfKids", label: "Number of Kids" },
+              { key: "location", label: "Location" },
+              { key: "stateOfOrigin", label: "State of Origin" },
+              { key: "ethnicity", label: "Ethnicity" },
+              { key: "height", label: "Height" },
+              { key: "weight", label: "Weight" },
+              { key: "genotype", label: "Genotype" },
+              { key: "bloodGroup", label: "Blood Group" },
+              { key: "complexion", label: "Complexion" },
+              { key: "maritalStatus", label: "Marital Status" },
+              { key: "qualification", label: "Qualification" },
+              { key: "profession", label: "Profession" },
+              { key: "hobbies", label: "Hobbies" },
+              { key: "religiousLevel", label: "Religious Level" },
+              { key: "spouseQualities", label: "Spouse Qualities" },
+              { key: "dealBreakers", label: "Deal Breakers" },
+              { key: "physicalChallenges", label: "Physical Challenges" },
+              { key: "bio", label: "Bio" },
+              { key: "gender", label: "Gender" },
+              { key: "referee_name", label: "Referee Name" },
+              { key: "referee_phone", label: "Referee Phone" },
+              { key: "referee_relationship", label: "Referee Relationship" },
+            ].map(({ key, label }) => {
+              const isDisabled = ["first_name", "last_name", "email", "age", "gender"].includes(key);
+              return (
+                <div key={key}>
+                  <label className="block text-sm font-semibold text-blue-800 mb-1">{label}</label>
+                  {selectFields[key] ? (
+                    <select
+                      name={key}
+                      value={userData[key] || ""}
+                      onChange={handleInputChange}
+                      disabled={isDisabled || !isEditing}
+                      required
+                      className={`w-full rounded-md px-3 py-2 border text-sm shadow-sm ${isDisabled || !isEditing
+                        ? "bg-gray-100 border-gray-200 text-gray-500 cursor-not-allowed"
+                        : "bg-white border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        }`}
+                    >
+                      <option value="">Select {label}</option>
+                      {selectFields[key].map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      name={key}
+                      value={userData[key] || ""}
+                      onChange={handleInputChange}
+                      disabled={isDisabled || !isEditing}
+                      required
+                      className={`w-full rounded-md px-3 py-2 border text-sm shadow-sm ${isDisabled || !isEditing
+                        ? "bg-gray-100 border-gray-200 text-gray-500 cursor-not-allowed"
+                        : "bg-white border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        }`}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </form>
+
+          {/* Save Button */}
+          {isEditing && (
+            <div className="mt-6 text-center">
+              <button onClick={handleSave} className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Save Changes
+              </button>
+            </div>
+          )}
+
+          {/* Logout */}
+          <div className="mt-10 text-center">
+            <button onClick={handleLogout} className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+              Logout
+            </button>
+          </div>
+        </div>
+      </main>
     </div>
-  </div>
   );
 }

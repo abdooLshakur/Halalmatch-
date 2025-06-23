@@ -44,7 +44,6 @@ const UsersComponent = () => {
         )
       );
     } catch (error) {
-      console.error("Error updating user status:", error);
       toast.error("Failed to update user. Please try again.");
     }
   };
@@ -63,75 +62,80 @@ const UsersComponent = () => {
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
       <Sidebar />
-        <ToastContainer />
-      <div className="w-full lg:w-[85vw] px-4 py-6 bg-white">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">All Users</h3>
+      <ToastContainer />
+      <div className="w-full md:w-[85vw] p-6">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+          <h2 className="text-2xl font-bold text-gray-800">All Users</h2>
           <input
             type="text"
             placeholder="Search by name or email..."
-            className="border px-3 py-1 rounded w-full max-w-sm"
+            className="border border-gray-300 shadow-sm px-4 py-2 rounded-lg w-full md:w-96 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="overflow-x-auto bg-white rounded shadow">
-          <table className="min-w-full text-sm border">
-            <thead className="bg-indigo-500 text-white">
+        <div className="overflow-x-auto rounded-lg shadow">
+          <table className="min-w-full bg-white border border-gray-200 text-sm text-left">
+            <thead className="bg-indigo-600 text-white text-xs uppercase">
               <tr>
-                <th className="p-2 border text-left">Name</th>
-                <th className="p-2 border text-left">Email</th>
-                <th className="p-2 border text-center">Status</th>
-                <th className="p-2 border text-center">Actions</th>
+                <th className="px-4 py-3 border">Name</th>
+                <th className="px-4 py-3 border">Email</th>
+                <th className="px-4 py-3 border text-center">Status</th>
+                <th className="px-4 py-3 border text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentUsers.map((user) => (
-                <tr key={user._id} className="hover:bg-gray-50">
-                  <td className="p-2 border font-medium">
+                <tr key={user._id} className="hover:bg-gray-50 border-b">
+                  <td className="px-4 py-3 font-medium text-gray-700">
                     {user.first_name} {user.last_name}
                   </td>
-                  <td className="p-2 border max-w-[200px] truncate">
+                  <td className="px-4 py-3 text-gray-600 max-w-[250px] truncate">
                     {user.email}
                   </td>
-                  <td className="p-2 border text-center">
+                  <td className="px-4 py-3 text-center">
                     <span
-                      className={`px-2 py-1 rounded text-xs font-semibold ${
-                        user.isVerified
-                          ? "bg-green-100 text-green-800"
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${user.isVerified
+                          ? "bg-green-100 text-green-700"
                           : "bg-yellow-100 text-yellow-800"
-                      }`}
+                        }`}
                     >
                       {user.isVerified ? "Activated" : "Pending"}
                     </span>
                   </td>
-                  <td className="p-2 border text-center">
+                  <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => handleUserAction(user._id)}
-                      className={`px-3 py-1 rounded text-white ${
-                        user.isVerified
+                      className={`px-4 py-1.5 rounded-md text-white transition duration-200 ${user.isVerified
                           ? "bg-red-500 hover:bg-red-600"
                           : "bg-green-500 hover:bg-green-600"
-                      }`}
+                        }`}
                     >
                       {user.isVerified ? "Disable" : "Activate"}
                     </button>
                   </td>
                 </tr>
               ))}
+              {currentUsers.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="text-center py-6 text-gray-500">
+                    No users found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-end mt-4 space-x-2">
+        <div className="flex justify-center mt-6 space-x-2">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
           >
             Previous
           </button>
@@ -142,7 +146,7 @@ const UsersComponent = () => {
               )
             }
             disabled={indexOfLastUser >= filteredUsers.length}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
           >
             Next
           </button>
