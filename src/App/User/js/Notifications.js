@@ -59,7 +59,7 @@ export default function Notifications() {
 
     // Fetch notifications on component mount
     fetchNotifications();
-  }, []); 
+  }, []);
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
@@ -73,15 +73,15 @@ export default function Notifications() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', 
-        body: JSON.stringify({ action }), 
+        credentials: 'include',
+        body: JSON.stringify({ action }),
       });
-  
+
       const data = await res.json();
-  
+
       if (res.ok && data.success) {
         toast.success(data.message);
-  
+
         // Update the notification locally
         setNotifications((prev) =>
           prev.map((n) =>
@@ -91,14 +91,24 @@ export default function Notifications() {
           )
         );
         setConfirmAction(null);
-  
+
+        // Additional handling based on type
         if (action === 'accepted') {
+          // If this was an image request, and backend returns info about sender
+          if (data.notification?.type === 'image' && data.notification?.sender) {
+            // Optional: update access list (if using context or state-sharing)
+            // e.g. approvedIds.push(data.notification.sender)
+            console.log("Granted image access to:", data.notification.sender);
+            // Optionally: update global state or call refresh
+          }
+
+          // Still allow auto-match creation (for interest-type)
           await fetch(`${api}/matches/auto-create`, {
             method: 'POST',
             credentials: 'include',
           });
         }
-  
+
       } else {
         toast.error(data.message || 'Failed to update notification status');
       }
@@ -107,7 +117,7 @@ export default function Notifications() {
       toast.error('Error updating notification status');
     }
   };
-  
+
 
   const handleDelete = async (id) => {
     try {
@@ -130,7 +140,7 @@ export default function Notifications() {
     : [];
 
   const isLoggedInUserRecipient = (notifications) => {
-    const loggedInUserId = getUserIdFromCookie(); 
+    const loggedInUserId = getUserIdFromCookie();
     return loggedInUserId && notifications.recipient === loggedInUserId;
   };
 

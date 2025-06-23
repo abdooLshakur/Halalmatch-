@@ -23,10 +23,10 @@ export default function UserProfile() {
     genotype: ["AA", "AS", "SS", "AC", "SC", "CC"],
     bloodGroup: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
     complexion: ["Fair", "Light Brown", "Dark", "Albino"],
-    maritalStatus: ["Single", "Married", "Divorced", "Widowed", "Separated"],
+    maritalStatus: ["Single", "Married", "Divorcee", "Widowed"],
     qualification: ["High School", "Diploma", "Bachelor's", "Master's", "PhD"],
-    religiousLevel: ["Not Practicing", "Moderate", "Strict"],
-    height: ["4'10\" - 5'0\"", "5'1\" - 5'3\"", "5'4\" - 5'6\"", "5'7\" - 5'9\"", "5'10\" - 6'0\"", "6'1\" and above"],
+    religiousLevel: ["Basically","Averagely", "Devoted", "Scholar"],
+    height: [ "smallish" , "medium", "Tall"],
     weight: ["XS", "S", "M", "L", "XL", "XXL",],
     gender: ["Male", "Female"],
   };
@@ -205,10 +205,7 @@ export default function UserProfile() {
               { key: "physicalChallenges", label: "Physical Challenges" },
               { key: "bio", label: "Bio" },
               { key: "gender", label: "Gender" },
-              { key: "referee_name", label: "Referee Name" },
-              { key: "referee_phone", label: "Referee Phone" },
-              { key: "referee_relationship", label: "Referee Relationship" },
-            ].map(({ key, label }) => {
+              ].map(({ key, label }) => {
               const isDisabled = ["first_name", "last_name", "email", "age", "gender"].includes(key);
               return (
                 <div key={key}>

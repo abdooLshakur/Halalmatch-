@@ -14,9 +14,6 @@ const Signup = () => {
   const [gender, setGender] = useState("");
   const [maritalStatus, setMaritalStatus] = useState("");
   const [password, setPassword] = useState("");
-  const [refereeName, setRefereeName] = useState("");
-  const [refereePhone, setRefereePhone] = useState("");
-  const [refereeRelationship, setRefereeRelationship] = useState("");
   const [marriageIntentDuration, setMarriageIntentDuration] = useState("");
   const [pledgeAccepted, setPledgeAccepted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,9 +37,6 @@ const Signup = () => {
       isEmpty(gender) ||
       isEmpty(maritalStatus) ||
       isEmpty(password) ||
-      isEmpty(refereeName) ||
-      isEmpty(refereePhone) ||
-      isEmpty(refereeRelationship) ||
       isEmpty(marriageIntentDuration) ||
       !pledgeAccepted
     ) {
@@ -76,9 +70,6 @@ const Signup = () => {
       gender: gender.trim(),
       location: "", 
       maritalStatus: maritalStatus.trim(),
-      name: refereeName.trim(),
-      phone: refereePhone.trim(),
-      relationship: refereeRelationship.trim(),
       marriageIntentDuration: marriageIntentDuration.trim(),
       pledgeAccepted,
     };
@@ -141,15 +132,11 @@ const Signup = () => {
               <option value="">Select Marital Status</option>
               <option value="Single">Single</option>
               <option value="Married">Married</option>
-              <option value="Divorced">Divorced</option>
+              <option value="Divorced">Divorcee</option>
               <option value="Widowed">Widowed</option>
             </select>
             <input type="password" placeholder="Password" className="p-3 border bg-white/60 rounded-lg" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-            {/* Additional Fields */}
-            <input type="text" placeholder="Referee Name" className="p-3 border bg-white/60 rounded-lg" value={refereeName} onChange={(e) => setRefereeName(e.target.value)} />
-            <input type="text" placeholder="Referee Phone" className="p-3 border bg-white/60 rounded-lg" value={refereePhone} onChange={(e) => setRefereePhone(e.target.value)} />
-            <input type="text" placeholder="Referee Relationship" className="p-3 border bg-white/60 rounded-lg" value={refereeRelationship} onChange={(e) => setRefereeRelationship(e.target.value)} />
             <select className="p-3 border bg-white/60 rounded-lg" value={marriageIntentDuration} onChange={(e) => setMarriageIntentDuration(e.target.value)}>
               <option value="">Marriage Intent Duration</option>
               <option value="Less than 3 months">Less than 3 months</option>

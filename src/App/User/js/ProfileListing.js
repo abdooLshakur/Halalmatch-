@@ -73,20 +73,6 @@ export default function ProfileListingPage() {
     return debouncedFetch.cancel;
   }, [debouncedFetch]);
 
-  useEffect(() => {
-    const fetchApproved = async () => {
-      try {
-        const res = await fetch(`${api}/approvedimagerequests`, { credentials: "include" });
-        const data = await res.json();
-        if (data.approved && Array.isArray(data.approved)) {
-          setApprovedIds(data.approved.map(String));
-        }
-      } catch {
-        // ignore
-      }
-    };
-    fetchApproved();
-  }, []);
 
   const checkActivation = async () => {
     try {
@@ -143,7 +129,7 @@ export default function ProfileListingPage() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "image" })
+        body: JSON.stringify({ targetUserId: id }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message);
@@ -153,6 +139,15 @@ export default function ProfileListingPage() {
       toast.error(e.message);
     }
   };
+
+  useEffect(() => {
+    const fetchApproved = async () => {
+      const res = await fetch(`${api}/api/my-image-access-list`, { credentials: 'include' });
+      const data = await res.json();
+      if (data.success) setApprovedIds(data.approvedIds);
+    };
+    fetchApproved();
+  }, []);
 
   return (
     <div>
@@ -365,7 +360,7 @@ export default function ProfileListingPage() {
                 alt="Avatar"
                 className="w-full h-60 object-cover rounded-xl mb-4"
               />
-              {["Age", "Location", "Ethnicity", "Height", "Weight", "maritalStatus", "qualification", "profession","religiousLevel", "spouseQualities", "dealBreakers", "physicalChallenges", "complexion", "stateOfOrigin", "numberOfKids",].map(label => (
+              {["Age", "Location", "Ethnicity", "Height", "Weight", "maritalStatus", "qualification", "profession", "religiousLevel", "spouseQualities", "dealBreakers", "physicalChallenges", "complexion", "stateOfOrigin", "numberOfKids",].map(label => (
                 <p key={label}><strong>{label}:</strong> {selectedUser[label.toLowerCase()] || "N/A"}</p>
               ))}
               <div className="text-right mt-4">
