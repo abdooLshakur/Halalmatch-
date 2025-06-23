@@ -3,7 +3,7 @@ import '../css/Contact.css';
 import Navbar from './Navbar';
 
 const ContactPage = () => {
-  const api = "https://api.halalmacthmakings.com";
+const api = "https://api.halalmatchmakings.com";
   const [toastMsg, setToastMsg] = useState('');
   const [showToast, setShowToast] = useState(false);
 
