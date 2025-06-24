@@ -31,7 +31,7 @@ const UsersComponent = () => {
 
     try {
       await axios.put(
-        `${API}/activate-user/${userId}`,
+        `${API}/users/${userId}/manualverify`,
         { isVerified: newStatus },
         { withCredentials: true }
       );
