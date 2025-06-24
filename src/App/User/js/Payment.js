@@ -94,7 +94,7 @@ const Payment = () => {
     email,
     amount,
     publicKey,
-    text: 'Pay ₦10,000 Now',
+    text: 'Pay ₦1000 Now',
     onSuccess,
     onClose,
   };
@@ -109,8 +109,9 @@ const Payment = () => {
           <h2 className="text-2xl font-bold text-center text-gray-800">Activate Your Profile</h2>
 
           <p className="text-gray-600 text-sm">
-            To access full features and connect with others, activate your profile with a one-time, non-refundable payment of <strong>₦10,000</strong>.
-          </p>
+🔓 Unlock Full Access!
+Activate your profile with a one-time, non-refundable payment of just ₦1,000 — a massive 90% discount off the regular price of <strike>₦10,000</strike>.
+Gain full features and start connecting with matches today!          </p>
 
           <ul className="text-gray-700 text-sm list-disc list-inside space-y-1">
             <li>Lifetime access – no recurring charges</li>
