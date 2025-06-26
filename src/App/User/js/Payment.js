@@ -10,7 +10,7 @@ const Payment = () => {
   const navigate = useNavigate();
 
   const publicKey = 'pk_live_e9c95e99506fa63a32392517a482d79a8640e078';
-  const amount = 10000 * 100; // Paystack uses kobo
+  const amount = 1000 * 100; // Paystack uses kobo
 
   const getUserFromCookies = () => {
     const cookie = document.cookie
