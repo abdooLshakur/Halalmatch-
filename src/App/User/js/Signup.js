@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,6 +26,12 @@ const Signup = () => {
   const handleEvent = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
+    if (!navigator.onLine) {
+      toast.error("You're offline. Please check your internet connection.");
+      setIsLoading(false);
+      return;
+    }
 
     const isEmpty = (field) => !field.toString().trim();
 
@@ -68,7 +75,7 @@ const Signup = () => {
       email: email.trim(),
       password: password.trim(),
       gender: gender.trim(),
-      location: "", 
+      location: "",
       maritalStatus: maritalStatus.trim(),
       marriageIntentDuration: marriageIntentDuration.trim(),
       pledgeAccepted,
@@ -101,6 +108,18 @@ const Signup = () => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const handleOffline = () => toast.error("You're offline. Check your internet connection.");
+    const handleOnline = () => toast.success("Back online!");
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
 
   return (
     <div
