@@ -55,7 +55,7 @@ export default function ProfileListingPage() {
       if (sortOption === "ageAsc") sorted.sort((a, b) => a.age - b.age);
       if (sortOption === "ageDesc") sorted.sort((a, b) => b.age - a.age);
 
-      const pageSize = 9;
+      const pageSize = 15;
       setTotalPages(Math.ceil(sorted.length / pageSize));
       setUsers(sorted.slice((page - 1) * pageSize, page * pageSize));
     } catch (e) {
