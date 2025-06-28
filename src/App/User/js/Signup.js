@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -93,6 +93,11 @@ const Signup = () => {
       if (!response.ok) {
         throw new Error(data.message || `HTTP error! status: ${response.status}`);
       }
+      if (!response.ok || !data.success) {
+        console.error("Signup failed:", data);
+        toast.error(data.message || "Signup failed.");
+        return;
+      }
 
       if (data.success) {
         toast.success(data.message || "Sign up successful!");
@@ -100,10 +105,13 @@ const Signup = () => {
       } else {
         setError(true);
         toast.error(data.message || "Signup failed.");
+        console.error("Signup failed:", data);
       }
     } catch (err) {
       setError(true);
       toast.error(err.message || "An error occurred during signup.");
+      console.error("Signup failed:", err.message);
+
     } finally {
       setIsLoading(false);
     }
