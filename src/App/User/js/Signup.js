@@ -21,7 +21,8 @@ const Signup = () => {
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
-  const api = "https://api.halalmatchmakings.com";
+  // const api = "https://api.halalmatchmakings.com";
+  const api = "http://localhost:8000";
 
   const handleEvent = async (e) => {
     e.preventDefault();
@@ -75,12 +76,12 @@ const Signup = () => {
       email: email.trim(),
       password: password.trim(),
       gender: gender.trim(),
-      location: "",
       maritalStatus: maritalStatus.trim(),
       marriageIntentDuration: marriageIntentDuration.trim(),
       pledgeAccepted,
+      phone: phone.trim(),
     };
-
+    console.log(signupData)
     try {
       const response = await fetch(`${api}/register-User`, {
         method: "POST",
@@ -164,18 +165,30 @@ const Signup = () => {
             </select>
             <input type="password" placeholder="Password" className="p-3 border bg-white/60 rounded-lg" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-            <select className="p-3 border bg-white/60 rounded-lg" value={marriageIntentDuration} onChange={(e) => setMarriageIntentDuration(e.target.value)}>
+            <select
+              className="p-3 border bg-white/60 rounded-lg"
+              value={marriageIntentDuration}
+              onChange={(e) => setMarriageIntentDuration(e.target.value)}
+            >
               <option value="">Marriage Intent Duration</option>
               <option value="Less than 3 months">Less than 3 months</option>
-              <option value="3 to 6 months">3 to 6 months</option>
+              <option value="In 3 to 6 months">In 3 to 6 months</option> {/* ✅ Fixed */}
               <option value="Less than a year">Less than a year</option>
               <option value="More than a year">More than a year</option>
             </select>
+
             <div className="md:col-span-2 flex items-start space-x-3">
-              <input type="checkbox" checked={pledgeAccepted} onChange={(e) => setPledgeAccepted(e.target.checked)} className="mt-1" />
-              <label className="text-sm text-gray-800">
+              <input
+                id="pledge"
+                type="checkbox"
+                checked={pledgeAccepted}
+                onChange={(e) => setPledgeAccepted(e.target.checked)}
+                className="mt-1"
+              />
+              <label htmlFor="pledge" className="text-sm text-gray-800">
                 I sincerely pledge that I'm signing up solely for marriage and for the sake of Allah.
               </label>
+
             </div>
 
             <div className="md:col-span-2">
