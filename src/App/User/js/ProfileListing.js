@@ -73,16 +73,27 @@ export default function ProfileListingPage() {
     return debouncedFetch.cancel;
   }, [debouncedFetch]);
 
-
   const checkActivation = async () => {
-    try {
-      const res = await fetch(`${api}/checkactivation`, { credentials: "include" });
-      const data = await res.json();
-      return data.activated;
-    } catch (e) {
-      toast.error("Failed to verify activation.");
-      return false;
-    }
+      try {
+ 
+        const res = await fetch(`${api}/checkactivation`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (res.status === 401) {
+          toast.error("Your session has expired. Please log in again.");
+          return;
+        }
+
+        const data = await res.json();
+
+        if (res.ok && data?.activated === true) {
+        }
+        // else: user stays on page, likely for activation/payment
+      } catch {
+        toast.error("Unable to verify your activation status. Please try again later.");
+      }
   };
 
   const openInterest = async (id) => {
