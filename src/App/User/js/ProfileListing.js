@@ -34,7 +34,7 @@ export default function ProfileListingPage() {
   const [requestedAccessIds, setRequestedAccessIds] = useState([]);
   const [approvedIds, setApprovedIds] = useState([]);
   const [showSidebar, setShowSidebar] = useState(true);
-  const [showActivationModal, setShowActivationModal] = useState(false); // ✅ NEW
+  const [showActivationModal, setShowActivationModal] = useState(false);
 
   const api = "https://api.halalmatchmakings.com";
 
@@ -74,37 +74,47 @@ export default function ProfileListingPage() {
   }, [debouncedFetch]);
 
   const checkActivation = async () => {
-      try {
- 
-        const res = await fetch(`${api}/checkactivation`, {
-          method: 'GET',
-          credentials: 'include',
-        });
+    try {
+      const res = await fetch(`${api}/checkactivation`, {
+        method: 'GET',
+        credentials: 'include',
+      });
 
-        if (res.status === 401) {
-          toast.error("Your session has expired. Please log in again.");
-          return;
-        }
-
-        const data = await res.json();
-
-        if (res.ok && data?.activated === true) {
-        }
-        // else: user stays on page, likely for activation/payment
-      } catch {
-        toast.error("Unable to verify your activation status. Please try again later.");
+      if (res.status === 401) {
+        toast.error("Your session has expired. Please log in again.");
+        return false;
       }
+
+      const data = await res.json();
+
+      if (res.ok && data?.activated === true) {
+        setShowActivationModal(false);
+        return true;
+      } else {
+        setShowActivationModal(true);
+        return false;
+      }
+
+    } catch (err) {
+      toast.error("Unable to verify your activation status. Please try again later.");
+      console.error("Activation check error:", err);
+      return false;
+    }
   };
+
+  useEffect(() => {
+    checkActivation();
+  }, []);
 
   const openInterest = async (id) => {
     const isActivated = await checkActivation();
     if (!isActivated) {
-      setShowActivationModal(true);
       return;
     }
     setTargetUserId(id);
     setShowInterestModal(true);
   };
+
 
   const openDetails = user => {
     setSelectedUser(user);
@@ -134,22 +144,22 @@ export default function ProfileListingPage() {
     }
   };
 
- const requestImageAccess = async id => {
-  try {
-    const res = await fetch(`${api}/createnotifiation/${id}`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "image"}),
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.message);
-    toast.success("Requested image access!");
-    setRequestedAccessIds(prev => [...prev, id]);
-  } catch (e) {
-    toast.error(e.message);
-  }
-};
+  const requestImageAccess = async id => {
+    try {
+      const res = await fetch(`${api}/createnotifiation/${id}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "image" }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message);
+      toast.success("Requested image access!");
+      setRequestedAccessIds(prev => [...prev, id]);
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
 
 
   useEffect(() => {
