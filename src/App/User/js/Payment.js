@@ -35,7 +35,7 @@ const Payment = () => {
 
         const data = await res.json();
 
-        if (res.ok && data?.activated === true) {
+        if (res.ok && data?.isVerified === true) {
           navigate('/profile');
         }
         // else: user stays on page, likely for activation/payment

@@ -87,7 +87,7 @@ export default function ProfileListingPage() {
 
       const data = await res.json();
 
-      if (res.ok && data?.activated === true) {
+      if (res.ok && data?.isVerified === true) {
         setShowActivationModal(false);
         return true;
       } else {
