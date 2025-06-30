@@ -87,13 +87,14 @@ export default function ProfileListingPage() {
 
       const data = await res.json();
 
-      if (res.ok && data?.isVerified === true) {
+      if (res.ok && data?.activated === true) {
         setShowActivationModal(false);
         return true;
       } else {
         setShowActivationModal(true);
         return false;
       }
+
 
     } catch (err) {
       toast.error("Unable to verify your activation status. Please try again later.");

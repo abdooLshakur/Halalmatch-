@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./Navbar";
-import softRoseBg from "../images/bg2.png"; // ← your previous image
+import softRoseBg from "../images/bg2.png"; 
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,7 +11,8 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
-  const api = "https://api.halalmatchmakings.com";
+  // const api = "https://api.halalmatchmakings.com";
+  const api = "http://localhost:8000";
 
   const handleEvent = (e) => {
     e.preventDefault();

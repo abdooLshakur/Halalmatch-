@@ -34,10 +34,12 @@ const Payment = () => {
         }
 
         const data = await res.json();
+        console.log(data);
 
-        if (res.ok && data?.isVerified === true) {
+        if (res.ok && data?.activated === true) {
           navigate('/profile');
         }
+
         // else: user stays on page, likely for activation/payment
       } catch {
         toast.error("Unable to verify your activation status. Please try again later.");
