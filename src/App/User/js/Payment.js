@@ -94,7 +94,7 @@ const Payment = () => {
     email,
     amount,
     publicKey,
-    text: 'Pay ₦1000 Now',
+    text: 'Pay ₦5000 Now',
     onSuccess,
     onClose,
   };
