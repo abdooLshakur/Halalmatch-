@@ -10,7 +10,7 @@ const Payment = () => {
   const navigate = useNavigate();
 
   const publicKey = 'pk_live_e9c95e99506fa63a32392517a482d79a8640e078';
-  const amount = 1000 * 100; // Paystack uses kobo
+  const amount = 5000 * 100; // Paystack uses kobo
 
   const getUserFromCookies = () => {
     const cookie = document.cookie
@@ -21,7 +21,7 @@ const Payment = () => {
   useEffect(() => {
     const checkVerification = async () => {
       try {
- 
+
         const res = await fetch(`${api}/checkactivation`, {
           method: 'GET',
           credentials: 'include',
@@ -100,7 +100,7 @@ const Payment = () => {
   };
 
   return (
-      <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
+    <div className="w-[99vw] max-w-full py-6 bg-white min-h-screen overflow-x-hidden">
       <Navbar />
       <ToastContainer />
 
@@ -109,9 +109,9 @@ const Payment = () => {
           <h2 className="text-2xl font-bold text-center text-gray-800">Activate Your Profile</h2>
 
           <p className="text-gray-600 text-sm">
-🔓 Unlock Full Access!
-Activate your profile with a one-time, non-refundable payment of just ₦1,000 — a massive 90% discount off the regular price of <strike>₦10,000</strike>.
-Gain full features and start connecting with matches today!          </p>
+            🔓 Unlock Full Access!
+            Activate your profile with a one-time, non-refundable payment of just ₦5,000 — a massive 50% discount off the regular price of <strike>₦10,000</strike>.
+            Gain full features and start connecting with matches today!</p>
 
           <ul className="text-gray-700 text-sm list-disc list-inside space-y-1">
             <li>Lifetime access – no recurring charges</li>
