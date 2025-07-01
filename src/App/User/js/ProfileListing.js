@@ -35,6 +35,16 @@ export default function ProfileListingPage() {
   const [approvedIds, setApprovedIds] = useState([]);
   const [showSidebar, setShowSidebar] = useState(true);
   const [showActivationModal, setShowActivationModal] = useState(false);
+  const getUserFromCookie = () => {
+    const cookies = document.cookie.split("; ");
+    const userCookie = cookies.find(row => row.startsWith("user="));
+    if (!userCookie) return null;
+    try {
+      return JSON.parse(decodeURIComponent(userCookie.split("=")[1]));
+    } catch {
+      return null;
+    }
+  };
 
   const api = "https://api.halalmatchmakings.com";
 
@@ -75,9 +85,20 @@ export default function ProfileListingPage() {
 
   const checkActivation = async () => {
     try {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) {
+        toast.error("User not found. Please log in.");
+        return false;
+      }
+
+      const user = JSON.parse(storedUser);
+
       const res = await fetch(`${api}/checkactivation`, {
-        method: 'GET',
-        credentials: 'include',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: user.email }),
       });
 
       if (res.status === 401) {
@@ -95,7 +116,6 @@ export default function ProfileListingPage() {
         return false;
       }
 
-
     } catch (err) {
       toast.error("Unable to verify your activation status. Please try again later.");
       console.error("Activation check error:", err);
@@ -105,6 +125,7 @@ export default function ProfileListingPage() {
 
   useEffect(() => {
     checkActivation();
+    getUserFromCookie();
   }, []);
 
   const openInterest = async (id) => {
@@ -115,7 +136,6 @@ export default function ProfileListingPage() {
     setTargetUserId(id);
     setShowInterestModal(true);
   };
-
 
   const openDetails = user => {
     setSelectedUser(user);
@@ -162,11 +182,11 @@ export default function ProfileListingPage() {
     }
   };
 
-
   useEffect(() => {
     const fetchApproved = async () => {
       const res = await fetch(`${api}/approvedimagerequests`, { credentials: 'include' });
       const data = await res.json();
+      console.log(data)
       if (data.success) setApprovedIds(data.approvedIds);
     };
     fetchApproved();
