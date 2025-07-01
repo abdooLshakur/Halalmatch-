@@ -40,8 +40,7 @@ export default function ProfileListingPage() {
 
  
 
-  // const api = "https://api.halalmatchmakings.com";
-  const api = "http://localhost:8000";
+  const api = "https://api.halalmatchmakings.com";
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -109,7 +108,7 @@ const checkActivation = async () => {
 
     const user = JSON.parse(decodeURIComponent(userCookie));
 
-    const res = await fetch("http://localhost:8000/checkactivation", {
+    const res = await fetch(`${api}/checkactivation`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
