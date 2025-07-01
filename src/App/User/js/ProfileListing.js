@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { FaFilter, FaChevronUp } from "react-icons/fa";
+import Cookies from "js-cookie";
 import Navbar from "./Navbar";
 import debounce from "lodash/debounce";
 import userimg from "../images/user.png";
@@ -12,7 +13,7 @@ const getUserIdFromCookie = () => {
   if (!cookie) return null;
   try {
     const userData = JSON.parse(decodeURIComponent(cookie.split("=")[1]));
-    return userData.id;
+    return userData.email;
   } catch {
     return null;
   }
@@ -33,20 +34,14 @@ export default function ProfileListingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestedAccessIds, setRequestedAccessIds] = useState([]);
   const [approvedIds, setApprovedIds] = useState([]);
+  const [userData, setUserData] = useState({});
   const [showSidebar, setShowSidebar] = useState(true);
   const [showActivationModal, setShowActivationModal] = useState(false);
-  const getUserFromCookie = () => {
-    const cookies = document.cookie.split("; ");
-    const userCookie = cookies.find(row => row.startsWith("user="));
-    if (!userCookie) return null;
-    try {
-      return JSON.parse(decodeURIComponent(userCookie.split("=")[1]));
-    } catch {
-      return null;
-    }
-  };
 
-  const api = "https://api.halalmatchmakings.com";
+ 
+
+  // const api = "https://api.halalmatchmakings.com";
+  const api = "http://localhost:8000";
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -83,59 +78,86 @@ export default function ProfileListingPage() {
     return debouncedFetch.cancel;
   }, [debouncedFetch]);
 
-  const checkActivation = async () => {
+ useEffect(() => {
+  const loadUserFromCookie = () => {
+    const userCookie = Cookies.get("user");
+
+    if (!userCookie) {
+      console.log("User not logged in");
+      return;
+    }
+
     try {
-      const storedUser = localStorage.getItem("user");
-      if (!storedUser) {
-        toast.error("User not found. Please log in.");
-        return false;
-      }
-
-      const user = JSON.parse(storedUser);
-
-      const res = await fetch(`${api}/checkactivation`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: user.email }),
-      });
-
-      if (res.status === 401) {
-        toast.error("Your session has expired. Please log in again.");
-        return false;
-      }
-
-      const data = await res.json();
-
-      if (res.ok && data?.activated === true) {
-        setShowActivationModal(false);
-        return true;
-      } else {
-        setShowActivationModal(true);
-        return false;
-      }
-
-    } catch (err) {
-      toast.error("Unable to verify your activation status. Please try again later.");
-      console.error("Activation check error:", err);
-      return false;
+      const parsedUser = JSON.parse(decodeURIComponent(userCookie));
+      setUserData(parsedUser);
+    } catch (error) {
+      console.error("Error parsing user cookie:", error);
+      toast.error("Failed to load user data");
     }
   };
+
+  loadUserFromCookie();
+}, []);
+
+const checkActivation = async () => {
+  try {
+    const userCookie = Cookies.get("user");
+    if (!userCookie) {
+      toast.error("You are not logged in.");
+      return false;
+    }
+
+    const user = JSON.parse(decodeURIComponent(userCookie));
+
+    const res = await fetch("http://localhost:8000/checkactivation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ email: user.email }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      toast.error("Server error: " + errText);
+      return false;
+    }
+
+    const data = await res.json();
+    console.log(data)
+
+    if (data.activated === true) {
+      setShowActivationModal(false);
+      return true;
+    } else {
+      setShowActivationModal(true);
+      return false;
+    }
+
+  } catch (err) {
+    toast.error("Failed to check activation.");
+    console.error("checkActivation error:", err);
+    return false;
+  }
+};
+
+
+
 
   useEffect(() => {
     checkActivation();
-    getUserFromCookie();
   }, []);
 
-  const openInterest = async (id) => {
-    const isActivated = await checkActivation();
-    if (!isActivated) {
-      return;
-    }
-    setTargetUserId(id);
-    setShowInterestModal(true);
-  };
+const openInterest = async (id) => {
+  const isActivated = await checkActivation();
+  if (!isActivated) {
+    return;
+  }
+  setTargetUserId(id);
+  setShowInterestModal(true); // ✅ only opens if activated & attribution = true
+};
+
 
   const openDetails = user => {
     setSelectedUser(user);
@@ -186,7 +208,7 @@ export default function ProfileListingPage() {
     const fetchApproved = async () => {
       const res = await fetch(`${api}/approvedimagerequests`, { credentials: 'include' });
       const data = await res.json();
-      console.log(data)
+      // console.log(data)
       if (data.success) setApprovedIds(data.approvedIds);
     };
     fetchApproved();
