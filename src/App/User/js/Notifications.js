@@ -43,7 +43,6 @@ export default function Notifications() {
         });
 
         const data = await response.json();
-
         if (data && Array.isArray(data.notifications)) {
           setNotifications(data.notifications); // Correctly setting notifications state
         } else {
@@ -204,32 +203,49 @@ export default function Notifications() {
                       className="bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition-all"
                     >
                       <div className="flex justify-between items-center mb-2">
-                        <h2 className="text-lg font-semibold capitalize">{item.type || "Notification"}</h2>
-                        <span className="text-xs text-gray-400">{formatDate(item.createdAt)}</span>
+                        <h2 className="text-lg font-semibold capitalize">
+                          {item.type || "Notification"}
+                        </h2>
+                        <span className="text-xs text-gray-400">
+                          {formatDate(item.createdAt)}
+                        </span>
                       </div>
 
-                      <p className="text-sm text-gray-700 mt-2 mb-4">
+                      {/* ✅ Sender Name */}
+                      <p className="text-sm text-gray-700 mt-2 mb-1">
+                        From:{" "}
+                        <span className="font-semibold">
+                          {item.sender ? `${item.sender.first_name} ${item.sender.last_name}` : "Unknown Sender"}
+                        </span>
+                      </p>
+
+                      {/* ✅ Message */}
+                      <p className="text-sm text-gray-700 mb-4">
                         {item.message || "You have a new notification."}
                       </p>
 
+                      {/* Actions */}
                       {isLoggedInUserRecipient(item) ? (
                         <>
                           {item.status === "pending" && (
                             <div className="flex flex-wrap gap-4 mt-4">
                               <button
-                                onClick={() => setConfirmAction({ type: "accepted", id: item._id })}
+                                onClick={() =>
+                                  setConfirmAction({ type: "accepted", id: item._id })
+                                }
                                 className="flex-1 min-w-[100px] px-4 py-2 border border-green-600 text-green-700 hover:bg-green-50 text-sm font-medium rounded-xl transition"
                               >
                                 ✅ Accept
                               </button>
                               <button
-                                onClick={() => setConfirmAction({ type: "rejected", id: item._id })}
+                                onClick={() =>
+                                  setConfirmAction({ type: "rejected", id: item._id })
+                                }
                                 className="flex-1 min-w-[100px] px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 text-sm font-medium rounded-xl transition"
                               >
                                 ❌ Reject
                               </button>
                             </div>
-
                           )}
                           <div className="mt-3 text-sm text-gray-600 font-medium">
                             Status: <span className="capitalize">{item.status || "Pending"}</span>
@@ -240,9 +256,9 @@ export default function Notifications() {
                           Status: <span className="capitalize">{item.status || "Pending"}</span>
                         </div>
                       )}
-
                     </div>
                   ))}
+
                 </div>
               )}
 

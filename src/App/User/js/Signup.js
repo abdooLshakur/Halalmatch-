@@ -147,7 +147,7 @@ const Signup = () => {
           >
             <input type="text" placeholder="First Name" className="p-3 border bg-white/60 rounded-lg" value={fname} onChange={(e) => setFname(e.target.value)} />
             <input type="text" placeholder="Last Name" className="p-3 border bg-white/60 rounded-lg" value={lname} onChange={(e) => setLname(e.target.value)} />
-            <input type="date" className="p-3 border bg-white/60 rounded-lg" value={dob} onChange={(e) => setDob(e.target.value)} />
+            <div className="p-3 border bg-white/60 rounded-lg gap-10"><label htmlFor="" className="mr-4">Date Of Birth</label> <input type="date"  value={dob} onChange={(e) => setDob(e.target.value)} /></div>
             <input type="email" placeholder="Email" className="p-3 border bg-white/60 rounded-lg" value={email} onChange={(e) => setEmail(e.target.value)} />
             <input type="number" placeholder="Phone Number" className="p-3 border bg-white/60 rounded-lg" value={phone} onChange={(e) => setPhone(e.target.value)} />
             <select className="p-3 border bg-white/60 rounded-lg" value={gender} onChange={(e) => setGender(e.target.value)}>

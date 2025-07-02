@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { FaFilter, FaChevronUp } from "react-icons/fa";
 import Cookies from "js-cookie";
@@ -34,11 +35,14 @@ export default function ProfileListingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestedAccessIds, setRequestedAccessIds] = useState([]);
   const [approvedIds, setApprovedIds] = useState([]);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [avatarMap, setAvatarMap] = useState({});
+
   const [userData, setUserData] = useState({});
   const [showSidebar, setShowSidebar] = useState(true);
   const [showActivationModal, setShowActivationModal] = useState(false);
 
- 
+
 
   const api = "https://api.halalmatchmakings.com";
 
@@ -77,86 +81,81 @@ export default function ProfileListingPage() {
     return debouncedFetch.cancel;
   }, [debouncedFetch]);
 
- useEffect(() => {
-  const loadUserFromCookie = () => {
-    const userCookie = Cookies.get("user");
+  useEffect(() => {
+    const loadUserFromCookie = () => {
+      const userCookie = Cookies.get("user");
 
-    if (!userCookie) {
-      console.log("User not logged in");
-      return;
-    }
+      if (!userCookie) {
+        console.log("User not logged in");
+        return;
+      }
 
+      try {
+        const parsedUser = JSON.parse(decodeURIComponent(userCookie));
+        setUserData(parsedUser);
+      } catch (error) {
+        console.error("Error parsing user cookie:", error);
+        toast.error("Failed to load user data");
+      }
+    };
+
+    loadUserFromCookie();
+  }, []);
+
+  const checkActivation = async () => {
     try {
-      const parsedUser = JSON.parse(decodeURIComponent(userCookie));
-      setUserData(parsedUser);
-    } catch (error) {
-      console.error("Error parsing user cookie:", error);
-      toast.error("Failed to load user data");
+      const userCookie = Cookies.get("user");
+      if (!userCookie) {
+        toast.error("You are not logged in.");
+        return false;
+      }
+
+      const user = JSON.parse(decodeURIComponent(userCookie));
+
+      const res = await fetch(`${api}/checkactivation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email: user.email }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        toast.error("Server error: " + errText);
+        return false;
+      }
+
+      const data = await res.json();
+
+      if (data.activated === true) {
+        setShowActivationModal(false);
+        return true;
+      } else {
+        setShowActivationModal(true);
+        return false;
+      }
+
+    } catch (err) {
+      toast.error("Failed to check activation.");
+      console.error("checkActivation error:", err);
+      return false;
     }
   };
-
-  loadUserFromCookie();
-}, []);
-
-const checkActivation = async () => {
-  try {
-    const userCookie = Cookies.get("user");
-    if (!userCookie) {
-      toast.error("You are not logged in.");
-      return false;
-    }
-
-    const user = JSON.parse(decodeURIComponent(userCookie));
-
-    const res = await fetch(`${api}/checkactivation`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ email: user.email }),
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      toast.error("Server error: " + errText);
-      return false;
-    }
-
-    const data = await res.json();
-    console.log(data)
-
-    if (data.activated === true) {
-      setShowActivationModal(false);
-      return true;
-    } else {
-      setShowActivationModal(true);
-      return false;
-    }
-
-  } catch (err) {
-    toast.error("Failed to check activation.");
-    console.error("checkActivation error:", err);
-    return false;
-  }
-};
-
-
-
 
   useEffect(() => {
     checkActivation();
   }, []);
 
-const openInterest = async (id) => {
-  const isActivated = await checkActivation();
-  if (!isActivated) {
-    return;
-  }
-  setTargetUserId(id);
-  setShowInterestModal(true); // ✅ only opens if activated & attribution = true
-};
-
+  const openInterest = async (id) => {
+    const isActivated = await checkActivation();
+    if (!isActivated) {
+      return;
+    }
+    setTargetUserId(id);
+    setShowInterestModal(true); // ✅ only opens if activated & attribution = true
+  };
 
   const openDetails = user => {
     setSelectedUser(user);
@@ -202,16 +201,58 @@ const openInterest = async (id) => {
       toast.error(e.message);
     }
   };
+  // useEffect(() => {
+  //   const fetchApproved = async () => {
+  //     try {
+  //       const res = await fetch(`${api}/avatar/:ownerId`, {
+  //         credentials: 'include',
+  //       });
+  //       const data = await res.json();
+  //       console.log("Approved IDs:", data);
+
+  //       if (data.success) {
+  //         setApprovedIds(data.approvedIds || []);
+  //       }
+  //     } catch (err) {
+  //       console.error("Failed to fetch approved IDs:", err);
+  //     }
+  //   };
+
+  //   fetchApproved();
+  // }, []);
+
+const fetchAvatar = async (userId) => {
+  try {
+    const res = await axios.get(`${api}/user/${userId}/avatar`, {
+      withCredentials: true,
+    });
+
+    setAvatarMap((prev) => ({
+      ...prev,
+      [userId]: res.data.avatar,
+    }));
+  } catch (err) {
+    if (err.response?.status === 403) {
+      setAvatarMap((prev) => ({ ...prev, [userId]: null })); // Access denied
+    } else if (err.response?.status === 404) {
+      console.warn(`User ${userId} not found`);
+      console.error(`Avatar fetch failed for user ${userId}:`, err?.response?.status, err?.response?.data || err.message);
+
+    } else {
+      console.error('Unexpected error fetching avatar:', err);
+      console.error(`Avatar fetch failed for user ${userId}:`, err?.response?.status, err?.response?.data || err.message);
+
+    }
+  }
+};
 
   useEffect(() => {
-    const fetchApproved = async () => {
-      const res = await fetch(`${api}/approvedimagerequests`, { credentials: 'include' });
-      const data = await res.json();
-      // console.log(data)
-      if (data.success) setApprovedIds(data.approvedIds);
-    };
-    fetchApproved();
-  }, []);
+    users.forEach(user => {
+      fetchAvatar(user._id);
+    });
+  }, [users]);
+
+
 
   return (
     <div>
@@ -310,10 +351,11 @@ const openInterest = async (id) => {
                     return (
                       <div key={user._id} className="bg-white rounded-2xl shadow p-4 hover:shadow-lg transition animate-pop-in">
                         <img
-                          src={gotImage ? `${api}/${user.avatar}` : userimg}
+                          src={avatarMap[user._id] || userimg}
                           alt={`${user.first_name} ${user.last_name}`}
-                          className={`w-full h-48 object-cover rounded-xl mb-4 ${gotImage ? "" : "opacity-50"}`}
+                          className={`w-full h-48 object-cover rounded-xl mb-4 ${avatarMap[user._id] ? "" : "opacity-50"}`}
                         />
+
                         <h3 className="text-lg font-bold mb-1">{user.first_name} {user.last_name}</h3>
                         <p className="text-sm text-gray-500">Age: {user.age} • {user.location}</p>
                         <p className="text-sm text-gray-500">Ethnicity: {user.ethnicity || "N/A"}</p>
