@@ -46,6 +46,7 @@ export default function ProfileListingPage() {
 
   const api = "https://api.halalmatchmakings.com";
 
+
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -221,34 +222,23 @@ export default function ProfileListingPage() {
   //   fetchApproved();
   // }, []);
 
-const fetchAvatar = async (userId) => {
-  try {
-    const res = await axios.get(`${api}/user/${userId}/avatar`, {
-      withCredentials: true,
-    });
-
-    setAvatarMap((prev) => ({
-      ...prev,
-      [userId]: res.data.avatar,
-    }));
-  } catch (err) {
-    if (err.response?.status === 403) {
-      setAvatarMap((prev) => ({ ...prev, [userId]: null })); // Access denied
-    } else if (err.response?.status === 404) {
-      console.warn(`User ${userId} not found`);
-      console.error(`Avatar fetch failed for user ${userId}:`, err?.response?.status, err?.response?.data || err.message);
-
-    } else {
-      console.error('Unexpected error fetching avatar:', err);
-      console.error(`Avatar fetch failed for user ${userId}:`, err?.response?.status, err?.response?.data || err.message);
-
+  const fetchAvatars = async () => {
+    const allUserIds = users.map(p => p._id);
+    try {
+      const res = await axios.post(`${api}/users/avatars`, { userIds: allUserIds }, {
+        withCredentials: true,
+      });
+      setAvatarMap(res.data.avatars);
+    } catch (err) {
+      console.error('Failed to fetch avatars', err);
     }
-  }
-};
+  };
+
+
 
   useEffect(() => {
     users.forEach(user => {
-      fetchAvatar(user._id);
+      fetchAvatars(user._id);
     });
   }, [users]);
 
@@ -351,10 +341,15 @@ const fetchAvatar = async (userId) => {
                     return (
                       <div key={user._id} className="bg-white rounded-2xl shadow p-4 hover:shadow-lg transition animate-pop-in">
                         <img
-                          src={avatarMap[user._id] || userimg}
+                          src={
+                            avatarMap[user._id]
+                              ? `${api}/${avatarMap[user._id]}`
+                              : userimg
+                          }
                           alt={`${user.first_name} ${user.last_name}`}
                           className={`w-full h-48 object-cover rounded-xl mb-4 ${avatarMap[user._id] ? "" : "opacity-50"}`}
                         />
+
 
                         <h3 className="text-lg font-bold mb-1">{user.first_name} {user.last_name}</h3>
                         <p className="text-sm text-gray-500">Age: {user.age} • {user.location}</p>
