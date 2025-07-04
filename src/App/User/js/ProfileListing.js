@@ -351,7 +351,9 @@ export default function ProfileListingPage() {
                         />
 
 
-                        <h3 className="text-lg font-bold mb-1">{user.first_name} {user.last_name}</h3>
+                        <h3 className="text-lg font-bold mb-1">
+                          {user.nickname ? user.nickname : user.first_name}
+                        </h3>
                         <p className="text-sm text-gray-500">Age: {user.age} • {user.location}</p>
                         <p className="text-sm text-gray-500">Ethnicity: {user.ethnicity || "N/A"}</p>
                         <div className="flex flex-col gap-2 mt-3">
