@@ -271,8 +271,18 @@ export default function Notifications() {
                         ? "Delete Notification"
                         : `${confirmAction.type.charAt(0).toUpperCase() + confirmAction.type.slice(1)} Request`}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-6 text-center">
-                      Are you sure you want to {confirmAction.type} this?
+
+                    {/* ✅ Conditional message */}
+                    <p className="text-sm text-gray-600 mb-6 text-center leading-relaxed">
+                      {confirmAction.type === "accepted" && activeTab === "interest" ? (
+                        <>
+                          Are you sure you want to accept this interest request?
+                          <br />
+                          Accepting will allow your contact information to be shared with the sender for easier communication.
+                        </>
+                      ) : (
+                        <>Are you sure you want to {confirmAction.type} this?</>
+                      )}
                     </p>
 
                     <div className="flex justify-center gap-4">
@@ -298,6 +308,7 @@ export default function Notifications() {
                   </div>
                 </div>
               )}
+
             </div>
           </main>
         </div>

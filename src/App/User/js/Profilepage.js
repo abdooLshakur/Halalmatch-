@@ -25,8 +25,8 @@ export default function UserProfile() {
     complexion: ["Fair", "Light Brown", "Dark", "Albino"],
     maritalStatus: ["Single", "Married", "Divorcee", "Widowed"],
     qualification: ["High School", "Diploma", "Bachelor's", "Master's", "PhD"],
-    religiousLevel: ["Basically","Averagely", "Devoted", "Scholar"],
-    height: [ "smallish" , "medium", "Tall"],
+    religiousLevel: ["Basically", "Averagely", "Devoted", "Scholar"],
+    height: ["smallish", "medium", "Tall"],
     weight: ["XS", "S", "M", "L", "XL", "XXL",],
     gender: ["Male", "Female"],
   };
@@ -50,6 +50,7 @@ export default function UserProfile() {
       }
 
       const result = await res.json();
+      console.log(result)
       if (result.success) {
         setUserData(result.data);
       } else {
@@ -96,8 +97,9 @@ export default function UserProfile() {
   }
 
   async function handleSave() {
-    const required = ["location", "ethnicity", "height", "weight", "genotype", "bloodGroup", "complexion", "qualification", "religiousLevel", "bio"];
+    const required = ["location", "ethnicity", "height", "weight", "genotype", "bloodGroup", "complexion", "qualification", "religiousLevel", "bio", "nickname"];
     for (const k of required) {
+      console.log("Submitting userData:", userData);
       if (!userData[k]) {
         toast.error(`Please fill the ${k} field`);
         return;
@@ -178,10 +180,18 @@ export default function UserProfile() {
               {isEditing ? "Cancel Edit" : "Edit Profile"}
             </button>
           </div>
+          <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 px-4 py-3 rounded mb-6 text-sm">
+            <strong className="block font-semibold mb-1">
+              Profile Update Reminder
+            </strong>
+            Please update your profile, especially your nickname. A thoughtful nickname helps preserve your privacy until a match is confirmed. Choose one that’s meaningful, respectful, and appropriate.
+          </div>
+
 
           {/* Form Inputs */}
           <form className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[
+              { key: "nickname", label: "Nick Name" },
               { key: "first_name", label: "First Name" },
               { key: "last_name", label: "Last Name" },
               { key: "email", label: "Email" },
@@ -205,8 +215,8 @@ export default function UserProfile() {
               { key: "physicalChallenges", label: "Physical Challenges" },
               { key: "bio", label: "Bio" },
               { key: "gender", label: "Gender" },
-              ].map(({ key, label }) => {
-              const isDisabled = ["first_name", "last_name", "email", "age", "gender"].includes(key);
+            ].map(({ key, label }) => {
+              const isDisabled = ["first_name", "last_name", "email", "age", "gender",].includes(key);
               return (
                 <div key={key}>
                   <label className="block text-sm font-semibold text-blue-800 mb-1">{label}</label>
