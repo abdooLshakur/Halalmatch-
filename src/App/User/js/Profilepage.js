@@ -21,7 +21,7 @@ export default function UserProfile() {
   };
 
   const selectFields = {
-    genotype: ["AA", "AS", "SS", "AC", "SC", "CC"],
+    genotype: ["AA", "AS", "SS"],
     bloodGroup: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
     complexion: ["Fair", "Light Brown", "Dark", "Albino"],
     maritalStatus: ["Single", "Married", "Divorcee", "Widowed"],
@@ -97,7 +97,7 @@ export default function UserProfile() {
   }
 
   async function handleSave() {
-    const required = ["location", Phone, "ethnicity", "height", "weight", "genotype", "bloodGroup", "complexion", "qualification", "religiousLevel", "bio", "nickname"];
+    const required = ["location", "ethnicity", "height", "weight", "genotype", "bloodGroup", "complexion", "qualification", "religiousLevel", "phone", "bio", "nickname"];
     for (const k of required) {
       if (!userData[k]) {
         toast.error(`Please fill the ${k} field`);

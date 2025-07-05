@@ -6,7 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const api = "https://api.halalmatchmakings.com";
+  // const api = "https://api.halalmatchmakings.com";
+  const api = "http://localhost:8000";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

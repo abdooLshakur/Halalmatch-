@@ -140,7 +140,7 @@ export default function ProfileListingPage() {
 
     } catch (err) {
       toast.error("Failed to check activation.");
-      console.error("checkActivation error:", err);
+      // console.error("checkActivation error:", err);
       return false;
     }
   };
@@ -214,8 +214,6 @@ export default function ProfileListingPage() {
       console.error('Failed to fetch avatars', err);
     }
   };
-
-
 
   useEffect(() => {
     users.forEach(user => {
@@ -450,7 +448,7 @@ export default function ProfileListingPage() {
                 );
               })()}
 
-              {["Age", "Location", "Ethnicity", "Height", "Weight", "maritalStatus", "qualification", "profession", "religiousLevel", "spouseQualities", "dealBreakers", "physicalChallenges", "complexion", "stateOfOrigin", "numberOfKids",].map(label => (
+              {["Age", "Location", "Ethnicity", "Height", "Weight", "maritalStatus", "qualification", "profession", "religiousLevel", "spouseQualities", "gender", "dealBreakers", "physicalChallenges", "complexion", "stateOfOrigin", "numberOfKids",].map(label => (
                 <p key={label}><strong>{label}:</strong> {selectedUser[label.toLowerCase()] || "N/A"}</p>
               ))}
               <div className="text-right mt-4">
