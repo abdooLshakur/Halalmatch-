@@ -11,8 +11,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
-  // const api = "https://api.halalmatchmakings.com";
-  const api = "http://localhost:8000";
+  const api = "https://api.halalmatchmakings.com";
 
   const handleEvent = (e) => {
     e.preventDefault();

@@ -30,6 +30,7 @@ useEffect(() => {
     } catch (error) {
       console.error("Invalid Admin cookie:", error);
       Cookies.remove("Admin", { path: "/" });
+      Cookies.remove("token", { path: "/" });
       navigate("/Adminlogin");
     }
   } else {
