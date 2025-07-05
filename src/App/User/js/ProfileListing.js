@@ -202,25 +202,6 @@ export default function ProfileListingPage() {
       toast.error(e.message);
     }
   };
-  // useEffect(() => {
-  //   const fetchApproved = async () => {
-  //     try {
-  //       const res = await fetch(`${api}/avatar/:ownerId`, {
-  //         credentials: 'include',
-  //       });
-  //       const data = await res.json();
-  //       console.log("Approved IDs:", data);
-
-  //       if (data.success) {
-  //         setApprovedIds(data.approvedIds || []);
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to fetch approved IDs:", err);
-  //     }
-  //   };
-
-  //   fetchApproved();
-  // }, []);
 
   const fetchAvatars = async () => {
     const allUserIds = users.map(p => p._id);

@@ -16,11 +16,12 @@ const Sidebar = () => {
         </button>
       </div>
 
+
       {/* Sidebar Drawer */}
       <div
-        className={`fixed top-0 right-0 min-h-screen h-full w-64 bg-white shadow-lg z-30 p-6 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        } md:translate-x-0 md:relative md:right-auto md:w-64 md:shadow-none md:block`}
+        className={`fixed top-0 right-0 min-h-screen h-full w-64 bg-white shadow-lg z-30 p-6 transform transition-transform duration-300 ease-in-out 
+    ${isOpen ? "translate-x-0" : "translate-x-full"} 
+    md:translate-x-0 md:sticky md:top-0 md:h-screen md:right-auto md:shadow-none md:block`}
       >
         <h2 className="text-xl font-bold text-indigo-600 mb-4">Admin Panel</h2>
         <nav className="space-y-4">
@@ -31,6 +32,7 @@ const Sidebar = () => {
           <Link to="/adminprofile" className="block text-gray-700 hover:text-indigo-600">Profile</Link>
         </nav>
       </div>
+
 
       {/* Overlay */}
       {isOpen && (

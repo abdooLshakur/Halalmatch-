@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import { FaRegUser } from "react-icons/fa";
+import { Phone } from "lucide-react";
 
 export default function UserProfile() {
   const [userData, setUserData] = useState({});
@@ -50,7 +51,6 @@ export default function UserProfile() {
       }
 
       const result = await res.json();
-      console.log(result)
       if (result.success) {
         setUserData(result.data);
       } else {
@@ -97,9 +97,8 @@ export default function UserProfile() {
   }
 
   async function handleSave() {
-    const required = ["location", "ethnicity", "height", "weight", "genotype", "bloodGroup", "complexion", "qualification", "religiousLevel", "bio", "nickname"];
+    const required = ["location", Phone, "ethnicity", "height", "weight", "genotype", "bloodGroup", "complexion", "qualification", "religiousLevel", "bio", "nickname"];
     for (const k of required) {
-      console.log("Submitting userData:", userData);
       if (!userData[k]) {
         toast.error(`Please fill the ${k} field`);
         return;
@@ -184,7 +183,7 @@ export default function UserProfile() {
             <strong className="block font-semibold mb-1">
               Profile Update Reminder
             </strong>
-            Please update your profile, especially your nickname. A thoughtful nickname helps preserve your privacy until a match is confirmed. Choose one that’s meaningful, respectful, and appropriate.
+            Please update your profile, especially your nickname and phone number. A thoughtful nickname helps preserve your privacy until a match is confirmed. Choose one that’s meaningful, respectful, and appropriate.
           </div>
 
 
@@ -195,6 +194,7 @@ export default function UserProfile() {
               { key: "first_name", label: "First Name" },
               { key: "last_name", label: "Last Name" },
               { key: "email", label: "Email" },
+              { key: "phone", label: "Phone Number" },
               { key: "age", label: "Age" },
               { key: "numberOfKids", label: "Number of Kids" },
               { key: "location", label: "Location" },

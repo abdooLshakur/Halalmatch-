@@ -17,7 +17,6 @@ const MatchesComponent = () => {
         const { data } = await axios.get(`${API}/matches`, {
           withCredentials: true,
         });
-        console.log(data)
         setMatches(data.matches || []);
       } catch (err) {
         console.error("Error fetching matches:", err);
@@ -69,10 +68,10 @@ const MatchesComponent = () => {
 
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
+    <div className="min-w-[99vw] flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
       <Sidebar />
       <ToastContainer />
-      <div className="min-w-[100vw] lg:min-w-[88vw] p-6">
+      <div className="min-w-[100vw] lg:min-w-[80vw] p-6">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Matched Users</h3>
           <input
