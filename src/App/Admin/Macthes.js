@@ -17,6 +17,7 @@ const MatchesComponent = () => {
         const { data } = await axios.get(`${API}/matches`, {
           withCredentials: true,
         });
+        console.log(data)
         setMatches(data.matches || []);
       } catch (err) {
         console.error("Error fetching matches:", err);
@@ -49,19 +50,29 @@ const MatchesComponent = () => {
   };
 
   const filteredMatches = matches.filter((match) => {
-    const user1 = match?.user1?.name?.toLowerCase() || "";
-    const user2 = match?.user2?.name?.toLowerCase() || "";
+    const user1First = match?.user1?.first_name?.toLowerCase() || "";
+    const user1Last = match?.user1?.last_name?.toLowerCase() || "";
+    const user2First = match?.user2?.first_name?.toLowerCase() || "";
+    const user2Last = match?.user2?.last_name?.toLowerCase() || "";
+
+    const user1Full = user1First + user1Last;
+    const user2Full = user2First + user2Last;
+
     return (
-      user1.includes(search.toLowerCase()) ||
-      user2.includes(search.toLowerCase())
+      user1First.includes(search.toLowerCase()) ||
+      user1Last.includes(search.toLowerCase()) ||
+      user2First.includes(search.toLowerCase()) ||
+      user2Last.includes(search.toLowerCase())
     );
+
   });
+
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
       <Sidebar />
       <ToastContainer />
-      <div className="w-full md:w-[85vw] p-6">
+      <div className="min-w-[100vw] lg:min-w-[88vw] p-6">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Matched Users</h3>
           <input
@@ -93,18 +104,22 @@ const MatchesComponent = () => {
                   <tr key={match._id} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <div className="font-semibold text-gray-700">
-                        {match.user1?.name || "N/A"}
+                        {match.user1
+                          ? `${match.user1.first_name} ${match.user1.last_name}`
+                          : "N/A"}
                       </div>
                       <div className="text-gray-500 text-xs">
-                        {match.user1?.email || "N/A"}
+                        {match.user1?.phone || match.user1?.email || "N/A"}
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="font-semibold text-gray-700">
-                        {match.user2?.name || "N/A"}
+                        {match.user2
+                          ? `${match.user2.first_name} ${match.user2.last_name}`
+                          : "N/A"}
                       </div>
                       <div className="text-gray-500 text-xs">
-                        {match.user2?.email || "N/A"}
+                        {match.user2?.phone || match.user2?.email || "N/A"}
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell text-xs text-gray-600">
@@ -130,6 +145,7 @@ const MatchesComponent = () => {
                   </tr>
                 )}
               </tbody>
+
             </table>
           </div>
         )}
