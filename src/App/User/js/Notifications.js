@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import Navbar from "./Navbar";
+import Cookies from "js-cookie";
+import userimg from "../images/user.png";
 
 export default function Notifications() {
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState([]); // Initialized to an empty array
   const [activeTab, setActiveTab] = useState("interest");
   const [confirmAction, setConfirmAction] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [approvedIds, setApprovedIds] = useState([]);
+  const [isActivated, setIsActivated] = useState(false);
+  const [showActivationModal, setShowActivationModal] = useState(false);
+
   const api = "https://api.halalmatchmakings.com";
 
   function getUserIdFromCookie() {
@@ -31,7 +39,6 @@ export default function Notifications() {
     toast.warn("User cookie not found. login again");
     return null;
   }
-
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -130,7 +137,6 @@ export default function Notifications() {
     }
   };
 
-
   const handleDelete = async (id) => {
     try {
       const response = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
@@ -155,6 +161,87 @@ export default function Notifications() {
     const loggedInUserId = getUserIdFromCookie();
     return loggedInUserId && notifications.recipient === loggedInUserId;
   };
+
+  const handleViewDetails = async (userId) => {
+    try {
+      const res = await fetch(`${api}/user/${userId}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          toast.error("Unauthorized. Please log in again.");
+        } else {
+          toast.error("Failed to fetch user details");
+        }
+        return;
+      }
+
+      const data = await res.json();
+
+      // 🔍 LOG THE FULL USER DATA HERE
+      console.log("Fetched user data:", data);
+
+      setSelectedUser(data);
+      setShowModal(true);
+    } catch (err) {
+      console.error("Error fetching user:", err);
+      toast.error("Something went wrong");
+    }
+  };
+
+
+
+  const checkActivation = async () => {
+    try {
+      const userCookie = Cookies.get("user");
+      if (!userCookie) {
+        toast.error("You are not logged in.");
+        return false;
+      }
+
+      const user = JSON.parse(decodeURIComponent(userCookie));
+
+      const res = await fetch(`${api}/checkactivation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email: user.email }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        toast.error("Server error: " + errText);
+        return false;
+      }
+
+      const data = await res.json();
+
+      if (data.activated === true) {
+        setShowActivationModal(false);
+        setIsActivated(true); // ✅ <-- Added
+        return true;
+      } else {
+        setShowActivationModal(true);
+        setIsActivated(false); // ✅ <-- Added
+        return false;
+      }
+    } catch (err) {
+      toast.error("Failed to check activation.");
+      setIsActivated(false);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    checkActivation();
+  }, []);
 
   return (
     <div>
@@ -219,33 +306,56 @@ export default function Notifications() {
                         </span>
                       </p>
 
-                      {/* ✅ Message */}
                       <p className="text-sm text-gray-700 mb-4">
                         {item.message || "You have a new notification."}
                       </p>
+
+                      {item.type === "image" && item.status === "accepted" && item.sender?._id && (
+                        <button
+                          onClick={() => handleViewDetails(item.sender._id)}
+                          className="text-sm text-blue-600 underline mb-4"
+                        >
+                          👁️ View Sender Details
+                        </button>
+                      )}
 
                       {/* Actions */}
                       {isLoggedInUserRecipient(item) ? (
                         <>
                           {item.status === "pending" && (
-                            <div className="flex flex-wrap gap-4 mt-4">
-                              <button
-                                onClick={() =>
-                                  setConfirmAction({ type: "accepted", id: item._id })
-                                }
-                                className="flex-1 min-w-[100px] px-4 py-2 border border-green-600 text-green-700 hover:bg-green-50 text-sm font-medium rounded-xl transition"
-                              >
-                                ✅ Accept
-                              </button>
-                              <button
-                                onClick={() =>
-                                  setConfirmAction({ type: "rejected", id: item._id })
-                                }
-                                className="flex-1 min-w-[100px] px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 text-sm font-medium rounded-xl transition"
-                              >
-                                ❌ Reject
-                              </button>
-                            </div>
+                            <>
+                              {isActivated ? (
+                                <div className="flex flex-wrap gap-4 mt-4">
+                                  <button
+                                    onClick={() =>
+                                      setConfirmAction({ type: "accepted", id: item._id })
+                                    }
+                                    className="flex-1 min-w-[100px] px-4 py-2 border border-green-600 text-green-700 hover:bg-green-50 text-sm font-medium rounded-xl transition"
+                                  >
+                                    ✅ Accept
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      setConfirmAction({ type: "rejected", id: item._id })
+                                    }
+                                    className="flex-1 min-w-[100px] px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 text-sm font-medium rounded-xl transition"
+                                  >
+                                    ❌ Reject
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="mt-4 text-sm text-red-600 font-medium">
+                                  To accept/reject this interest, please{" "}
+                                  <button
+                                    className="underline text-blue-600"
+                                    onClick={() => setShowActivationModal(true)}
+                                  >
+                                    verify your account
+                                  </button>
+                                  .
+                                </div>
+                              )}
+                            </>
                           )}
                           <div className="mt-3 text-sm text-gray-600 font-medium">
                             Status: <span className="capitalize">{item.status || "Pending"}</span>
@@ -256,6 +366,7 @@ export default function Notifications() {
                           Status: <span className="capitalize">{item.status || "Pending"}</span>
                         </div>
                       )}
+
                     </div>
                   ))}
 
@@ -303,6 +414,68 @@ export default function Notifications() {
                         className="px-5 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400 transition"
                       >
                         Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {showModal && selectedUser && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white p-6 rounded-xl max-w-lg w-full animate-slide-in-up">
+                    <h2 className="text-xl font-semibold mb-4">
+                      {selectedUser.first_name} {selectedUser.last_name}
+                    </h2>
+                    {(() => {
+                      const hasImageAccess =
+                        selectedUser.avatar && approvedIds.includes(selectedUser._id);
+                      return (
+                        <img
+                          src={hasImageAccess ? `${api}/${selectedUser.avatar}` : userimg}
+                          alt="Avatar"
+                          className={`w-full h-60 object-cover rounded-xl mb-4 ${hasImageAccess ? "" : "opacity-50"
+                            }`}
+                        />
+                      );
+                    })()}
+
+                    {[
+                      "age",
+                      "location",
+                      "ethnicity",
+                      "height",
+                      "weight",
+                      "maritalStatus",
+                      "qualification",
+                      "profession",
+                      "religiousLevel",
+                      "spouseQualities",
+                      "gender",
+                      "dealBreakers",
+                      "physicalChallenges",
+                      "complexion",
+                      "stateOfOrigin",
+                      "numberOfKids"
+                    ].map((key) => (
+                      <p key={key}>
+                        <strong>
+                          {key
+                            .replace(/([A-Z])/g, " $1")
+                            .replace(/^./, (str) => str.toUpperCase())}
+                          :
+                        </strong>{" "}
+                        {selectedUser?.data?.[key] || "N/A"}
+                      </p>
+                    ))}
+
+
+
+                    <div className="text-right mt-4">
+                      <button
+                        onClick={() => setShowModal(false)}
+                        className="px-4 py-2 border rounded"
+                      >
+                        Close
                       </button>
                     </div>
                   </div>
