@@ -441,9 +441,13 @@ export default function ProfileListingPage() {
                 const hasImageAccess = selectedUser.avatar && approvedIds.includes(selectedUser._id);
                 return (
                   <img
-                    src={hasImageAccess ? `${api}/${selectedUser.avatar}` : userimg}
-                    alt="Avatar"
-                    className={`w-full h-60 object-cover rounded-xl mb-4 ${hasImageAccess ? '' : 'opacity-50'}`}
+                    src={
+                      avatarMap[selectedUser._id]
+                        ? `${api}/${avatarMap[selectedUser._id]}`
+                        : userimg
+                    }
+                    alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
+                    className={`w-full h-48 object-cover rounded-xl mb-4 ${avatarMap[selectedUser._id] ? "" : "opacity-50"}`}
                   />
                 );
               })()}

@@ -123,9 +123,10 @@ export default function UserProfile() {
   }
 
   function handleLogout() {
-    Cookies.remove("token", { path: "/" }, {domain: ".halalmatchmakings"});
-    Cookies.remove("user", { path: "/" }, {domain: ".halalmatchmakings"});
+    Cookies.remove("token", { path: "/", domain: ".halalmatchmakings" });
+    Cookies.remove("user", { path: "/", domain: ".halalmatchmakings" });
     navigate("/login");
+
   }
 
   return (

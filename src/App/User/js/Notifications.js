@@ -3,6 +3,7 @@ import { Toaster, toast } from "react-hot-toast";
 import Navbar from "./Navbar";
 import Cookies from "js-cookie";
 import userimg from "../images/user.png";
+import axios from "axios";
 
 export default function Notifications() {
   const [loading, setLoading] = useState(true);
@@ -13,6 +14,7 @@ export default function Notifications() {
   const [showModal, setShowModal] = useState(false);
   const [approvedIds, setApprovedIds] = useState([]);
   const [isActivated, setIsActivated] = useState(false);
+  const [avatarMap, setAvatarMap] = useState({});
   const [showActivationModal, setShowActivationModal] = useState(false);
 
   const api = "https://api.halalmatchmakings.com";
@@ -243,6 +245,25 @@ export default function Notifications() {
     checkActivation();
   }, []);
 
+  const fetchSingleAvatar = async (userId) => {
+    try {
+      const res = await axios.post(`${api}/users/avatars`, { userIds: [userId] }, {
+        withCredentials: true,
+      });
+      setAvatarMap(prev => ({
+        ...prev,
+        [userId]: res.data.avatars[userId]
+      }));
+    } catch (err) {
+      console.error('Failed to fetch avatar for user', err);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedUser && !avatarMap[selectedUser._id]) {
+      fetchSingleAvatar(selectedUser._id);
+    }
+  }, [selectedUser]);
   return (
     <div>
       <Navbar />
@@ -431,11 +452,15 @@ export default function Notifications() {
                         selectedUser.avatar && approvedIds.includes(selectedUser._id);
                       return (
                         <img
-                          src={hasImageAccess ? `${api}/${selectedUser.avatar}` : userimg}
-                          alt="Avatar"
-                          className={`w-full h-60 object-cover rounded-xl mb-4 ${hasImageAccess ? "" : "opacity-50"
-                            }`}
+                          src={
+                            avatarMap[selectedUser._id]
+                              ? `${api}/${avatarMap[selectedUser._id]}`
+                              : userimg
+                          }
+                          alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
+                          className={`w-full h-48 object-cover rounded-xl mb-4 ${avatarMap[selectedUser._id] ? "" : "opacity-50"}`}
                         />
+
                       );
                     })()}
 
@@ -467,8 +492,6 @@ export default function Notifications() {
                         {selectedUser?.data?.[key] || "N/A"}
                       </p>
                     ))}
-
-
 
                     <div className="text-right mt-4">
                       <button
