@@ -42,7 +42,7 @@ export default function Navbar() {
   };
 
   const avatarSrc = userData.avatar
-    ? `${api}/${userData.avatar}`
+    ? `${userData.avatar}`
     : userimg;
 
   return (

@@ -256,7 +256,6 @@ export default function Notifications() {
         { userIds: [userId] },
         { withCredentials: true }
       );
-      console.log("Avatar fetch response:", res.data);
       if (res.data.avatars && res.data.avatars[userId]) {
         setAvatarMap(prev => ({
           ...prev,
@@ -270,10 +269,8 @@ export default function Notifications() {
     }
   };
 
-
   useEffect(() => {
     if (selectedUser?.data && !avatarMap[selectedUser.data._id]) {
-      console.log("Selected user triggered fetch:", selectedUser.data._id);
       fetchSingleAvatar(selectedUser.data._id);
     }
   }, [selectedUser]);
@@ -283,10 +280,8 @@ export default function Notifications() {
     <div>
       <Navbar />
       <div className="w-[99vw] max-w-full min-h-screen overflow-x-hidden">
-
         <div className="flex flex-col min-h-screen bg-gray-100">
           <Toaster position="top-center" reverseOrder={false} />
-
           <main className="flex-1 flex justify-center items-start p-6 w-full">
             <div className="w-full max-w-[600px]">
 
@@ -476,7 +471,7 @@ export default function Notifications() {
                         <img
                           src={
                             avatarMap[selectedUser.data._id]
-                              ? `${api}/${avatarMap[selectedUser.data._id]}`
+                              ? `${avatarMap[selectedUser.data._id]}`
                               : userimg // fallback image
                           }
                           alt={`${selectedUser.data.first_name} ${selectedUser.data.last_name}`}

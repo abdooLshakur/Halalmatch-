@@ -322,7 +322,7 @@ export default function ProfileListingPage() {
                         <img
                           src={
                             avatarMap[user._id]
-                              ? `${api}/${avatarMap[user._id]}`
+                              ? `${avatarMap[user._id]}`
                               : userimg
                           }
                           alt={`${user.first_name} ${user.last_name}`}
@@ -443,7 +443,7 @@ export default function ProfileListingPage() {
                   <img
                     src={
                       avatarMap[selectedUser._id]
-                        ? `${api}/${avatarMap[selectedUser._id]}`
+                        ? `${avatarMap[selectedUser._id]}`
                         : userimg
                     }
                     alt={`${selectedUser.first_name} ${selectedUser.last_name}`}

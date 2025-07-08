@@ -154,7 +154,7 @@ export default function UserProfile() {
             <div className="relative">
               {previewUrl || userData.avatar ? (
                 <img
-                  src={previewUrl || `${api}/${userData.avatar}?t=${Date.now()}`}
+                  src={previewUrl || `${userData.avatar}?t=${Date.now()}`}
                   alt="Profile"
                   className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
                 />
