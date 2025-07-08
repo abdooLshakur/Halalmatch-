@@ -122,12 +122,19 @@ export default function UserProfile() {
     }
   }
 
-  function handleLogout() {
-    Cookies.remove("token", { path: "/", domain: ".halalmatchmakings" });
-    Cookies.remove("user", { path: "/", domain: ".halalmatchmakings" });
+const handleLogout = async () => {
+  try {
+    await fetch(`${api}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (err) {
+    console.error("Logout error:", err);
+  } finally {
     navigate("/login");
-
   }
+};
+
 
   return (
     <div className="min-h-screen w-screen bg-gray-50 flex flex-col">
