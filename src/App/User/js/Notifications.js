@@ -185,8 +185,6 @@ export default function Notifications() {
 
       const data = await res.json();
 
-      // 🔍 LOG THE FULL USER DATA HERE
-      console.log("Fetched user data:", data);
 
       setSelectedUser(data);
       setShowModal(true);
@@ -246,24 +244,41 @@ export default function Notifications() {
   }, []);
 
   const fetchSingleAvatar = async (userId) => {
+    if (!userId) {
+      console.warn("No userId provided to fetchSingleAvatar");
+      return;
+    }
+
+    console.log("Fetching avatar for user:", userId);
     try {
-      const res = await axios.post(`${api}/users/avatars`, { userIds: [userId] }, {
-        withCredentials: true,
-      });
-      setAvatarMap(prev => ({
-        ...prev,
-        [userId]: res.data.avatars[userId]
-      }));
+      const res = await axios.post(
+        `${api}/users/avatars`,
+        { userIds: [userId] },
+        { withCredentials: true }
+      );
+      console.log("Avatar fetch response:", res.data);
+      if (res.data.avatars && res.data.avatars[userId]) {
+        setAvatarMap(prev => ({
+          ...prev,
+          [userId]: res.data.avatars[userId]
+        }));
+      } else {
+        console.warn("No avatar returned for user:", userId);
+      }
     } catch (err) {
-      console.error('Failed to fetch avatar for user', err);
+      console.error("Failed to fetch avatar for user", err);
     }
   };
 
+
   useEffect(() => {
-    if (selectedUser && !avatarMap[selectedUser._id]) {
-      fetchSingleAvatar(selectedUser._id);
+    if (selectedUser?.data && !avatarMap[selectedUser.data._id]) {
+      console.log("Selected user triggered fetch:", selectedUser.data._id);
+      fetchSingleAvatar(selectedUser.data._id);
     }
   }, [selectedUser]);
+
+
   return (
     <div>
       <Navbar />
@@ -304,6 +319,7 @@ export default function Notifications() {
                   No {activeTab} notifications yet.
                 </div>
               ) : (
+
                 <div className="space-y-6">
                   {filteredNotifications.map((item) => (
                     <div
@@ -393,6 +409,12 @@ export default function Notifications() {
 
                 </div>
               )}
+              {selectedUser && (
+                <div>
+                  <p>User: {selectedUser.first_name} {selectedUser.last_name}</p>
+                  <p>Avatar Map: {JSON.stringify(avatarMap[selectedUser._id])}</p>
+                </div>
+              )}
 
               {/* Confirmation Modal */}
               {confirmAction && (
@@ -453,14 +475,14 @@ export default function Notifications() {
                       return (
                         <img
                           src={
-                            avatarMap[selectedUser._id]
-                              ? `${api}/${avatarMap[selectedUser._id]}`
-                              : userimg
+                            avatarMap[selectedUser.data._id]
+                              ? `${api}/${avatarMap[selectedUser.data._id]}`
+                              : userimg // fallback image
                           }
-                          alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
-                          className={`w-full h-48 object-cover rounded-xl mb-4 ${avatarMap[selectedUser._id] ? "" : "opacity-50"}`}
+                          alt={`${selectedUser.data.first_name} ${selectedUser.data.last_name}`}
+                          className={`w-full h-48 object-cover rounded-xl mb-4 ${avatarMap[selectedUser.data._id] ? "" : "opacity-50"
+                            }`}
                         />
-
                       );
                     })()}
 
