@@ -7,6 +7,7 @@ import Navbar from "./Navbar";
 import Testimonials from "./Testimonials";
 import WhyChooseUs from "./whychooseus";
 import CookieConsentBanner from "./Cookieconsent"; // 👈 import this
+import SpecialServices from "./Specialservices";
 
 function Landing() {
   return (
@@ -16,6 +17,7 @@ function Landing() {
         <Hero />
         <AboutHalalMatch />
         <HowItWorks />
+        <SpecialServices/>
         <Testimonials />
         <WhyChooseUs />
         <FinalCTA />
