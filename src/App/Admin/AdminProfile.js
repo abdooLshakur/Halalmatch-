@@ -167,15 +167,7 @@ export default function AdminProfile() {
       <div className="flex flex-col md:flex-row min-h-screen">
         {/* Sidebar */}
         {sidebarOpen && (
-          <div className="fixed z-40 top-0 left-0 w-64 h-full bg-white shadow-lg md:hidden">
-            <Sidebar />
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="absolute top-4 right-4 text-gray-600 hover:text-red-600 text-xl"
-            >
-              ✕
-            </button>
-          </div>
+          <Sidebar />
         )}
 
         {/* Sidebar for desktop */}
