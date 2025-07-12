@@ -171,8 +171,9 @@ export default function Gallery() {
               <img
                 src={selectedGallery.gallery_imgs[activeImageIndex]}
                 alt="Preview"
-                className="w-full h-[60vh] object-cover rounded-t-xl transition duration-500 ease-in-out transform hover:scale-[1.01]"
+                className="w-full max-h-[80vh] object-contain md:object-cover rounded-t-xl transition duration-500 ease-in-out transform hover:scale-[1.01]"
               />
+
 
               {/* Overlay Text */}
               <div className="absolute bottom-4 left-4 bg-black/50 text-white px-4 py-2 rounded-lg backdrop-blur-sm max-w-[80%]">
@@ -203,8 +204,8 @@ export default function Gallery() {
                   src={img}
                   onClick={() => setActiveImageIndex(i)}
                   className={`w-14 h-14 md:w-16 md:h-16 rounded-full object-cover border-4 transition duration-200 cursor-pointer hover:scale-105 shadow-md ${activeImageIndex === i
-                      ? "border-white shadow-white/30 scale-110"
-                      : "border-transparent"
+                    ? "border-white shadow-white/30 scale-110"
+                    : "border-transparent"
                     }`}
                   alt={`thumb-${i}`}
                 />

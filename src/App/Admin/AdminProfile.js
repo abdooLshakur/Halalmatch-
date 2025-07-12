@@ -3,7 +3,8 @@ import Sidebar from "./Sidebar";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
-import { FaEdit, FaSave, FaSignOutAlt, FaCamera } from "react-icons/fa";
+import { FaEdit, FaSave, FaSignOutAlt, FaCamera, FaBars } from "react-icons/fa";
+import userimg from "../User/images/user.png";
 
 export default function AdminProfile() {
   const [AdminData, setAdminData] = useState({});
@@ -11,6 +12,8 @@ export default function AdminProfile() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [AdminId, setAdminId] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const api = "https://api.halalmatchmakings.com";
   const navigate = useNavigate();
 
@@ -18,6 +21,7 @@ export default function AdminProfile() {
     const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
     return match ? decodeURIComponent(match[2]) : null;
   };
+
   useEffect(() => {
     const rawCookie = Cookies.get("Admin");
 
@@ -30,14 +34,12 @@ export default function AdminProfile() {
     try {
       parsed = JSON.parse(rawCookie);
     } catch (error) {
-      console.error("Failed to parse Admin cookie", error);
       Cookies.remove("Admin", { path: "/" });
       navigate("/Adminlogin");
       return;
     }
 
     if (!parsed?.id) {
-      console.warn("Admin ID missing from cookie");
       Cookies.remove("Admin", { path: "/" });
       navigate("/Adminlogin");
       return;
@@ -46,7 +48,6 @@ export default function AdminProfile() {
     setAdminId(parsed.id);
     fetchAdminData(parsed.id);
   }, []);
-
 
   const fetchAdminData = async (id) => {
     try {
@@ -152,18 +153,45 @@ export default function AdminProfile() {
   };
 
   return (
-    <div className="w-[100vw] max-w-full bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      <div className="flex   py-6  min-h-screen overflow-x-hidden">
-        <ToastContainer />
-        <Sidebar />
-        <main className="flex-1 p-6 sm:p-10">
+    <div className="w-[100vw] max-w-full bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen">
+      <ToastContainer />
+
+      {/* Hamburger Button */}
+      <button
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
+        <FaBars />
+      </button>
+
+      <div className="flex flex-col md:flex-row min-h-screen">
+        {/* Sidebar */}
+        {sidebarOpen && (
+          <div className="fixed z-40 top-0 left-0 w-64 h-full bg-white shadow-lg md:hidden">
+            <Sidebar />
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-red-600 text-xl"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* Sidebar for desktop */}
+        <div className="hidden md:block">
+          <Sidebar />
+        </div>
+
+        {/* Main Content */}
+        <main className="flex-1 p-4 sm:p-6 md:p-10">
           <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-lg p-6 sm:p-10">
             <div className="flex flex-col sm:flex-row gap-6 items-center">
               <div className="relative">
                 <img
                   src={
                     previewUrl ||
-                    (AdminData.avatar ? `${api}/${AdminData.avatar}?t=${Date.now()}` : "/default-avatar.png")
+                    (AdminData.avatar ? `${AdminData.avatar}?t=${Date.now()}` : userimg)
                   }
                   alt="Profile"
                   className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
