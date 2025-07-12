@@ -8,34 +8,44 @@ const CreateGallery = () => {
   const [formData, setFormData] = useState({
     gallery_header: "",
     gallery_location: "",
-    gallery_img: null,
+    gallery_description: "",
+    Gallery_img: [],
   });
-  const [preview, setPreview] = useState(null);
+
+  const [preview, setPreview] = useState([]);
   const navigate = useNavigate();
   const api = "https://api.halalmatchmakings.com";
 
   const handleChange = (e) => {
-    if (e.target.name === "gallery_img") {
-      const file = e.target.files[0];
-      setFormData({ ...formData, gallery_img: file });
-      setPreview(file ? URL.createObjectURL(file) : null);
+    const { name, value, files } = e.target;
+
+    if (name === "Gallery_img") {
+      const selectedFiles = Array.from(files);
+      setFormData((prev) => ({ ...prev, Gallery_img: selectedFiles }));
+      setPreview(selectedFiles.map((file) => URL.createObjectURL(file)));
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = new FormData();
     data.append("gallery_header", formData.gallery_header);
     data.append("gallery_location", formData.gallery_location);
-    data.append("Gallery_img", formData.gallery_img);
+    data.append("gallery_description", formData.gallery_description);
+
+    formData.Gallery_img.forEach((file) => {
+      data.append("Gallery_img", file); 
+    });
 
     try {
       await axios.post(`${api}/create-Gallery`, data, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       toast.success("Gallery created successfully!");
       navigate("/GalleryTable");
     } catch (err) {
@@ -68,6 +78,7 @@ const CreateGallery = () => {
               required
             />
           </div>
+
           <div>
             <label className="block text-gray-700 font-medium mb-1">Location</label>
             <input
@@ -80,26 +91,45 @@ const CreateGallery = () => {
               required
             />
           </div>
+
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Image</label>
+            <label className="block text-gray-700 font-medium mb-1">Description</label>
+            <textarea
+              name="gallery_description"
+              value={formData.gallery_description}
+              onChange={handleChange}
+              rows="4"
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+              placeholder="Enter description"
+            ></textarea>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Images</label>
             <input
               type="file"
-              name="gallery_img"
+              name="Gallery_img"
               accept="image/*"
+              multiple
               onChange={handleChange}
               className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-white file:bg-blue-600 hover:file:bg-blue-700"
               required
             />
           </div>
-          {preview && (
-            <div className="mt-3">
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-32 h-32 object-cover border rounded"
-              />
+
+          {preview.length > 0 && (
+            <div className="mt-3 grid grid-cols-3 gap-3">
+              {preview.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`Preview ${index + 1}`}
+                  className="w-24 h-24 object-cover border rounded"
+                />
+              ))}
             </div>
           )}
+
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200"

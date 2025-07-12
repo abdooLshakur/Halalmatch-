@@ -18,6 +18,7 @@ const GalleryTable = () => {
   const [formValues, setFormValues] = useState({
     gallery_header: "",
     gallery_location: "",
+    gallery_description: "",
   });
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,8 +52,9 @@ const GalleryTable = () => {
     setFormValues({
       gallery_header: item.gallery_header || "",
       gallery_location: item.gallery_location || "",
+      gallery_description: item.gallery_description || "",
     });
-    setPreviewImage(`${api}/${item.gallery_img}`);
+    setPreviewImage(item.gallery_imgs?.[0]); 
     setIsModalOpen(true);
   };
 
@@ -62,6 +64,7 @@ const GalleryTable = () => {
     const data = new FormData();
     data.append("gallery_header", formValues.gallery_header);
     data.append("gallery_location", formValues.gallery_location);
+    data.append("gallery_description", formValues.gallery_description);
     if (form.gallery_img.files[0]) {
       data.append("Gallery_img", form.gallery_img.files[0]);
     }
@@ -126,6 +129,7 @@ const GalleryTable = () => {
                   <th className="py-2 px-4 text-left">Image</th>
                   <th className="py-2 px-4 text-left">Header</th>
                   <th className="py-2 px-4 text-left">Location</th>
+                  <th className="py-2 px-4 text-left">Description</th>
                   <th className="py-2 px-4 text-left">Actions</th>
                 </tr>
               </thead>
@@ -134,13 +138,15 @@ const GalleryTable = () => {
                   <tr key={item._id} className="border-b">
                     <td className="py-2 px-4">
                       <img
-                        src={`${api}/${item.gallery_img}`}
+                        src={item.gallery_imgs?.[0]} // first image only
                         alt={item.gallery_header}
                         className="w-16 h-16 object-cover rounded"
                       />
+
                     </td>
                     <td className="py-2 px-4">{item.gallery_header}</td>
                     <td className="py-2 px-4">{item.gallery_location}</td>
+                    <td className="py-2 px-4">{item.gallery_description}</td>
                     <td className="py-2 px-4 space-x-2">
                       <button
                         onClick={() => handleEdit(item)}
@@ -173,7 +179,9 @@ const GalleryTable = () => {
               <button
                 key={index}
                 onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 rounded ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                className={`px-3 py-1 rounded ${currentPage === index + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200"
                   }`}
               >
                 {index + 1}
@@ -214,6 +222,18 @@ const GalleryTable = () => {
                       onChange={(e) =>
                         setFormValues({ ...formValues, gallery_location: e.target.value })
                       }
+                      className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea
+                      name="gallery_description"
+                      value={formValues.gallery_description}
+                      onChange={(e) =>
+                        setFormValues({ ...formValues, gallery_description: e.target.value })
+                      }
+                      rows={3}
                       className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-300"
                     />
                   </div>
@@ -261,9 +281,9 @@ const GalleryTable = () => {
             </div>
           )}
         </div>
-        </div>
       </div>
-      );
+    </div>
+  );
 };
 
-      export default GalleryTable;
+export default GalleryTable;

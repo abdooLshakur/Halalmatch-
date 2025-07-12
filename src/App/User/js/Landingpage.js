@@ -6,7 +6,6 @@ import HowItWorks from "./Howitworks";
 import Navbar from "./Navbar";
 import Testimonials from "./Testimonials";
 import WhyChooseUs from "./whychooseus";
-import CookieConsentBanner from "./Cookieconsent"; // 👈 import this
 import SpecialServices from "./Specialservices";
 
 function Landing() {
@@ -24,7 +23,6 @@ function Landing() {
         <Footer />
       </div>
 
-      {/* <CookieConsentBanner /> */}
     </div>
   );
 }

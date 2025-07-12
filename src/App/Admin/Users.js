@@ -17,7 +17,6 @@ const UsersComponent = () => {
         const { data } = await axios.get(`${API}/users`, {
           withCredentials: true,
         });
-        console.log(data.data);
         setUsers(data.data);
       } catch (error) {
         toast.error("Failed to load users");
