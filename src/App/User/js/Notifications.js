@@ -132,9 +132,14 @@ export default function Notifications() {
       }
 
       const data = await res.json();
+
+      // 🔥 Fetch avatar FIRST before modal opens
+      fetchSingleAvatar(data?.data?._id);
+
       setSelectedUser(data);
       setShowModal(true);
 
+      // Mark notification as read
       setNotifications((prev) =>
         prev.map((n) =>
           n._id === notifId ? { ...n, isRead: true } : n
@@ -145,6 +150,8 @@ export default function Notifications() {
       toast.error("Something went wrong");
     }
   };
+
+
 
   const filteredNotifications = notifications.filter((n) => n.type === activeTab);
 
@@ -204,7 +211,7 @@ export default function Notifications() {
   }, [selectedUser]);
 
   const includedFields = [
-    "nickname", "age", "gender", "location", "maritalStatus",
+     "age", "gender", "location", "maritalStatus",
     "hobbies", "profession", "religiousLevel", "qualification", "genotype",
     "ethnicity", "height", "weight", "complexion", "bio", "dealBreakers",
     "spouseQualities", "physicalChallenges", "stateOfOrigin", "marriageIntentDuration"
@@ -314,7 +321,7 @@ export default function Notifications() {
                     className="w-16 h-16 rounded-full object-cover"
                   />
                   <div>
-                    <h2 className="text-xl font-bold">{selectedUser.data.first_name} {selectedUser.data.last_name}</h2>
+                    <h2 className="text-xl font-bold">{selectedUser.data.nickname}</h2>
                     <p className="text-sm text-gray-500">Age: {selectedUser.data.age}</p>
                     <p className="text-sm text-gray-500">Location: {selectedUser.data.location}</p>
                   </div>
