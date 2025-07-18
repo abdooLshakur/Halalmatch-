@@ -1,6 +1,9 @@
 import React from 'react';
 
 const SpecialServices = () => {
+  const whatsappLink = (text) =>
+    `https://wa.me/2347025555250?text=${encodeURIComponent(text)}`;
+
   return (
     <section className="bg-gray-50 py-16 px-6 md:px-16" id="special-services">
       <div className="max-w-6xl mx-auto text-center mb-12">
@@ -15,9 +18,17 @@ const SpecialServices = () => {
       <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
         {/* Premium Package */}
         <div className="bg-white shadow-lg rounded-xl p-6">
-          <h3 className="text-2xl font-semibold text-green-700 mb-2">💼 Premium Package</h3>
+          <a
+            href={whatsappLink("Hello, I’m interested in the Premium Package")}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h3 className="text-2xl font-semibold text-rose-600 hover:underline mb-2 cursor-pointer">
+              💼 Premium Package
+            </h3>
+          </a>
           <p className="text-sm text-gray-500 mb-1">
-            Cost: <strong className="text-green-600">₦30,000</strong>
+            Cost: <strong className="text-gray-800">₦30,000</strong>
           </p>
           <p className="text-gray-700 text-base mt-2">
             Our Premium Service offers confidential, anonymous matchmaking without the need to sign up or share personal details publicly.
@@ -31,12 +42,21 @@ const SpecialServices = () => {
 
         {/* E-book */}
         <div className="bg-white shadow-lg rounded-xl p-6">
-          <h3 className="text-2xl font-semibold text-green-700 mb-2">📘 E-book: 100+ Questions Before Nikaah</h3>
+          <a
+            href="https://selar.com/6gq257"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h3 className="text-2xl font-semibold text-rose-600 hover:underline mb-2 cursor-pointer">
+              📘 E-book: 100+ Questions Before Nikaah
+            </h3>
+          </a>
           <p className="text-sm text-gray-500 mb-1">
-            Cost: <strong className="text-green-600">₦5,000</strong>
+            Cost: <strong className="text-gray-800">₦5,000</strong>
           </p>
           <p className="text-gray-700 text-base mt-2">
-            Written by Coach Khadija Ibrahim, this practical guide equips Muslim singles with 100+ thoughtful questions covering spirituality, roles, finances, goals, and more—helping couples make informed, Allah-conscious marriage decisions.
+            Written by Coach Khadija Ibrahim, this practical guide equips Muslim singles with 100+ thoughtful questions covering spirituality,
+            roles, finances, goals, and more—helping couples make informed, Allah-conscious marriage decisions.
           </p>
           <p className="text-sm text-gray-600 italic mt-3">
             A must-have roadmap for intentional marriage seekers.
@@ -45,7 +65,15 @@ const SpecialServices = () => {
 
         {/* Counselling Services */}
         <div className="bg-white shadow-lg rounded-xl p-6">
-          <h3 className="text-2xl font-semibold text-green-700 mb-2">🧕 Pre-Marital & Marital Counselling</h3>
+          <a
+            href={whatsappLink("Hello, I’m interested in Pre-Marital or Marital Counselling")}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h3 className="text-2xl font-semibold text-rose-600 hover:underline mb-2 cursor-pointer">
+              🧕 Pre-Marital & Marital Counselling
+            </h3>
+          </a>
           <p className="text-sm text-gray-500 mb-1">
             Cost: <strong className="text-yellow-600">Contact admin</strong>
           </p>
@@ -60,7 +88,15 @@ const SpecialServices = () => {
 
         {/* Spiritual Diagnosis */}
         <div className="bg-white shadow-lg rounded-xl p-6">
-          <h3 className="text-2xl font-semibold text-green-700 mb-2">🌿 Spiritual Diagnosis: Delay in Marriage</h3>
+          <a
+            href={whatsappLink("Hello, I’m interested in the Spiritual Diagnosis for marriage delay")}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h3 className="text-2xl font-semibold text-rose-600 hover:underline mb-2 cursor-pointer">
+              🌿 Spiritual Diagnosis: Delay in Marriage
+            </h3>
+          </a>
           <p className="text-sm text-gray-500 mb-1">
             Cost: <strong className="text-yellow-600">Contact admin</strong>
           </p>
@@ -96,4 +132,3 @@ const SpecialServices = () => {
 };
 
 export default SpecialServices;
-

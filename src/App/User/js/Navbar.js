@@ -6,12 +6,15 @@ import { BellIcon } from "@heroicons/react/24/outline";
 import logo from "../images/logo.png";
 import userimg from "../images/user.png";
 import { toast } from "react-toastify";
+import { io } from "socket.io-client";
+import { useLocation } from "react-router-dom";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [userData, setUserData] = useState({});
   const [newMessages, setNewMessages] = useState(0);
+  const location = useLocation();
   const api = "https://api.halalmatchmakings.com";
   const navigate = useNavigate();
 
@@ -31,6 +34,31 @@ export default function Navbar() {
       setIsLoggedIn(false);
     }
   }, []);
+  useEffect(() => {
+    if (location.pathname === "/notification") {
+      setNewMessages(0);
+    }
+  }, [location]);
+
+  useEffect(() => {
+    const socket = io(api, {
+      transports: ["websocket"],
+      withCredentials: true,
+    });
+
+    socket.on("connect", () => {
+    });
+
+    socket.on("newNotification", (data) => {
+      console.log("Notification received:", data);
+      setNewMessages((prev) => prev + 1);
+      toast.success("📩 New notification received");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   const handleLogout = () => {
     Cookies.remove("user");
@@ -41,21 +69,19 @@ export default function Navbar() {
     toast.success("Logged out successfully!");
   };
 
-  const avatarSrc = userData.avatar
-    ? `${userData.avatar}`
-    : userimg;
+  const avatarSrc = userData.avatar ? `${userData.avatar}` : userimg;
 
   return (
     <nav className="bg-white shadow-md px-6 py-3 relative z-50 w-full">
       <div className="w-full flex items-center justify-between">
-        {/* Left: Logo */}
+        {/* Logo */}
         <div className="flex items-center">
           <Link to="/">
             <img src={logo} alt="Logo" className="h-14 object-contain rounded-lg" />
           </Link>
         </div>
 
-        {/* Right: Desktop Nav */}
+        {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-6">
           <Link to="/" className="text-gray-700 hover:text-indigo-600 transition">Home</Link>
           <Link to="/profilelisting" className="text-gray-700 hover:text-indigo-600 transition">Find Match</Link>
@@ -68,7 +94,7 @@ export default function Navbar() {
               <BellIcon className="h-6 w-6" />
             </Link>
             {newMessages > 0 && (
-              <span className="absolute top-0 right-0 h-4 w-4 bg-indigo-600 text-white text-xs rounded-full flex items-center justify-center">
+              <span className="absolute top-0 right-0 h-4 w-4 bg-red-600 text-white text-xs rounded-full flex items-center justify-center animate-bounce">
                 {newMessages}
               </span>
             )}
@@ -116,7 +142,12 @@ export default function Navbar() {
           <Link onClick={() => setMenuOpen(false)} to="/profilelisting" className="text-gray-700 hover:text-indigo-600 transition">Find Match</Link>
           <Link onClick={() => setMenuOpen(false)} to="/contact" className="text-gray-700 hover:text-indigo-600 transition">Contact</Link>
           <Link onClick={() => setMenuOpen(false)} to="/gallery" className="text-gray-700 hover:text-indigo-600 transition">Gallery</Link>
-          <Link onClick={() => setMenuOpen(false)} to="/notification" className="text-gray-700 hover:text-indigo-600 transition">Notifications</Link>
+          <Link onClick={() => setMenuOpen(false)} to="/notification" className="text-gray-700 hover:text-indigo-600 transition">
+            Notifications
+            {newMessages > 0 && (
+              <span className="ml-2 px-2 py-0.5 bg-red-600 text-white text-xs rounded-full">{newMessages}</span>
+            )}
+          </Link>
           <button onClick={handleLogout} className="text-indigo-600 font-semibold text-left hover:underline">Logout</button>
         </div>
       )}

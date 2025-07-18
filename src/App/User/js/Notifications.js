@@ -7,7 +7,7 @@ import axios from "axios";
 
 export default function Notifications() {
   const [loading, setLoading] = useState(true);
-  const [notifications, setNotifications] = useState([]); // Initialized to an empty array
+  const [notifications, setNotifications] = useState([]);
   const [activeTab, setActiveTab] = useState("interest");
   const [confirmAction, setConfirmAction] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -16,6 +16,7 @@ export default function Notifications() {
   const [isActivated, setIsActivated] = useState(false);
   const [avatarMap, setAvatarMap] = useState({});
   const [showActivationModal, setShowActivationModal] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const api = "https://api.halalmatchmakings.com";
 
@@ -53,7 +54,9 @@ export default function Notifications() {
 
         const data = await response.json();
         if (data && Array.isArray(data.notifications)) {
-          setNotifications(data.notifications); // Correctly setting notifications state
+          setNotifications(data.notifications);
+          const unread = data.notifications.filter(n => !n.isRead).length;
+          setUnreadCount(unread);
         } else {
           toast.error("try again later");
         }
@@ -65,7 +68,6 @@ export default function Notifications() {
       }
     };
 
-    // Fetch notifications on component mount
     fetchNotifications();
   }, []);
 
@@ -78,9 +80,7 @@ export default function Notifications() {
     try {
       const res = await fetch(`${api}/updateNotificationStatus/${notificationId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ action }),
       });
@@ -90,46 +90,23 @@ export default function Notifications() {
       if (res.ok && data.success) {
         toast.success(data.message);
 
-        // Update the notification locally
         setNotifications((prev) =>
           prev.map((n) =>
-            n._id === notificationId
-              ? { ...n, status: action, isRead: true }
-              : n
+            n._id === notificationId ? { ...n, status: action, isRead: true } : n
           )
         );
         setConfirmAction(null);
 
-        // Additional handling based on type
         if (action === 'accepted') {
-          // If this was an image request, and backend returns info about sender
-          if (data.notification?.type === 'image' && data.notification?.sender) {
-            // Optional: update access list (if using context or state-sharing)
-            // e.g. approvedIds.push(data.notification.sender)
-            // Optionally: update global state or call refresh
-          }
-          if (action === 'accepted') {
-            if (data.notification?.type === 'image') {
-              // no match creation
-              return;
-            }
+          if (data.notification?.type === 'image') return;
 
-            // Only run for interest-type
-            if (data.notification?.type === 'interest') {
-              await fetch(`${api}/matches/auto-create`, {
-                method: 'POST',
-                credentials: 'include',
-              });
-            }
+          if (data.notification?.type === 'interest') {
+            await fetch(`${api}/matches/auto-create`, {
+              method: 'POST',
+              credentials: 'include',
+            });
           }
-
-          // Still allow auto-match creation (for interest-type)
-          await fetch(`${api}/matches/auto-create`, {
-            method: 'POST',
-            credentials: 'include',
-          });
         }
-
       } else {
         toast.error(data.message || 'Failed to update notification status');
       }
@@ -139,100 +116,61 @@ export default function Notifications() {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
-
-      if (!response.ok) throw new Error("Failed to delete");
-
-      setNotifications((prev) => prev.filter((n) => n._id !== id));
-      toast.success("Notification deleted successfully.");
-    } catch (error) {
-      toast.error("Error deleting notification:", error);
-      toast.error("Failed to delete notification.");
-    } finally {
-      setConfirmAction(null);
-    }
-  };
-
-  const filteredNotifications = Array.isArray(notifications)
-    ? notifications.filter((n) => n.type === activeTab)
-    : [];
-
-  const isLoggedInUserRecipient = (notifications) => {
-    const loggedInUserId = getUserIdFromCookie();
-    return loggedInUserId && notifications.recipient === loggedInUserId;
-  };
-
-  const handleViewDetails = async (userId) => {
+  const handleViewDetails = async (userId, notifId) => {
     try {
       const res = await fetch(`${api}/user/${userId}`, {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       if (!res.ok) {
-        if (res.status === 401) {
-          toast.error("Unauthorized. Please log in again.");
-        } else {
-          toast.error("Failed to fetch user details");
-        }
+        res.status === 401
+          ? toast.error("Unauthorized. Please log in again.")
+          : toast.error("Failed to fetch user details");
         return;
       }
 
       const data = await res.json();
-
-
       setSelectedUser(data);
       setShowModal(true);
+
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n._id === notifId ? { ...n, isRead: true } : n
+        )
+      );
     } catch (err) {
       console.error("Error fetching user:", err);
       toast.error("Something went wrong");
     }
   };
 
+  const filteredNotifications = notifications.filter((n) => n.type === activeTab);
 
+  const isLoggedInUserRecipient = (notification) => {
+    const loggedInUserId = getUserIdFromCookie();
+    return loggedInUserId && notification.recipient === loggedInUserId;
+  };
 
   const checkActivation = async () => {
     try {
       const userCookie = Cookies.get("user");
-      if (!userCookie) {
-        toast.error("You are not logged in.");
-        return false;
-      }
-
+      if (!userCookie) return false;
       const user = JSON.parse(decodeURIComponent(userCookie));
 
       const res = await fetch(`${api}/checkactivation`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ email: user.email }),
       });
 
-      if (!res.ok) {
-        const errText = await res.text();
-        toast.error("Server error: " + errText);
-        return false;
-      }
-
       const data = await res.json();
-
-      if (data.activated === true) {
-        setShowActivationModal(false);
-        setIsActivated(true); // ✅ <-- Added
-        return true;
-      } else {
-        setShowActivationModal(true);
-        setIsActivated(false); // ✅ <-- Added
-        return false;
-      }
-    } catch (err) {
+      setIsActivated(data.activated);
+      setShowActivationModal(!data.activated);
+      return data.activated;
+    } catch {
       toast.error("Failed to check activation.");
       setIsActivated(false);
       return false;
@@ -244,12 +182,7 @@ export default function Notifications() {
   }, []);
 
   const fetchSingleAvatar = async (userId) => {
-    if (!userId) {
-      console.warn("No userId provided to fetchSingleAvatar");
-      return;
-    }
-
-    console.log("Fetching avatar for user:", userId);
+    if (!userId) return;
     try {
       const res = await axios.post(
         `${api}/users/avatars`,
@@ -257,15 +190,10 @@ export default function Notifications() {
         { withCredentials: true }
       );
       if (res.data.avatars && res.data.avatars[userId]) {
-        setAvatarMap(prev => ({
-          ...prev,
-          [userId]: res.data.avatars[userId]
-        }));
-      } else {
-        console.warn("No avatar returned for user:", userId);
+        setAvatarMap(prev => ({ ...prev, [userId]: res.data.avatars[userId] }));
       }
     } catch (err) {
-      console.error("Failed to fetch avatar for user", err);
+      console.error("Failed to fetch avatar", err);
     }
   };
 
@@ -275,36 +203,35 @@ export default function Notifications() {
     }
   }, [selectedUser]);
 
+  const includedFields = [
+    "nickname", "age", "gender", "location", "maritalStatus",
+    "hobbies", "profession", "religiousLevel", "qualification", "genotype",
+    "ethnicity", "height", "weight", "complexion", "bio", "dealBreakers",
+    "spouseQualities", "physicalChallenges", "stateOfOrigin", "marriageIntentDuration"
+  ];
 
   return (
     <div>
-      <Navbar />
+      <Navbar unreadCount={unreadCount} />
       <div className="w-[99vw] max-w-full min-h-screen overflow-x-hidden">
         <div className="flex flex-col min-h-screen bg-gray-100">
           <Toaster position="top-center" reverseOrder={false} />
           <main className="flex-1 flex justify-center items-start p-6 w-full">
             <div className="w-full max-w-[600px]">
-
-              {/* Page Title */}
               <h1 className="text-3xl font-bold mb-8 text-center">Notifications</h1>
 
-              {/* Tabs */}
               <div className="flex justify-center mb-8 gap-2">
                 {["interest", "image"].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-6 py-2 text-sm rounded-full font-semibold transition ${activeTab === tab
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-600 border hover:bg-gray-50"
-                      }`}
+                    className={`px-6 py-2 text-sm rounded-full font-semibold transition-all shadow-sm ${activeTab === tab ? "bg-blue-600 text-white" : "bg-white text-gray-600 border hover:bg-blue-50"}`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)} Requests
                   </button>
                 ))}
               </div>
 
-              {/* Content */}
               {loading ? (
                 <div className="flex justify-center items-center h-40">
                   <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-300 border-t-blue-600"></div>
@@ -314,13 +241,12 @@ export default function Notifications() {
                   No {activeTab} notifications yet.
                 </div>
               ) : (
-
                 <div className="space-y-6">
-                  {filteredNotifications.map((item) => (
-                    <div
-                      key={item._id}
-                      className="bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition-all"
-                    >
+                  {filteredNotifications.map((item, i) => (
+                    <div key={item._id || i} className="relative bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition-all">
+                      {!item.isRead && (
+                        <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full"></span>
+                      )}
                       <div className="flex justify-between items-center mb-2">
                         <h2 className="text-lg font-semibold capitalize">
                           {item.type || "Notification"}
@@ -329,201 +255,85 @@ export default function Notifications() {
                           {formatDate(item.createdAt)}
                         </span>
                       </div>
-
-                      {/* ✅ Sender Name */}
                       <p className="text-sm text-gray-700 mt-2 mb-1">
-                        From:{" "}
-                        <span className="font-semibold">
+                        From: <span className="font-semibold">
                           {item.sender ? `${item.sender.first_name} ${item.sender.last_name}` : "Unknown Sender"}
                         </span>
                       </p>
-
                       <p className="text-sm text-gray-700 mb-4">
                         {item.message || "You have a new notification."}
                       </p>
 
-                      {item.type === "image" && item.status === "accepted" && item.sender?._id && (
+                      {(item.status === "accepted" || item.status === "pending") && item.sender?._id && (
                         <button
-                          onClick={() => handleViewDetails(item.sender._id)}
+                          onClick={() => handleViewDetails(item.sender._id, item._id)}
                           className="text-sm text-blue-600 underline mb-4"
                         >
-                          👁️ View Sender Details
+                          👁️ View Details
                         </button>
                       )}
 
-                      {/* Actions */}
                       {isLoggedInUserRecipient(item) ? (
-                        <>
-                          {item.status === "pending" && (
-                            <>
-                              {isActivated ? (
-                                <div className="flex flex-wrap gap-4 mt-4">
-                                  <button
-                                    onClick={() =>
-                                      setConfirmAction({ type: "accepted", id: item._id })
-                                    }
-                                    className="flex-1 min-w-[100px] px-4 py-2 border border-green-600 text-green-700 hover:bg-green-50 text-sm font-medium rounded-xl transition"
-                                  >
-                                    ✅ Accept
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      setConfirmAction({ type: "rejected", id: item._id })
-                                    }
-                                    className="flex-1 min-w-[100px] px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 text-sm font-medium rounded-xl transition"
-                                  >
-                                    ❌ Reject
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="mt-4 text-sm text-red-600 font-medium">
-                                  To accept/reject this interest, please{" "}
-                                  <button
-                                    className="underline text-blue-600"
-                                    onClick={() => setShowActivationModal(true)}
-                                  >
-                                    verify your account
-                                  </button>
-                                  .
-                                </div>
-                              )}
-                            </>
-                          )}
+                        item.status === "pending" ? (
+                          isActivated ? (
+                            <div className="flex flex-wrap gap-4 mt-4">
+                              <button onClick={() => handleReply(item._id, "accepted")} className="flex-1 min-w-[100px] px-4 py-2 border border-green-600 text-green-700 hover:bg-green-50 text-sm font-medium rounded-xl transition">✅ Accept</button>
+                              <button onClick={() => handleReply(item._id, "rejected")} className="flex-1 min-w-[100px] px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 text-sm font-medium rounded-xl transition">❌ Reject</button>
+                            </div>
+                          ) : (
+                            <div className="mt-4 text-sm text-red-600 font-medium">
+                              To accept/reject this interest, please <button className="underline text-blue-600" onClick={() => setShowActivationModal(true)}>verify your account</button>.
+                            </div>
+                          )
+                        ) : (
                           <div className="mt-3 text-sm text-gray-600 font-medium">
                             Status: <span className="capitalize">{item.status || "Pending"}</span>
                           </div>
-                        </>
+                        )
                       ) : (
                         <div className="mt-3 text-sm text-gray-600 font-medium">
                           Status: <span className="capitalize">{item.status || "Pending"}</span>
                         </div>
                       )}
-
                     </div>
                   ))}
-
                 </div>
               )}
-              {selectedUser && (
-                <div>
-                  <p>User: {selectedUser.first_name} {selectedUser.last_name}</p>
-                  <p>Avatar Map: {JSON.stringify(avatarMap[selectedUser._id])}</p>
-                </div>
-              )}
-
-              {/* Confirmation Modal */}
-              {confirmAction && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-                  <div className="bg-white p-8 rounded-lg shadow-lg max-w-[400px] w-full">
-                    <h3 className="text-lg font-bold mb-4 text-center">
-                      {confirmAction.type === "delete"
-                        ? "Delete Notification"
-                        : `${confirmAction.type.charAt(0).toUpperCase() + confirmAction.type.slice(1)} Request`}
-                    </h3>
-
-                    {/* ✅ Conditional message */}
-                    <p className="text-sm text-gray-600 mb-6 text-center leading-relaxed">
-                      {confirmAction.type === "accepted" && activeTab === "interest" ? (
-                        <>
-                          Are you sure you want to accept this interest request?
-                          <br />
-                          Accepting will allow your contact information to be shared with the sender for easier communication.
-                        </>
-                      ) : (
-                        <>Are you sure you want to {confirmAction.type} this?</>
-                      )}
-                    </p>
-
-                    <div className="flex justify-center gap-4">
-                      <button
-                        onClick={() => {
-                          if (confirmAction.type === "delete") {
-                            handleDelete(confirmAction.id);
-                          } else {
-                            handleReply(confirmAction.id, confirmAction.type);
-                          }
-                        }}
-                        className="px-5 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
-                      >
-                        Yes
-                      </button>
-                      <button
-                        onClick={() => setConfirmAction(null)}
-                        className="px-5 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400 transition"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {showModal && selectedUser && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-white p-6 rounded-xl max-w-lg w-full animate-slide-in-up">
-                    <h2 className="text-xl font-semibold mb-4">
-                      {selectedUser.first_name} {selectedUser.last_name}
-                    </h2>
-                    {(() => {
-                      const hasImageAccess =
-                        selectedUser.avatar && approvedIds.includes(selectedUser._id);
-                      return (
-                        <img
-                          src={
-                            avatarMap[selectedUser.data._id]
-                              ? `${avatarMap[selectedUser.data._id]}`
-                              : userimg // fallback image
-                          }
-                          alt={`${selectedUser.data.first_name} ${selectedUser.data.last_name}`}
-                          className={`w-full h-48 object-cover rounded-xl mb-4 ${avatarMap[selectedUser.data._id] ? "" : "opacity-50"
-                            }`}
-                        />
-                      );
-                    })()}
-
-                    {[
-                      "age",
-                      "location",
-                      "ethnicity",
-                      "height",
-                      "weight",
-                      "maritalStatus",
-                      "qualification",
-                      "profession",
-                      "religiousLevel",
-                      "spouseQualities",
-                      "gender",
-                      "dealBreakers",
-                      "physicalChallenges",
-                      "complexion",
-                      "stateOfOrigin",
-                      "numberOfKids"
-                    ].map((key) => (
-                      <p key={key}>
-                        <strong>
-                          {key
-                            .replace(/([A-Z])/g, " $1")
-                            .replace(/^./, (str) => str.toUpperCase())}
-                          :
-                        </strong>{" "}
-                        {selectedUser?.data?.[key] || "N/A"}
-                      </p>
-                    ))}
-
-                    <div className="text-right mt-4">
-                      <button
-                        onClick={() => setShowModal(false)}
-                        className="px-4 py-2 border rounded"
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
             </div>
           </main>
+
+          {/* User Details Modal */}
+          {showModal && selectedUser && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg w-full max-w-lg p-6 relative overflow-y-auto max-h-[90vh]">
+                <button onClick={() => setShowModal(false)} className="absolute top-2 right-2 text-gray-600 hover:text-gray-800">✖</button>
+                <div className="flex items-center space-x-4 mb-4">
+                  <img
+                    src={avatarMap[selectedUser.data._id] || userimg}
+                    alt="User Avatar"
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                  <div>
+                    <h2 className="text-xl font-bold">{selectedUser.data.first_name} {selectedUser.data.last_name}</h2>
+                    <p className="text-sm text-gray-500">Age: {selectedUser.data.age}</p>
+                    <p className="text-sm text-gray-500">Location: {selectedUser.data.location}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                  {Object.entries(selectedUser.data)
+                    .filter(([key]) => includedFields.includes(key))
+                    .map(([key, value]) => (
+                      <div key={key} className="capitalize">
+                        <strong>{key.replace(/([A-Z])/g, ' $1')}: </strong>
+                        {Array.isArray(value) ? value.join(", ") : String(value)}
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>

@@ -57,7 +57,7 @@ const api = "https://api.halalmatchmakings.com";
 
             {/* Contact Info Section */}
             <div className="w-full md:w-1/2 space-y-5 text-center md:text-left text-sm sm:text-base">
-              <h2 className="text-xl sm:text-2xl font-semibold text-indigo-700">Get In Touch With Us</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-rose-700">Get In Touch With Us</h2>
               <p className="text-gray-600">
                 We’d love to hear from you! Fill out the form or reach out — we’ll get back as soon as possible.
               </p>
@@ -114,7 +114,7 @@ const api = "https://api.halalmatchmakings.com";
                 />
                 <button
                   type="submit"
-                  className="bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition text-sm sm:text-base"
+                  className="bg-rose-500 text-white py-2 rounded hover:bg-rose-700 transition text-sm sm:text-base"
                 >
                   Contact us
                 </button>

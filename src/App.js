@@ -48,9 +48,9 @@ function App() {
         <Route path="/users" element={<UsersComponent />} />
         <Route path="/matched-users" element={<MatchesComponent />} />
         <Route path="/messages" element={<ContactMessagesComponent />} />
-        <Route path="/adminlogin" element={<AdminLogin />} />
-        <Route path="/adminsignup" element={<AdminSignup />} />
-        <Route path="/adminprofile" element={<AdminProfile />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/admin-registerform" element={<AdminSignup />} />
+        <Route path="/admin-profile" element={<AdminProfile />} />
         <Route path="/GalleryTable" element={<GalleryTable />} />
         <Route path="/CreateGallery" element={<Galleryform />} />
         <Route path="/admins" element={<Admins />} />

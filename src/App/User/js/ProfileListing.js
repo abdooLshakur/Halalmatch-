@@ -124,7 +124,8 @@ export default function ProfileListingPage() {
 
       if (!res.ok) {
         const errText = await res.text();
-        toast.error("Server error: " + errText);
+        toast.error("Reload or Relogin ");
+        console.error("Server error: " + errText);
         return false;
       }
 
@@ -139,8 +140,7 @@ export default function ProfileListingPage() {
       }
 
     } catch (err) {
-      toast.error("Failed to check activation.");
-      // console.error("checkActivation error:", err);
+      console.error("checkActivation error:", err);
       return false;
     }
   };

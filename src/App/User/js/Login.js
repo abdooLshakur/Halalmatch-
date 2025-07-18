@@ -12,7 +12,6 @@ const Login = () => {
   const [error, setError] = useState(false);
   const navigate = useNavigate();
   const api = "https://api.halalmatchmakings.com";
-
   const handleEvent = (e) => {
     e.preventDefault();
     setIsLoading(true);
