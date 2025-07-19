@@ -26,7 +26,7 @@ export default function AdminProfile() {
     const rawCookie = Cookies.get("Admin");
 
     if (!rawCookie) {
-      navigate("/Adminlogin");
+      navigate("/Admin-login");
       return;
     }
 
@@ -35,13 +35,13 @@ export default function AdminProfile() {
       parsed = JSON.parse(rawCookie);
     } catch (error) {
       Cookies.remove("Admin", { path: "/" });
-      navigate("/Adminlogin");
+      navigate("/Admin-login");
       return;
     }
 
     if (!parsed?.id) {
       Cookies.remove("Admin", { path: "/" });
-      navigate("/Adminlogin");
+      navigate("/Admin-login");
       return;
     }
 
@@ -58,7 +58,7 @@ export default function AdminProfile() {
       if (res.status === 401) {
         Cookies.remove("Admin", { path: "/" });
         Cookies.remove("token", { path: "/" });
-        navigate("/Adminlogin");
+        navigate("/Admin-login");
         return;
       }
 
@@ -149,7 +149,7 @@ export default function AdminProfile() {
   const handleLogout = () => {
     Cookies.remove("token", { path: "/" });
     Cookies.remove("Admin", { path: "/" });
-    navigate("/adminlogin");
+    navigate("/admin-login");
   };
 
   return (

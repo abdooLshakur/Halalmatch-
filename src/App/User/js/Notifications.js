@@ -132,14 +132,10 @@ export default function Notifications() {
       }
 
       const data = await res.json();
-
-      // 🔥 Fetch avatar FIRST before modal opens
       fetchSingleAvatar(data?.data?._id);
-
       setSelectedUser(data);
       setShowModal(true);
 
-      // Mark notification as read
       setNotifications((prev) =>
         prev.map((n) =>
           n._id === notifId ? { ...n, isRead: true } : n
@@ -150,8 +146,6 @@ export default function Notifications() {
       toast.error("Something went wrong");
     }
   };
-
-
 
   const filteredNotifications = notifications.filter((n) => n.type === activeTab);
 
@@ -204,22 +198,16 @@ export default function Notifications() {
     }
   };
 
-  useEffect(() => {
-    if (selectedUser?.data && !avatarMap[selectedUser.data._id]) {
-      fetchSingleAvatar(selectedUser.data._id);
-    }
-  }, [selectedUser]);
-
   const includedFields = [
      "age", "gender", "location", "maritalStatus",
     "hobbies", "profession", "religiousLevel", "qualification", "genotype",
     "ethnicity", "height", "weight", "complexion", "bio", "dealBreakers",
     "spouseQualities", "physicalChallenges", "stateOfOrigin", "marriageIntentDuration"
   ];
-
   return (
     <div>
       <Navbar unreadCount={unreadCount} />
+      <Toaster />
       <div className="w-[99vw] max-w-full min-h-screen overflow-x-hidden">
         <div className="flex flex-col min-h-screen bg-gray-100">
           <Toaster position="top-center" reverseOrder={false} />
@@ -340,9 +328,47 @@ export default function Notifications() {
               </div>
             </div>
           )}
+          {/* Confirmation Modal */}
+          {confirmAction && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+              <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+                <p className="mb-4">Are you sure you want to {confirmAction.action} this request?</p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => handleReply(confirmAction.id, confirmAction.action)}
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={() => setConfirmAction(null)}
+                    className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
+          {/* Activation Modal */}
+          {showActivationModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-lg font-semibold mb-4">Account Activation Required</h2>
+                <p className="text-sm text-gray-700 mb-4">Please activate your account to access full features.</p>
+                <button
+                  onClick={() => setShowActivationModal(false)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
+
   );
 }

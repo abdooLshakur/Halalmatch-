@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Button } from "../js/Button";
 import { BellIcon } from "@heroicons/react/24/outline";
@@ -7,7 +7,7 @@ import logo from "../images/logo.png";
 import userimg from "../images/user.png";
 import { toast } from "react-toastify";
 import { io } from "socket.io-client";
-import { useLocation } from "react-router-dom";
+import { Link as ScrollLink } from "react-scroll";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -34,6 +34,7 @@ export default function Navbar() {
       setIsLoggedIn(false);
     }
   }, []);
+
   useEffect(() => {
     if (location.pathname === "/notification") {
       setNewMessages(0);
@@ -46,11 +47,7 @@ export default function Navbar() {
       withCredentials: true,
     });
 
-    socket.on("connect", () => {
-    });
-
     socket.on("newNotification", (data) => {
-      console.log("Notification received:", data);
       setNewMessages((prev) => prev + 1);
       toast.success("📩 New notification received");
     });
@@ -83,10 +80,12 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-gray-700 hover:text-indigo-600 transition">Home</Link>
-          <Link to="/profilelisting" className="text-gray-700 hover:text-indigo-600 transition">Find Match</Link>
-          <Link to="/contact" className="text-gray-700 hover:text-indigo-600 transition">Contact</Link>
-          <Link to="/gallery" className="text-gray-700 hover:text-indigo-600 transition">Gallery</Link>
+          <Link to="/" className="text-gray-700 hover:text-rose-600 transition">Home</Link>
+          <Link to="/profilelisting" className="text-gray-700 hover:text-rose-600 transition">Find Match</Link>
+          <Link to="/contact" className="text-gray-700 hover:text-rose-600 transition">Contact</Link>
+          <Link to="/gallery" className="text-gray-700 hover:text-rose-600 transition">Gallery</Link>
+          <Link to="/#special-services" className="text-gray-700 hover:text-rose-600 transition"> Special Services </Link>
+
 
           {/* Notifications */}
           <div className="relative">
@@ -106,12 +105,12 @@ export default function Navbar() {
               <img
                 src={avatarSrc}
                 alt="User avatar"
-                className="w-10 h-10 rounded-full object-cover border-2 border-indigo-500"
+                className="w-10 h-10 rounded-full object-cover border-2 border-rose-500"
               />
             </Link>
           ) : (
             <Link to="/signup">
-              <Button className="bg-indigo-600 text-white hover:bg-indigo-500 transition">Join Now</Button>
+              <Button className="bg-rose-600 text-white hover:bg-rose-500 transition">Join Now</Button>
             </Link>
           )}
         </div>
@@ -123,12 +122,12 @@ export default function Navbar() {
               <img
                 src={avatarSrc}
                 alt="User avatar"
-                className="w-10 h-10 rounded-full object-cover border-2 border-indigo-500"
+                className="w-10 h-10 rounded-full object-cover border-2 border-rose-500"
               />
             </button>
           ) : (
             <Link to="/signup">
-              <Button className="bg-indigo-600 text-white hover:bg-indigo-500 transition">Join Now</Button>
+              <Button className="bg-rose-600 text-white hover:bg-rose-500 transition">Join Now</Button>
             </Link>
           )}
         </div>
@@ -137,18 +136,26 @@ export default function Navbar() {
       {/* Mobile Dropdown */}
       {menuOpen && isLoggedIn && (
         <div className="absolute top-full left-0 w-full bg-white shadow-md p-4 flex flex-col space-y-4 md:hidden">
-          <Link onClick={() => setMenuOpen(false)} to="/" className="text-gray-700 hover:text-indigo-600 transition">Home</Link>
-          <Link onClick={() => setMenuOpen(false)} to="/profile" className="text-gray-700 hover:text-indigo-600 transition">Profile</Link>
-          <Link onClick={() => setMenuOpen(false)} to="/profilelisting" className="text-gray-700 hover:text-indigo-600 transition">Find Match</Link>
-          <Link onClick={() => setMenuOpen(false)} to="/contact" className="text-gray-700 hover:text-indigo-600 transition">Contact</Link>
-          <Link onClick={() => setMenuOpen(false)} to="/gallery" className="text-gray-700 hover:text-indigo-600 transition">Gallery</Link>
-          <Link onClick={() => setMenuOpen(false)} to="/notification" className="text-gray-700 hover:text-indigo-600 transition">
+          <Link onClick={() => setMenuOpen(false)} to="/" className="text-gray-700 hover:text-rose-600 transition">Home</Link>
+          <Link onClick={() => setMenuOpen(false)} to="/profile" className="text-gray-700 hover:text-rose-600 transition">Profile</Link>
+          <Link onClick={() => setMenuOpen(false)} to="/profilelisting" className="text-gray-700 hover:text-rose-600 transition">Find Match</Link>
+          <Link onClick={() => setMenuOpen(false)} to="/contact" className="text-gray-700 hover:text-rose-600 transition">Contact</Link>
+          <Link onClick={() => setMenuOpen(false)} to="/gallery" className="text-gray-700 hover:text-rose-600 transition">Gallery</Link>
+          <Link
+            to="/#special-services"
+            onClick={() => setMenuOpen(false)}
+            className="text-gray-700 hover:text-rose-600 transition"
+          >
+            Special Services
+          </Link>
+          <Link onClick={() => setMenuOpen(false)} to="/notification" className="text-gray-700 hover:text-rose-600 transition">
             Notifications
             {newMessages > 0 && (
               <span className="ml-2 px-2 py-0.5 bg-red-600 text-white text-xs rounded-full">{newMessages}</span>
             )}
           </Link>
-          <button onClick={handleLogout} className="text-indigo-600 font-semibold text-left hover:underline">Logout</button>
+
+          <button onClick={handleLogout} className="text-rose-600 font-semibold text-left hover:underline">Logout</button>
         </div>
       )}
     </nav>

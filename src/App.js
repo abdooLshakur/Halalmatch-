@@ -23,6 +23,7 @@ import ContactMessagesComponent from "./App/Admin/Messages";
 import GalleryTable from "./App/Admin/GalleryTable";
 import Galleryform from "./App/Admin/Galleryform";
 import Admins from "./App/Admin/Admins";
+import SpecialServices from "./App/User/js/Specialservices";
 
 function App() {
 
@@ -43,6 +44,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/activate" element={<Payment />} />
+        <Route path="/special-services" element={<SpecialServices />} />
         {/* <Route path="/Dashboard" element={<Dashbard />} /> */}
 
         <Route path="/users" element={<UsersComponent />} />

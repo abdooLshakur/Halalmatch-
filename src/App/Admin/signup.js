@@ -80,7 +80,7 @@ const AdminSignup = () => {
       if (data.success) {
         toast.success(data.message || "Sign up successful!");
         setTimeout(() => {
-          Navigate("/adminlogin");
+          Navigate("/admin-login");
         }, 500);
       } else {
         setError(true);
@@ -223,7 +223,7 @@ const AdminSignup = () => {
 
         <p className="text-center mt-4 text-sm text-gray-600">
           Already have an account?{" "}
-          <Link to="/adminlogin" className="text-blue-500 hover:underline">
+          <Link to="/admin-login" className="text-blue-500 hover:underline">
             Sign in
           </Link>
         </p>
