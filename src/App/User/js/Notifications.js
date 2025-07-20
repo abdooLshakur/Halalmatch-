@@ -58,7 +58,7 @@ export default function Notifications() {
           const unread = data.notifications.filter(n => !n.isRead).length;
           setUnreadCount(unread);
         } else {
-          toast.error("try again later");
+          toast.error("try again later, relogin");
         }
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -74,6 +74,26 @@ export default function Notifications() {
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const markAsRead = async (notificationId) => {
+    try {
+      const res = await fetch(`${api}/notifications/markAsRead/${notificationId}`, {
+        method: 'PUT',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n._id === notificationId ? { ...n, isRead: true } : n
+          )
+        );
+        setUnreadCount((prev) => Math.max(prev - 1, 0));
+      }
+    } catch (err) {
+      console.error("Failed to mark as read", err);
+    }
   };
 
   const handleReply = async (notificationId, action) => {
@@ -95,6 +115,7 @@ export default function Notifications() {
             n._id === notificationId ? { ...n, status: action, isRead: true } : n
           )
         );
+        setUnreadCount((prev) => Math.max(prev - 1, 0));
         setConfirmAction(null);
 
         if (action === 'accepted') {
@@ -136,11 +157,7 @@ export default function Notifications() {
       setSelectedUser(data);
       setShowModal(true);
 
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n._id === notifId ? { ...n, isRead: true } : n
-        )
-      );
+      await markAsRead(notifId);
     } catch (err) {
       console.error("Error fetching user:", err);
       toast.error("Something went wrong");
@@ -199,16 +216,17 @@ export default function Notifications() {
   };
 
   const includedFields = [
-     "age", "gender", "location", "maritalStatus",
+    "age", "gender", "location", "maritalStatus",
     "hobbies", "profession", "religiousLevel", "qualification", "genotype",
     "ethnicity", "height", "weight", "complexion", "bio", "dealBreakers",
     "spouseQualities", "physicalChallenges", "stateOfOrigin", "marriageIntentDuration"
   ];
+
   return (
     <div>
       <Navbar unreadCount={unreadCount} />
       <Toaster />
-      <div className="w-[99vw] max-w-full min-h-screen overflow-x-hidden">
+       <div className="w-[99vw] max-w-full min-h-screen overflow-x-hidden">
         <div className="flex flex-col min-h-screen bg-gray-100">
           <Toaster position="top-center" reverseOrder={false} />
           <main className="flex-1 flex justify-center items-start p-6 w-full">
@@ -236,60 +254,22 @@ export default function Notifications() {
                   No {activeTab} notifications yet.
                 </div>
               ) : (
-                <div className="space-y-6">
-                  {filteredNotifications.map((item, i) => (
-                    <div key={item._id || i} className="relative bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition-all">
-                      {!item.isRead && (
-                        <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full"></span>
-                      )}
-                      <div className="flex justify-between items-center mb-2">
-                        <h2 className="text-lg font-semibold capitalize">
-                          {item.type || "Notification"}
-                        </h2>
-                        <span className="text-xs text-gray-400">
-                          {formatDate(item.createdAt)}
-                        </span>
+                <div className="p-4">
+                  {filteredNotifications.map((n) => (
+                    <div key={n._id} className="bg-white shadow p-4 rounded mb-4">
+                      <p><strong>From:</strong> {n.senderName || "Unknown"}</p>
+                      <p><strong>Type:</strong> {n.type}</p>
+                      <p><strong>Date:</strong> {formatDate(n.createdAt)}</p>
+                      <div className="flex gap-3 mt-3 items-center">
+                        <button onClick={() => handleViewDetails(n.sender, n._id)} className="text-blue-600 hover:underline">View Details</button>
+                        {isLoggedInUserRecipient(n) && !n.status && (
+                          <>
+                            <button onClick={() => setConfirmAction({ id: n._id, action: 'accepted' })} className="text-green-600 hover:underline">Accept</button>
+                            <button onClick={() => setConfirmAction({ id: n._id, action: 'rejected' })} className="text-red-600 hover:underline">Reject</button>
+                          </>
+                        )}
+                        {!n.isRead && <span className="ml-2 w-2 h-2 bg-red-500 rounded-full"></span>}
                       </div>
-                      <p className="text-sm text-gray-700 mt-2 mb-1">
-                        From: <span className="font-semibold">
-                          {item.sender ? `${item.sender.first_name} ${item.sender.last_name}` : "Unknown Sender"}
-                        </span>
-                      </p>
-                      <p className="text-sm text-gray-700 mb-4">
-                        {item.message || "You have a new notification."}
-                      </p>
-
-                      {(item.status === "accepted" || item.status === "pending") && item.sender?._id && (
-                        <button
-                          onClick={() => handleViewDetails(item.sender._id, item._id)}
-                          className="text-sm text-blue-600 underline mb-4"
-                        >
-                          👁️ View Details
-                        </button>
-                      )}
-
-                      {isLoggedInUserRecipient(item) ? (
-                        item.status === "pending" ? (
-                          isActivated ? (
-                            <div className="flex flex-wrap gap-4 mt-4">
-                              <button onClick={() => handleReply(item._id, "accepted")} className="flex-1 min-w-[100px] px-4 py-2 border border-green-600 text-green-700 hover:bg-green-50 text-sm font-medium rounded-xl transition">✅ Accept</button>
-                              <button onClick={() => handleReply(item._id, "rejected")} className="flex-1 min-w-[100px] px-4 py-2 border border-yellow-500 text-yellow-600 hover:bg-yellow-50 text-sm font-medium rounded-xl transition">❌ Reject</button>
-                            </div>
-                          ) : (
-                            <div className="mt-4 text-sm text-red-600 font-medium">
-                              To accept/reject this interest, please <button className="underline text-blue-600" onClick={() => setShowActivationModal(true)}>verify your account</button>.
-                            </div>
-                          )
-                        ) : (
-                          <div className="mt-3 text-sm text-gray-600 font-medium">
-                            Status: <span className="capitalize">{item.status || "Pending"}</span>
-                          </div>
-                        )
-                      ) : (
-                        <div className="mt-3 text-sm text-gray-600 font-medium">
-                          Status: <span className="capitalize">{item.status || "Pending"}</span>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -369,6 +349,5 @@ export default function Notifications() {
         </div>
       </div>
     </div>
-
   );
 }
