@@ -257,7 +257,7 @@ export default function Notifications() {
                 <div className="p-4">
                   {filteredNotifications.map((n) => (
                     <div key={n._id} className="bg-white shadow p-4 rounded mb-4">
-                      <p><strong>From:</strong> {n.senderName || "Unknown"}</p>
+                      <p><strong>From:</strong> {n.nickname || "Unknown"}</p>
                       <p><strong>Type:</strong> {n.type}</p>
                       <p><strong>Date:</strong> {formatDate(n.createdAt)}</p>
                       <div className="flex gap-3 mt-3 items-center">
